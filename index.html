@@ -43,6 +43,7 @@
         .btn-primary { background: linear-gradient(135deg, #b9591f, #e06c2e); color: #0a0502; border: none; box-shadow: 0 2px 8px rgba(224,108,46,0.3); }
         .btn-outline { background: transparent; border: 1px solid var(--ember); color: var(--ember-bright); }
         .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+        .btn-xs { padding: 4px 8px; font-size: 0.65rem; border-radius: 20px; }
         .stats-row { display: flex; justify-content: space-between; background: #1a1512; border-radius: 40px; padding: 12px; margin-top: 8px; }
         .avatar-circle { width: 56px; height: 56px; background: #2e241f; border-radius: 50%; border: 2px solid var(--ember); display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
@@ -56,6 +57,14 @@
         .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         input, select, textarea { width: 100%; padding: 12px; background: #1c140f; border: 1px solid #3a2a20; border-radius: 20px; color: white; margin: 6px 0; }
+        .admin-panel { border: 1px dashed var(--gold); background: #1e1814; margin-top: 12px; padding: 12px; border-radius: 20px; }
+        .admin-panel h3 { color: var(--gold); margin-bottom: 8px; }
+        .member-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1512; border-radius: 16px; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+        .member-info { font-size: 0.85rem; flex: 1; min-width: 140px; }
+        .member-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .badge-admin { background: #d4af37; color: #000; padding: 2px 8px; border-radius: 12px; font-size: 0.65rem; font-weight: bold; }
+        .badge-inadiplente { background: #c55a3a; color: #fff; }
+        .truncate { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: middle; }
     </style>
 </head>
 <body>
@@ -87,7 +96,7 @@
     <span>Conectando ao clube...</span>
 </div>
 
-<!-- App Principal (MVP) -->
+<!-- App Principal -->
 <div id="app">
     <div class="topbar">
         <div class="logo"><i class="fas fa-skull"></i><span>Asfalto</span></div>
@@ -105,6 +114,12 @@
                 <div class="stats-row"><span>🎟️ Ingressos: <span id="ticketAmount">0</span></span><span>🏅 Confiança: <span id="trustScore">0</span></span></div>
                 <div class="xp-bar"><div id="xpFill" style="background:linear-gradient(90deg,#c97e3a,#f0b27a); width:0%; height:100%; border-radius:10px;"></div></div>
                 <div><span class="plan-badge" id="planBadge">Associado</span> <span id="statusBadge">✅ Adimplente</span></div>
+            </div>
+            <!-- Botão do Mestre (admin) -->
+            <div id="adminEntry" style="display:none;">
+                <button class="btn btn-outline" style="width:100%; border-color: var(--gold); color: var(--gold);" onclick="navigateTo('admin')">
+                    <i class="fas fa-crown"></i> Painel do Mestre
+                </button>
             </div>
             <div class="grid-2col">
                 <div onclick="navigateTo('qr')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-qrcode"></i></div><span>Meu QR</span></div>
@@ -148,12 +163,38 @@
             </div>
         </div>
 
-        <!-- CHECK-IN (simplificado, sem geolocalização obrigatória) -->
+        <!-- CHECK-IN -->
         <div class="view" id="viewCheckin">
             <div class="card"><h3><i class="fas fa-camera"></i> Check-in</h3>
                 <p style="font-size:0.8rem; color:var(--text-muted);">Registre sua presença no ponto de encontro.</p>
-                <button class="btn btn-primary" id="checkinSimplesBtn" onclick="realizarCheckinSimples()">Registrar Check-in (+30🔥)</button>
+                <p style="font-size:0.75rem;">Recompensa atual: <strong id="checkinRewardDisplay">30</strong> 🔥</p>
+                <button class="btn btn-primary" id="checkinSimplesBtn" onclick="realizarCheckinSimples()">Registrar Check-in</button>
                 <p id="checkinStatus" style="margin-top:8px; font-size:0.8rem;"></p>
+            </div>
+        </div>
+
+        <!-- ADMIN (MESTRE) -->
+        <div class="view" id="viewAdmin">
+            <div class="card admin-panel">
+                <h3><i class="fas fa-crown"></i> Painel do Mestre</h3>
+                <div style="margin-bottom:12px;">
+                    <label style="font-size:0.8rem;">Recompensa por Check-in (🔥)</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="number" id="adminCheckinReward" placeholder="30" min="0" step="1" style="flex:1;">
+                        <button class="btn btn-primary btn-sm" id="saveRewardBtn">Salvar</button>
+                    </div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <h4 style="margin:8px 0;">Cunhar Tokens para Membro</h4>
+                    <input type="email" id="adminMemberEmail" placeholder="E-mail do membro">
+                    <input type="number" id="adminTokenAmount" placeholder="Quantidade" min="1" step="1">
+                    <button class="btn btn-primary btn-sm" id="adminMintBtn" style="width:100%; margin-top:6px;">⚒️ Cunhar</button>
+                    <p id="adminMintStatus" style="font-size:0.7rem; margin-top:4px;"></p>
+                </div>
+                <div>
+                    <h4 style="margin:8px 0;">📋 Membros</h4>
+                    <div id="membersList" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -170,7 +211,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 <script>
-    // Configuração do Firebase (substitua pelas suas credenciais se necessário)
+    // Configuração do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
         authDomain: "clube-de-vantagens-d748e.firebaseapp.com",
@@ -186,8 +227,8 @@
 
     let userData = null;
     let html5QrScanner = null;
+    let currentCheckinReward = 30; // valor padrão, será sobrescrito pela config
 
-    // Toast
     function toast(msg, type='info') {
         const stack = document.getElementById('toastStack');
         const t = document.createElement('div');
@@ -197,12 +238,42 @@
         setTimeout(() => t.remove(), 3000);
     }
 
-    // ========== AUTENTICAÇÃO (MVP) ==========
+    // Carrega configurações do app (recompensa check-in)
+    async function loadAppConfig() {
+        try {
+            const doc = await db.collection('config').doc('app').get();
+            if (doc.exists && doc.data().checkinReward !== undefined) {
+                currentCheckinReward = doc.data().checkinReward;
+            } else {
+                // criar documento com valor padrão se não existir
+                await db.collection('config').doc('app').set({ checkinReward: 30 }, { merge: true });
+                currentCheckinReward = 30;
+            }
+            document.getElementById('checkinRewardDisplay').innerText = currentCheckinReward;
+        } catch (e) {
+            console.warn('Não foi possível carregar config, usando padrão 30');
+            currentCheckinReward = 30;
+            document.getElementById('checkinRewardDisplay').innerText = currentCheckinReward;
+        }
+    }
+
+    // Verifica se é o primeiro usuário e define como admin
+    async function definirAdminSePrimeiro(uid) {
+        try {
+            const usersSnap = await db.collection('users').limit(1).get();
+            if (usersSnap.empty) {
+                await db.collection('users').doc(uid).update({ role: 'admin' });
+                return true;
+            }
+            return false;
+        } catch (e) { console.error(e); return false; }
+    }
+
+    // ========== AUTENTICAÇÃO ==========
     document.getElementById('loginBtn').addEventListener('click', async () => {
         const email = document.getElementById('emailLogin').value.trim();
         const senha = document.getElementById('senhaLogin').value;
         if (!email || !senha) return toast('Preencha e-mail e senha', 'error');
-
         try {
             await auth.signInWithEmailAndPassword(email, senha);
             toast('Login efetuado!', 'success');
@@ -226,7 +297,6 @@
 
         try {
             const cred = await auth.createUserWithEmailAndPassword(email, senha);
-            // Cria documento do usuário no Firestore
             await db.collection('users').doc(cred.user.uid).set({
                 email: email,
                 credits: 0,
@@ -238,16 +308,13 @@
                 plano: 0,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            toast('Conta criada! Faça login.', 'success');
+            const virouAdmin = await definirAdminSePrimeiro(cred.user.uid);
+            toast('Conta criada! Faça login.' + (virouAdmin ? ' ⚡ Você é o MESTRE (admin).' : ''), 'success');
         } catch (e) {
             console.error(e);
-            if (e.code === 'auth/email-already-in-use') {
-                toast('Este e-mail já está cadastrado.', 'error');
-            } else if (e.code === 'auth/weak-password') {
-                toast('Senha muito fraca (mínimo 6 caracteres).', 'error');
-            } else {
-                toast(e.message, 'error');
-            }
+            if (e.code === 'auth/email-already-in-use') toast('Este e-mail já está cadastrado.', 'error');
+            else if (e.code === 'auth/weak-password') toast('Senha muito fraca (mínimo 6 caracteres).', 'error');
+            else toast(e.message, 'error');
         }
     });
 
@@ -257,9 +324,7 @@
         try {
             await auth.sendPasswordResetEmail(email);
             toast(`Link de recuperação enviado para ${email}`, 'success');
-        } catch (e) {
-            toast(e.message, 'error');
-        }
+        } catch (e) { toast(e.message, 'error'); }
     });
 
     window.logout = () => auth.signOut();
@@ -271,7 +336,6 @@
             try {
                 const docSnap = await db.collection('users').doc(user.uid).get();
                 if (!docSnap.exists) {
-                    // Cria doc mínimo caso não exista (ex.: primeiro acesso)
                     await db.collection('users').doc(user.uid).set({
                         email: user.email,
                         credits: 0,
@@ -283,6 +347,7 @@
                         plano: 0,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
+                    await definirAdminSePrimeiro(user.uid);
                     const newDoc = await db.collection('users').doc(user.uid).get();
                     userData = { uid: user.uid, ...newDoc.data() };
                 } else {
@@ -291,26 +356,28 @@
                 document.getElementById('loadingData').style.display = 'none';
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
+                await loadAppConfig();
                 atualizarUI();
+                if (userData.role === 'admin') {
+                    document.getElementById('adminEntry').style.display = 'block';
+                    carregarListaMembros();
+                } else {
+                    document.getElementById('adminEntry').style.display = 'none';
+                }
             } catch (err) {
                 console.error(err);
-                // Se o erro for de permissão no Firestore, ainda permite acesso básico
                 if (err.code === 'permission-denied') {
                     toast('Aviso: permissões do Firestore precisam ser ajustadas. Usando modo offline.', 'error');
                     userData = {
-                        uid: user.uid,
-                        email: user.email,
-                        credits: 0,
-                        trust: 0,
-                        role: 'user',
-                        status: 'adimplente',
+                        uid: user.uid, email: user.email, credits: 0, trust: 0,
+                        role: 'user', status: 'adimplente',
                         perfil: { nome: user.email.split('@')[0] },
-                        tickets: 0,
-                        plano: 0
+                        tickets: 0, plano: 0
                     };
                     document.getElementById('loadingData').style.display = 'none';
                     document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
+                    currentCheckinReward = 30;
                     atualizarUI();
                 } else {
                     toast('Erro ao carregar dados. Tente novamente.', 'error');
@@ -335,6 +402,7 @@
         const planos = ['Associado', 'Bronze', 'Prata', 'Ouro', 'Platina', 'Diamante'];
         document.getElementById('planBadge').innerText = planos[userData.plano || 0];
         document.getElementById('statusBadge').innerHTML = userData.status === 'adimplente' ? '✅ Adimplente' : '⚠️ Inadimplente';
+        document.getElementById('checkinRewardDisplay').innerText = currentCheckinReward;
 
         if (userData.perfil) {
             document.getElementById('perfilNome').value = userData.perfil.nome || '';
@@ -343,7 +411,7 @@
         }
     }
 
-    // ========== CHECK-IN SIMPLES (sem geolocalização) ==========
+    // ========== CHECK-IN SIMPLES ==========
     window.realizarCheckinSimples = async () => {
         if (!userData) return toast('Faça login primeiro', 'error');
         try {
@@ -353,21 +421,18 @@
                 tipo: 'simples'
             });
             await db.collection('users').doc(userData.uid).update({
-                credits: firebase.firestore.FieldValue.increment(30),
+                credits: firebase.firestore.FieldValue.increment(currentCheckinReward),
                 trust: firebase.firestore.FieldValue.increment(10)
             });
-            userData.credits += 30;
+            userData.credits += currentCheckinReward;
             userData.trust += 10;
             atualizarUI();
-            document.getElementById('checkinStatus').innerText = '✅ Check-in registrado! +30🔥';
+            document.getElementById('checkinStatus').innerText = `✅ Check-in registrado! +${currentCheckinReward}🔥`;
             toast('Check-in realizado!', 'success');
         } catch (e) {
             console.error(e);
-            if (e.code === 'permission-denied') {
-                toast('Sem permissão para escrever no Firestore. Verifique as regras.', 'error');
-            } else {
-                toast('Erro ao registrar check-in.', 'error');
-            }
+            if (e.code === 'permission-denied') toast('Sem permissão para escrever no Firestore.', 'error');
+            else toast('Erro ao registrar check-in.', 'error');
         }
     };
 
@@ -393,7 +458,6 @@
         const container = document.getElementById('qrContainer');
         container.innerHTML = '';
         if (!userData) return toast('Faça login primeiro', 'error');
-        // Gera QR simples com UID
         new QRCode(container, {
             text: userData.uid,
             width: 180,
@@ -413,26 +477,124 @@
         html5QrScanner.start(
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 250 } },
-            (text) => {
-                toast(`QR lido: ${text.substring(0,15)}...`, 'success');
-                stopScanner();
-            },
+            (text) => { toast(`QR lido: ${text.substring(0,15)}...`, 'success'); stopScanner(); },
             () => {}
-        ).catch(() => {
-            stopScanner();
-            toast('Erro ao acessar a câmera.', 'error');
-        });
+        ).catch(() => { stopScanner(); toast('Erro ao acessar a câmera.', 'error'); });
     });
 
     document.getElementById('btnStopScanner').addEventListener('click', stopScanner);
     function stopScanner() {
-        if (html5QrScanner) {
-            html5QrScanner.stop().catch(() => {});
-            html5QrScanner = null;
-        }
+        if (html5QrScanner) { html5QrScanner.stop().catch(()=>{}); html5QrScanner = null; }
         document.getElementById('btnStartScanner').style.display = '';
         document.getElementById('btnStopScanner').style.display = 'none';
     }
+
+    // ========== ADMIN: LISTA DE MEMBROS ==========
+    async function carregarListaMembros() {
+        if (!userData || userData.role !== 'admin') return;
+        const container = document.getElementById('membersList');
+        container.innerHTML = '<div class="spinner"></div> Carregando membros...';
+        try {
+            const snap = await db.collection('users').orderBy('createdAt', 'desc').get();
+            if (snap.empty) {
+                container.innerHTML = '<p style="color:var(--text-muted);">Nenhum membro ainda.</p>';
+                return;
+            }
+            let html = '';
+            snap.forEach(doc => {
+                const m = doc.data();
+                const uid = doc.id;
+                const isAdimplente = m.status === 'adimplente';
+                const isAdmin = m.role === 'admin';
+                html += `
+                <div class="member-row">
+                    <div class="member-info">
+                        <span class="truncate">${m.email || 'sem email'}</span>
+                        ${isAdmin ? '<span class="badge-admin">MESTRE</span>' : ''}
+                        <br><small>🔥 ${m.credits || 0} | ${isAdimplente ? '✅' : '⚠️'} ${m.status || 'adimplente'}</small>
+                    </div>
+                    <div class="member-actions">
+                        <button class="btn btn-xs btn-outline" onclick="toggleStatus('${uid}', '${m.status}')">${isAdimplente ? 'Inadimplente' : 'Adimplente'}</button>
+                        <button class="btn btn-xs btn-outline" onclick="cunharParaMembro('${uid}', '${m.email}')">⚒️</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        } catch (e) {
+            container.innerHTML = '<p style="color:red;">Erro ao carregar membros.</p>';
+            console.error(e);
+        }
+    }
+
+    window.toggleStatus = async (uid, currentStatus) => {
+        if (!userData || userData.role !== 'admin') return toast('Apenas o Mestre pode alterar status', 'error');
+        const novoStatus = currentStatus === 'adimplente' ? 'inadimplente' : 'adimplente';
+        try {
+            await db.collection('users').doc(uid).update({ status: novoStatus });
+            toast(`Status alterado para ${novoStatus}`, 'success');
+            carregarListaMembros();
+            if (uid === userData.uid) {
+                userData.status = novoStatus;
+                atualizarUI();
+            }
+        } catch (e) { toast('Erro ao alterar status.', 'error'); }
+    };
+
+    window.cunharParaMembro = async (uid, email) => {
+        const amount = prompt(`Quantos tokens deseja cunhar para ${email}?`, '10');
+        if (!amount || isNaN(amount) || parseInt(amount) <= 0) return;
+        try {
+            await db.collection('users').doc(uid).update({
+                credits: firebase.firestore.FieldValue.increment(parseInt(amount))
+            });
+            toast(`${amount} 🔥 cunhados para ${email}`, 'success');
+            carregarListaMembros();
+        } catch (e) { toast('Erro ao cunhar tokens.', 'error'); }
+    };
+
+    // Admin: cunhar por email (campo específico)
+    document.getElementById('adminMintBtn').addEventListener('click', async () => {
+        if (!userData || userData.role !== 'admin') return toast('Apenas o Mestre pode cunhar', 'error');
+        const email = document.getElementById('adminMemberEmail').value.trim();
+        const amount = parseInt(document.getElementById('adminTokenAmount').value);
+        if (!email || isNaN(amount) || amount <= 0) return toast('Preencha e-mail e quantidade válida', 'error');
+        try {
+            const q = await db.collection('users').where('email', '==', email).limit(1).get();
+            if (q.empty) {
+                document.getElementById('adminMintStatus').innerText = '❌ Membro não encontrado.';
+                return;
+            }
+            const docRef = q.docs[0].ref;
+            await docRef.update({ credits: firebase.firestore.FieldValue.increment(amount) });
+            document.getElementById('adminMintStatus').innerText = `✅ ${amount} tokens enviados para ${email}.`;
+            toast(`Cunhagem de ${amount}🔥 para ${email} realizada!`, 'success');
+            carregarListaMembros();
+        } catch (e) {
+            document.getElementById('adminMintStatus').innerText = '❌ Erro ao cunhar.';
+            toast(e.message, 'error');
+        }
+    });
+
+    // Admin: salvar recompensa do check-in
+    document.getElementById('saveRewardBtn').addEventListener('click', async () => {
+        if (!userData || userData.role !== 'admin') return toast('Apenas o Mestre pode alterar a recompensa', 'error');
+        const newReward = parseInt(document.getElementById('adminCheckinReward').value);
+        if (isNaN(newReward) || newReward < 0) return toast('Valor inválido', 'error');
+        try {
+            await db.collection('config').doc('app').set({ checkinReward: newReward }, { merge: true });
+            currentCheckinReward = newReward;
+            document.getElementById('checkinRewardDisplay').innerText = currentCheckinReward;
+            toast(`Recompensa de check-in alterada para ${newReward}🔥`, 'success');
+        } catch (e) { toast('Erro ao salvar configuração.', 'error'); }
+    });
+
+    // Preenche campo de recompensa ao carregar view admin
+    const adminObserver = new MutationObserver(() => {
+        if (document.getElementById('viewAdmin').classList.contains('active') && userData?.role === 'admin') {
+            document.getElementById('adminCheckinReward').value = currentCheckinReward;
+        }
+    });
+    adminObserver.observe(document.getElementById('viewAdmin'), { attributes: true, attributeFilter: ['class'] });
 
     // ========== NAVEGAÇÃO ==========
     window.navigateTo = (view) => {
@@ -442,9 +604,13 @@
         const btn = document.querySelector(`.nav-item[data-view="${view}"]`);
         if (btn) btn.classList.add('active');
         if (view === 'scanner') stopScanner();
+        if (view === 'admin' && userData?.role === 'admin') {
+            carregarListaMembros();
+            document.getElementById('adminCheckinReward').value = currentCheckinReward;
+        }
     };
 
-    // Remove service workers antigos para evitar conflitos
+    // Remove service workers antigos
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
     }
