@@ -22,7 +22,6 @@
             --border-ember: rgba(224,108,46,0.4);
             --safe-bottom: env(safe-area-inset-bottom, 16px);
             --font-body: 'Inter', system-ui, sans-serif;
-            --neon-glow: 0 0 5px #e06c2e;
         }
         body { background: var(--bg-deep); color: var(--text-primary); font-family: var(--font-body); height: 100vh; overflow: hidden; }
         .bg-flame { position: fixed; inset: 0; background: radial-gradient(ellipse at 30% 20%, rgba(224,108,46,0.1) 0%, transparent 70%), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.1"><path fill="%23e06c2e" d="M50,10 L60,40 L90,40 L65,60 L75,90 L50,70 L25,90 L35,60 L10,40 L40,40 Z"/></svg>'); background-size: 80px; pointer-events: none; z-index: 0; }
@@ -297,7 +296,7 @@
 </div>
 
 <script>
-    // Firebase Config (fornecida pelo usuário)
+    // ==================== FIREBASE CONFIG (REAL) ====================
     const firebaseConfig = {
         apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
         authDomain: "clube-de-vantagens-d748e.firebaseapp.com",
@@ -331,6 +330,17 @@
         setTimeout(() => t.remove(), 3000);
     }
 
+    // Validação de imagem (TÓPICO 5)
+    function validateImageFile(file, maxSizeMB = 5) {
+        if (!file) return "Nenhum arquivo selecionado.";
+        if (!file.type.startsWith('image/')) return "Apenas imagens são permitidas.";
+        if (file.size > maxSizeMB * 1024 * 1024) return `Imagem muito grande (máx ${maxSizeMB}MB).`;
+        const allowed = ['jpg','jpeg','png','gif','webp','bmp'];
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!allowed.includes(ext)) return `Formato .${ext} não suportado.`;
+        return null; // sucesso
+    }
+
     async function compressImage(file, maxWidth=800, quality=0.7) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -343,7 +353,7 @@
                     canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', quality));
+                    canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality);
                 };
                 img.src = e.target.result;
             };
@@ -352,8 +362,9 @@
     }
 
     async function uploadImageToStorage(file, path) {
-        const compressed = await compressImage(file, 800, 0.7);
-        const blob = await (await fetch(compressed)).blob();
+        const error = validateImageFile(file, 5);
+        if (error) throw new Error(error);
+        const blob = file.size > 100000 ? await compressImage(file, 800, 0.7) : file;
         const ref = storage.ref().child(path);
         await ref.put(blob);
         return await ref.getDownloadURL();
@@ -420,7 +431,7 @@
         setLoading(btn, true);
         loginCooldown = true;
         try {
-            // Verifica se é o primeiro usuário
+            // TÓPICO 6: Admin único – apenas o primeiro usuário
             const usersSnap = await db.collection('users').limit(1).get();
             const isFirst = usersSnap.empty;
             const cred = await auth.createUserWithEmailAndPassword(email, pass);
@@ -453,9 +464,8 @@
             document.getElementById('loadingData').style.display = 'flex';
             try {
                 const userRef = db.collection('users').doc(user.uid);
-                const docSnap = await userRef.get();
+                let docSnap = await userRef.get();
                 if (!docSnap.exists) {
-                    // Fallback: criar documento (caso não tenha sido criado no registro)
                     const isFirst = (await db.collection('users').limit(1).get()).empty;
                     await userRef.set({
                         email: user.email,
@@ -470,8 +480,9 @@
                         plano: 0,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
+                    docSnap = await userRef.get();
                 }
-                userData = { uid: user.uid, ...(await userRef.get()).data() };
+                userData = { uid: user.uid, ...docSnap.data() };
                 document.getElementById('loadingData').style.display = 'none';
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
@@ -542,7 +553,7 @@
             await db.collection('users').doc(userData.uid).update({ 'perfil.fotoURL': url });
             toast("Foto atualizada!", "success");
             renderUI();
-        } catch (err) { toast("Erro ao enviar foto", "error"); }
+        } catch (err) { toast(err.message, "error"); }
         setLoading(btn, false);
     });
 
@@ -613,6 +624,8 @@
         const btn = document.getElementById('checkinBtn');
         setLoading(btn, true);
         try {
+            const error = validateImageFile(fotoFile, 5);
+            if (error) { toast(error, "error"); setLoading(btn, false); return; }
             let pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
             const url = await uploadImageToStorage(fotoFile, `checkins/${userData.uid}/${Date.now()}.jpg`);
             const hash = await sha256(url);
@@ -626,7 +639,7 @@
             toast("Check-in +30🔥", 'success');
             carregarCheckins();
             document.getElementById('checkinFoto').value = '';
-        } catch (err) { toast("Erro ao salvar check-in", "error"); }
+        } catch (err) { toast(err.message, "error"); }
         setLoading(btn, false);
     }
 
@@ -644,6 +657,8 @@
         const btn = document.getElementById('nfBtn');
         setLoading(btn, true);
         try {
+            const error = validateImageFile(fotoFile, 5);
+            if (error) { toast(error, "error"); setLoading(btn, false); return; }
             const url = await uploadImageToStorage(fotoFile, `notas/${userData.uid}/${Date.now()}.jpg`);
             const hash = await sha256(url);
             let exist = await db.collection('notas').where('hash', '==', hash).get();
@@ -654,7 +669,7 @@
             toast(`Nota válida! +${cred}🔥`, 'success');
             document.getElementById('nfFoto').value = '';
             document.getElementById('valorNF').value = '';
-        } catch (err) { toast("Erro ao enviar nota", "error"); }
+        } catch (err) { toast(err.message, "error"); }
         setLoading(btn, false);
     }
 
@@ -687,7 +702,7 @@
 
     // ========== GALERIA ==========
     async function carregarGaleria() { let snap = await db.collection('galeria').orderBy('data', 'desc').limit(30).get(); let fotos = snap.docs.map(d => d.data()); document.getElementById('galleryContainer').innerHTML = fotos.map(f => `<div class="gallery-item"><img src="${f.imageUrl}"></div>`).join(''); }
-    document.getElementById('addGalleryBtn')?.addEventListener('click', () => { let input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.onchange = async (e) => { let file = e.target.files[0]; if (!file) return; const url = await uploadImageToStorage(file, `galeria/${userData.uid}/${Date.now()}.jpg`); await db.collection('galeria').add({ userId: userData.uid, imageUrl: url, data: new Date() }); carregarGaleria(); toast("Foto adicionada!", "success"); }; input.click(); });
+    document.getElementById('addGalleryBtn')?.addEventListener('click', () => { let input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.onchange = async (e) => { let file = e.target.files[0]; if (!file) return; const error = validateImageFile(file, 5); if (error) return toast(error, "error"); const url = await uploadImageToStorage(file, `galeria/${userData.uid}/${Date.now()}.jpg`); await db.collection('galeria').add({ userId: userData.uid, imageUrl: url, data: new Date() }); carregarGaleria(); toast("Foto adicionada!", "success"); }; input.click(); });
 
     // ========== HABILIDADES ==========
     async function carregarHabilidades() { let snap = await db.collection('skills').get(); if (snap.empty) { await db.collection('skills').doc('skill1').set({ id: 'skill1', name: 'Visão de Águia', desc: '+10% scans', cost: 2 }); snap = await db.collection('skills').get(); } allSkills = snap.docs.map(d => d.data()); let userSkills = userData.habilidades || []; document.getElementById('skillsTree').innerHTML = allSkills.map(s => `<div class="skill-card ${userSkills.includes(s.id)?'unlocked':''}" onclick="comprarHabilidade('${s.id}')"><strong>${s.name}</strong><br>${s.desc}<br>Custo: ${s.cost} pts</div>`).join(''); }
@@ -701,7 +716,7 @@
     window.enviarMensagemGlobal = async () => { let tempo = getTempoGlobal(); if (!tempo) return toast("Seu plano não pode postar no mural", "error"); let msg = document.getElementById('msgGlobal').value; if (!msg.trim()) return; await db.collection('globalChat').add({ uid: userData.uid, nome: userData.perfil?.nome || userData.cpf, texto: msg, expira: Date.now() + tempo, data: new Date() }); document.getElementById('msgGlobal').value = ''; };
     function carregarMuralGlobal() { db.collection('globalChat').where('expira', '>', Date.now()).orderBy('data', 'desc').onSnapshot(snap => { let msgs = snap.docs.map(d => d.data()); document.getElementById('globalMural').innerHTML = msgs.map(m => `<div class="mural-item"><strong>${m.nome}</strong>: ${m.texto}</div>`).join(''); }); }
 
-    // ========== CHAT PRIVADO (criptografia) ==========
+    // ========== CHAT PRIVADO ==========
     async function derivarChave(u1, u2) { let seed = u1 < u2 ? u1+u2 : u2+u1; return await crypto.subtle.digest('SHA-256', new TextEncoder().encode(seed)); }
     async function criptografar(texto, chave) { let iv = crypto.getRandomValues(new Uint8Array(12)); let enc = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, chave, new TextEncoder().encode(texto)); return { ciphertext: Array.from(new Uint8Array(enc)), iv: Array.from(iv) }; }
     async function descriptografar(obj, chave) { let dec = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(obj.iv) }, chave, new Uint8Array(obj.ciphertext)); return new TextDecoder().decode(dec); }
@@ -716,7 +731,7 @@
     window.enviarFeedback = async () => { let msg = document.getElementById('feedbackMsg').value; if (!msg.trim()) return; await db.collection('feedbacks').add({ userId: userData.uid, nome: userData.perfil?.nome || userData.cpf, mensagem: msg, data: new Date() }); toast("Feedback enviado", "success"); document.getElementById('feedbackMsg').value = ''; carregarMeusFeedbacks(); };
     async function carregarMeusFeedbacks() { let snap = await db.collection('feedbacks').where('userId', '==', userData.uid).orderBy('data', 'desc').get(); let lista = snap.docs.map(d => d.data()); document.getElementById('meusFeedbacks').innerHTML = lista.map(f => `<div class="chat-message">${new Date(f.data.toDate()).toLocaleString()}<br>${f.mensagem}</div>`).join(''); }
 
-    // ========== ADMIN ==========
+    // ========== ADMIN (com correções) ==========
     window.listarMembros = async () => { let snap = await db.collection('users').limit(30).get(); let lista = snap.docs.map(d => ({ id: d.id, ...d.data() })); document.getElementById('adminList').innerHTML = lista.map(m => `<div>📧 ${m.email} (CPF: ${m.cpf}) - 🔥${m.credits || 0} <button onclick="darCreditos('${m.id}', 100)">+100</button> <button class="btn-danger" onclick="darCreditos('${m.id}', -100)">-100</button></div>`).join(''); };
     window.darCreditos = async (uid, amount) => { await db.collection('users').doc(uid).update({ credits: firebase.firestore.FieldValue.increment(amount) }); toast(`${amount>0?'Adicionado':'Removido'} ${Math.abs(amount)} tokens`, "success"); listarMembros(); };
     window.adminGerenciarHabilidades = () => { document.getElementById('habilidadesAdminArea').innerHTML = `<input id="skillName" placeholder="Nome"><input id="skillCost" placeholder="Custo"><button onclick="criarHabilidade()">Criar</button><div id="listaSkillsAdmin"></div>`; };
@@ -729,7 +744,6 @@
     window.adminGerenciarEventos = () => { document.getElementById('eventosArea').innerHTML = `<input id="eventName" placeholder="Nome"><input id="eventMult" placeholder="Multiplicador"><input type="datetime-local" id="eventEnd"><button onclick="criarEvento()">Criar</button><div id="listaEventos"></div>`; };
     window.adminDefinirClasse = async () => { let email = prompt("E-mail do usuário:"); let classe = prompt("Nova classe:"); if (email && classe) { let q = await db.collection('users').where('email', '==', email).get(); if (!q.empty) await q.docs[0].ref.update({ classe }); toast(`Classe alterada para ${classe}`); } };
     window.gerenciarParceiros = () => { document.getElementById('parceirosAdminArea').innerHTML = `<input id="parNome" placeholder="Nome"><input id="parCat" placeholder="Categoria"><input id="parPrice" placeholder="Preço"><button onclick="criarParceiroAdmin()">Criar</button><div id="listaParceirosAdmin"></div>`; };
-    // Funções auxiliares admin
     window.criarHabilidade = async () => { let name = document.getElementById('skillName').value, cost = parseInt(document.getElementById('skillCost').value); let id = Date.now().toString(); await db.collection('skills').doc(id).set({ id, name, desc: "Personalizada", cost }); toast("Habilidade criada"); adminGerenciarHabilidades(); };
     window.criarConquista = async () => { let name = document.getElementById('achName').value; let id = Date.now().toString(); await db.collection('achievements').doc(id).set({ id, name, desc: "Nova conquista" }); toast("Conquista criada"); adminGerenciarConquistas(); };
     window.criarEvento = async () => { let name = document.getElementById('eventName').value, mult = parseFloat(document.getElementById('eventMult').value), end = new Date(document.getElementById('eventEnd').value).getTime(); let id = Date.now().toString(); await db.collection('events').doc(id).set({ id, name, multiplier: mult, endDate: end }); toast("Evento criado"); adminGerenciarEventos(); };
@@ -764,7 +778,6 @@
     document.getElementById('feedbackBtn').onclick = enviarFeedback;
     document.getElementById('btnStartScanner').onclick = startScanner;
     document.getElementById('btnStopScanner').onclick = stopScanner;
-    // Recuperação senha
     document.getElementById('forgotPasswordBtn').onclick = () => document.getElementById('recoveryModal').style.display = 'flex';
     document.getElementById('closeRecoveryModal').onclick = () => document.getElementById('recoveryModal').style.display = 'none';
     document.getElementById('sendEmailResetBtn').onclick = async () => {
@@ -775,12 +788,12 @@
         document.getElementById('recoveryModal').style.display = 'none';
     };
 
-    // Service Worker para PWA
+    // ========== SERVICE WORKER (TÓPICO 4) ==========
     if ('serviceWorker' in navigator) {
-        const swCode = `self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => e.waitUntil(clients.claim())); self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));`;
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        navigator.serviceWorker.register(swUrl).catch(console.warn);
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (let reg of registrations) reg.unregister();
+            console.log('Service Workers removidos');
+        });
     }
 </script>
 </body>
