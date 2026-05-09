@@ -419,41 +419,92 @@
         setTimeout(() => { loginCooldown = false; }, 5000);
     }
 
+    // ========== NOVA FUNÇÃO DE CADASTRO (com validação de CPF) ==========
     async function handleRegister() {
-        let email = document.getElementById('emailLogin').value.trim();
-        if (!email) return toast("Digite um e-mail válido", "error");
-        let cpf = prompt("Digite seu CPF (apenas números):");
-        if (!cpf || !/^\d{11}$/.test(cpf.replace(/\D/g,''))) return toast("CPF inválido (11 dígitos)", "error");
-        let pass = document.getElementById('senhaLogin').value;
-        if (!pass || pass.length < 6) return toast("Senha deve ter no mínimo 6 caracteres", "error");
-        if (loginCooldown) return toast("Aguarde alguns segundos", "error");
+        // 1. Captura e valida e-mail
+        let emailInput = document.getElementById('emailLogin').value.trim();
+        if (!emailInput || !emailInput.includes('@')) {
+            return toast("Digite um e-mail válido", "error");
+        }
+
+        // 2. Solicita CPF com validação (apenas números, 11 dígitos)
+        let cpfBruto = prompt("Digite seu CPF (apenas números, 11 dígitos):");
+        if (!cpfBruto) return;
+        let cpfLimpo = cpfBruto.replace(/\D/g, '');
+        if (cpfLimpo.length !== 11 || !/^\d{11}$/.test(cpfLimpo)) {
+            return toast("CPF inválido. Digite exatamente 11 números.", "error");
+        }
+
+        // 3. Captura e valida a senha
+        let senha = document.getElementById('senhaLogin').value;
+        if (!senha || senha.length < 6) {
+            return toast("A senha deve ter no mínimo 6 caracteres", "error");
+        }
+
+        // 4. Anti‑abuso (cooldown global)
+        if (loginCooldown) {
+            return toast("Aguarde alguns segundos antes de tentar novamente", "error");
+        }
+
         const btn = document.getElementById('registerBtn');
         setLoading(btn, true);
         loginCooldown = true;
+
         try {
-            // TÓPICO 6: Admin único – apenas o primeiro usuário
+            // 5. Verifica se o CPF já está cadastrado (anti-fraude)
+            const cpfQuery = await db.collection('users')
+                .where('cpf', '==', cpfLimpo)
+                .limit(1)
+                .get();
+            if (!cpfQuery.empty) {
+                throw new Error("CPF já cadastrado no sistema.");
+            }
+
+            // 6. Cria o usuário no Firebase Auth
+            const userCredential = await auth.createUserWithEmailAndPassword(emailInput, senha);
+            const user = userCredential.user;
+
+            // 7. Determina se é o primeiro usuário (admin único)
             const usersSnap = await db.collection('users').limit(1).get();
             const isFirst = usersSnap.empty;
-            const cred = await auth.createUserWithEmailAndPassword(email, pass);
-            await db.collection('users').doc(cred.user.uid).set({
-                email: email,
-                cpf: cpf.replace(/\D/g,''),
+
+            // 8. Salva todos os dados no Firestore (incluindo CPF)
+            await db.collection('users').doc(user.uid).set({
+                email: emailInput,
+                cpf: cpfLimpo,               // CPF salvo de forma segura
                 credits: isFirst ? 500 : 0,
                 trust: 0,
                 role: isFirst ? 'admin' : 'user',
                 status: 'adimplente',
-                perfil: { nome: email.split('@')[0] },
+                perfil: { nome: emailInput.split('@')[0] },
                 tickets: 0,
                 skillPoints: isFirst ? 10 : 0,
                 plano: 0,
+                habilidades: [],
+                conquistas: [],
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-            toast("Conta criada! Faça login.", "success");
-        } catch (e) {
-            toast(e.message, "error");
+
+            toast("Conta criada com sucesso! Faça login.", "success");
+            // Opcional: já loga automaticamente? Prefira manter segurança.
+            // await auth.signOut(); // descomente se quiser forçar novo login
+        } catch (error) {
+            console.error("Erro no cadastro:", error);
+            // Tratamento amigável dos erros mais comuns
+            if (error.code === 'auth/email-already-in-use') {
+                toast("Este e-mail já está em uso.", "error");
+            } else if (error.code === 'auth/weak-password') {
+                toast("Senha muito fraca. Use ao menos 6 caracteres.", "error");
+            } else if (error.code === 'auth/invalid-email') {
+                toast("Formato de e-mail inválido.", "error");
+            } else {
+                toast(error.message || "Erro ao criar conta.", "error");
+            }
         }
+
         setLoading(btn, false);
-        loginCooldown = false;
+        // Libera o cooldown após 5 segundos
+        setTimeout(() => { loginCooldown = false; }, 5000);
     }
 
     window.logout = () => { auth.signOut(); };
