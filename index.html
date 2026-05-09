@@ -566,6 +566,43 @@
             .big-tokens { font-size: 3rem; }
             .menu-card { min-height: 100px; }
         }
+
+        /* ==================== LISTAS (inventário, ranking, facções) ==================== */
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--surface);
+            border-radius: 16px;
+            margin-bottom: 8px;
+        }
+
+        .rank-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--surface);
+            border-radius: 16px;
+            margin-bottom: 8px;
+        }
+
+        .rank-pos {
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--gold);
+            width: 32px;
+            text-align: center;
+        }
+
+        .fac-item {
+            padding: 14px;
+            background: var(--surface);
+            border-radius: 16px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
     </style>
 </head>
 <body>
@@ -650,6 +687,9 @@
                     <button class="menu-card" onclick="showView('parceirosView')"><div>🤝</div><span>Parceiros</span></button>
                     <button class="menu-card" onclick="showView('lojaView')"><div>🛒</div><span>Loja</span></button>
                     <button class="menu-card" onclick="showView('ticketsView')"><div>🎟️</div><span>Tickets</span></button>
+                    <button class="menu-card" onclick="showView('inventarioView')"><div>🎒</div><span>Inventário</span></button>
+                    <button class="menu-card" onclick="showView('rankingView')"><div>🏆</div><span>Ranking</span></button>
+                    <button class="menu-card" onclick="showView('faccoesView')"><div>🏴</div><span>Facções</span></button>
                     <button class="menu-card" onclick="showView('perfilView')"><div>👤</div><span>Perfil</span></button>
                     <button class="menu-card adminOnly" id="adminMenuBtn" onclick="showView('adminView')"><div>👑</div><span>Admin</span></button>
                 </div>
@@ -684,6 +724,30 @@
                 <div class="card">
                     <div class="section-title">🎟️ Meus Tickets</div>
                     <div id="ticketsList"></div>
+                </div>
+            </section>
+
+            <!-- INVENTÁRIO -->
+            <section id="inventarioView" class="view">
+                <div class="card">
+                    <div class="section-title">🎒 Inventário</div>
+                    <div id="inventarioList"></div>
+                </div>
+            </section>
+
+            <!-- RANKING -->
+            <section id="rankingView" class="view">
+                <div class="card">
+                    <div class="section-title">🏆 Ranking de XPs</div>
+                    <div id="rankingList"></div>
+                </div>
+            </section>
+
+            <!-- FACÇÕES -->
+            <section id="faccoesView" class="view">
+                <div class="card">
+                    <div class="section-title">🏴 Facções</div>
+                    <div id="faccoesList"></div>
                 </div>
             </section>
 
@@ -740,7 +804,8 @@
 
                     <input id="adminUserEmail" placeholder="E-mail do membro">
                     <input id="adminTokenAmount" type="number" placeholder="Tokens">
-                    <button id="mintTokensBtn" class="btn btn-primary">🔥 CUNHAR TOKENS</button>
+                    <input id="adminXpAmount" type="number" placeholder="XP (opcional)">
+                    <button id="mintTokensBtn" class="btn btn-primary">🔥 CUNHAR RECOMPENSA</button>
 
                     <hr style="border-color:var(--border); margin:16px 0;">
 
@@ -775,7 +840,15 @@
                     <h3 style="color:var(--emberLight); margin-bottom:8px;">⚔️ Criar Missão</h3>
                     <input id="missaoNome" placeholder="Título da Missão">
                     <input id="missaoXp" type="number" placeholder="XP">
+                    <input id="missaoTokens" type="number" placeholder="Tokens (recompensa)">
                     <button id="createMissaoBtn" class="btn btn-primary">⚔️ CRIAR MISSÃO</button>
+
+                    <hr style="border-color:var(--border); margin:16px 0;">
+
+                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🏴 Criar Facção</h3>
+                    <input id="faccaoNome" placeholder="Nome da Facção">
+                    <input id="faccaoDesc" placeholder="Descrição">
+                    <button id="createFaccaoBtn" class="btn btn-primary">🏴 CRIAR FACÇÃO</button>
                 </div>
             </section>
 
@@ -787,6 +860,7 @@
             <button class="nav-btn active" data-view="homeView"><i class="fas fa-home"></i><span>Home</span></button>
             <button class="nav-btn" data-view="missoesView"><i class="fas fa-crosshairs"></i><span>Missões</span></button>
             <button class="nav-btn" data-view="lojaView"><i class="fas fa-store"></i><span>Loja</span></button>
+            <button class="nav-btn" data-view="rankingView"><i class="fas fa-trophy"></i><span>Ranking</span></button>
             <button class="nav-btn" data-view="perfilView"><i class="fas fa-user"></i><span>Perfil</span></button>
         </nav>
     </div>
@@ -885,10 +959,12 @@
             if (viewId === 'parceirosView') loadParceiros();
             if (viewId === 'lojaView') loadLoja();
             if (viewId === 'ticketsView') loadTickets();
+            if (viewId === 'inventarioView') loadInventario();
+            if (viewId === 'rankingView') loadRanking();
+            if (viewId === 'faccoesView') loadFaccoes();
             if (viewId === 'adminView') loadMembers();
         }
 
-        // Navegação pelos botões inferiores
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const viewId = btn.getAttribute('data-view');
@@ -926,7 +1002,8 @@
                         bio: ''
                     },
                     createdAt: serverTimestamp(),
-                    ticketsOwned: []
+                    ticketsOwned: [],
+                    inventory: []
                 });
 
                 toast('Conta criada!', 'success');
@@ -983,7 +1060,8 @@
                             status: 'Adimplente',
                             perfil: defaultPerfil,
                             createdAt: serverTimestamp(),
-                            ticketsOwned: []
+                            ticketsOwned: [],
+                            inventory: []
                         });
                         snap = await db.collection('users').doc(user.uid).get();
                     }
@@ -1032,14 +1110,18 @@
         document.getElementById('mintTokensBtn').addEventListener('click', async () => {
             if (userData?.role !== 'admin') return;
             const email = document.getElementById('adminUserEmail').value.trim();
-            const amount = parseInt(document.getElementById('adminTokenAmount').value);
-            if (!email || !amount) { toast('Dados inválidos', 'error'); return; }
+            const tokens = parseInt(document.getElementById('adminTokenAmount').value) || 0;
+            const xp = parseInt(document.getElementById('adminXpAmount').value) || 0;
+            if (!email || (tokens === 0 && xp === 0)) { toast('Dados inválidos', 'error'); return; }
 
             try {
                 const q = await db.collection('users').where('email', '==', email).limit(1).get();
                 if (q.empty) { toast('Usuário não encontrado', 'error'); return; }
-                await q.docs[0].ref.update({ credits: increment(amount) });
-                toast(`${amount} tokens enviados!`, 'success');
+                const updateData = {};
+                if (tokens > 0) updateData.credits = increment(tokens);
+                if (xp > 0) updateData.xp = increment(xp);
+                await q.docs[0].ref.update(updateData);
+                toast(`Recompensa enviada!`, 'success');
             } catch (e) {
                 toast('Erro ao cunhar', 'error');
             }
@@ -1101,14 +1183,29 @@
         document.getElementById('createMissaoBtn').addEventListener('click', async () => {
             if (userData?.role !== 'admin') return;
             const titulo = document.getElementById('missaoNome').value;
-            const xp = parseInt(document.getElementById('missaoXp').value);
-            if (!titulo || !xp) { toast('Preencha os dados', 'error'); return; }
+            const xp = parseInt(document.getElementById('missaoXp').value) || 0;
+            const tokens = parseInt(document.getElementById('missaoTokens').value) || 0;
+            if (!titulo || (xp === 0 && tokens === 0)) { toast('Preencha os dados', 'error'); return; }
             try {
-                await db.collection('missoes').add({ titulo, xp, createdAt: serverTimestamp() });
+                await db.collection('missoes').add({ titulo, xp, tokens, createdAt: serverTimestamp() });
                 toast('Missão criada!', 'success');
                 loadMissoes();
             } catch (e) {
                 toast('Erro ao criar missão', 'error');
+            }
+        });
+
+        document.getElementById('createFaccaoBtn').addEventListener('click', async () => {
+            if (userData?.role !== 'admin') return;
+            const nome = document.getElementById('faccaoNome').value;
+            const desc = document.getElementById('faccaoDesc').value;
+            if (!nome) { toast('Preencha o nome', 'error'); return; }
+            try {
+                await db.collection('faccoes').add({ nome, desc, createdAt: serverTimestamp() });
+                toast('Facção criada!', 'success');
+                loadFaccoes();
+            } catch (e) {
+                toast('Erro ao criar facção', 'error');
             }
         });
 
@@ -1119,10 +1216,15 @@
             snap.forEach(doc => {
                 const u = doc.data();
                 html += `
-                    <div style="background:#1d1510; border-radius:16px; padding:12px; margin-bottom:8px;">
-                        <strong>${u.perfil?.apelido || 'Sem Nome'}</strong>
-                        <span style="float:right;">🔥 ${u.credits || 0}</span><br>
-                        <small style="color:var(--muted);">${u.email}</small>
+                    <div style="background:#1d1510; border-radius:16px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong>${u.perfil?.apelido || 'Sem Nome'}</strong>
+                            <small style="color:var(--muted); display:block;">${u.email}</small>
+                        </div>
+                        <div style="text-align:right;">
+                            <span>🔥 ${u.credits || 0}</span><br>
+                            <span style="font-size:0.8rem;">⚡ ${u.xp || 0} XP</span>
+                        </div>
                     </div>`;
             });
             document.getElementById('membersList').innerHTML = html || '<p style="color:var(--muted);">Nenhum membro encontrado.</p>';
@@ -1137,7 +1239,7 @@
                 html += `
                     <div class="card" style="margin-bottom:12px;">
                         <h3>${m.titulo}</h3>
-                        <p>⚡ ${m.xp} XP</p>
+                        <p>⚡ ${m.xp || 0} XP &nbsp;|&nbsp; 🔥 ${m.tokens || 0} tokens</p>
                     </div>`;
             });
             document.getElementById('missoesList').innerHTML = html || '<p style="color:var(--muted);">Nenhuma missão disponível.</p>';
@@ -1166,7 +1268,7 @@
                     <div class="card" style="margin-bottom:12px;">
                         <h3>${item.nome}</h3>
                         <p>🔥 ${item.preco} tokens</p>
-                        <button class="btn btn-primary" onclick="comprarItem('${doc.id}', ${item.preco})">Comprar</button>
+                        <button class="btn btn-primary" onclick="comprarItem('${doc.id}', '${item.nome}', ${item.preco})">Comprar</button>
                     </div>`;
             });
             document.getElementById('lojaList').innerHTML = html || '<p style="color:var(--muted);">Nenhum item na loja.</p>';
@@ -1191,7 +1293,66 @@
             document.getElementById('ticketsList').innerHTML = html || '<p style="color:var(--muted);">Nenhum ticket disponível.</p>';
         }
 
-        async function comprarItem(id, preco) {
+        async function loadInventario() {
+            if (!userData) return;
+            const userSnap = await db.collection('users').doc(userData.uid).get();
+            const inventory = userSnap.data()?.inventory || [];
+            if (inventory.length === 0) {
+                document.getElementById('inventarioList').innerHTML = '<p style="color:var(--muted);">Inventário vazio.</p>';
+                return;
+            }
+            // Buscar detalhes dos itens na loja
+            const lojaSnap = await db.collection('loja').get();
+            const lojaItems = {};
+            lojaSnap.forEach(doc => { lojaItems[doc.id] = doc.data(); });
+
+            let html = '';
+            inventory.forEach(itemId => {
+                const item = lojaItems[itemId];
+                if (item) {
+                    html += `<div class="item-row"><span>${item.nome}</span><span style="color:var(--muted);">🔥 ${item.preco}</span></div>`;
+                } else {
+                    html += `<div class="item-row"><span>Item desconhecido</span></div>`;
+                }
+            });
+            document.getElementById('inventarioList').innerHTML = html;
+        }
+
+        async function loadRanking() {
+            const snap = await db.collection('users').orderBy('xp', 'desc').limit(20).get();
+            let html = '';
+            let pos = 1;
+            snap.forEach(doc => {
+                const u = doc.data();
+                html += `
+                    <div class="rank-item">
+                        <div class="rank-pos">#${pos++}</div>
+                        <div style="flex:1;">
+                            <strong>${u.perfil?.apelido || 'Sem Nome'}</strong>
+                            <div style="color:var(--muted); font-size:0.8rem;">${calcularPatente(u.xp || 0)}</div>
+                        </div>
+                        <div style="font-weight:700;">⚡ ${u.xp || 0} XP</div>
+                    </div>`;
+            });
+            document.getElementById('rankingList').innerHTML = html || '<p style="color:var(--muted);">Nenhum jogador no ranking.</p>';
+        }
+
+        async function loadFaccoes() {
+            const snap = await db.collection('faccoes').orderBy('createdAt', 'desc').get();
+            let html = '';
+            snap.forEach(doc => {
+                const f = doc.data();
+                html += `
+                    <div class="fac-item">
+                        <h3>🏴 ${f.nome}</h3>
+                        <p style="color:var(--muted);">${f.desc || 'Sem descrição'}</p>
+                    </div>`;
+            });
+            document.getElementById('faccoesList').innerHTML = html || '<p style="color:var(--muted);">Nenhuma facção criada.</p>';
+        }
+
+        // ==================== COMPRAS ====================
+        async function comprarItem(id, nome, preco) {
             if (!userData) return;
             if ((userData.credits || 0) < preco) {
                 toast('Tokens insuficientes', 'error');
@@ -1199,12 +1360,16 @@
             }
             try {
                 await db.collection('users').doc(userData.uid).update({
-                    credits: increment(-preco)
+                    credits: increment(-preco),
+                    inventory: arrayUnion(id)
                 });
                 userData.credits -= preco;
+                if (!userData.inventory) userData.inventory = [];
+                userData.inventory.push(id);
                 atualizarUI();
-                toast('Compra realizada!', 'success');
+                toast(`${nome} comprado!`, 'success');
                 loadLoja();
+                loadInventario();
             } catch (e) {
                 toast('Erro ao comprar', 'error');
             }
