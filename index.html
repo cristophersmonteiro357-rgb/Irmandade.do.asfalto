@@ -6,11 +6,12 @@
     <title>Irmandade do Asfalto</title>
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- QR Code libs -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- Firebase SDKs (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
     <style>
         /* ==================== RESET & VARIÁVEIS ==================== */
@@ -143,10 +144,19 @@
             flex: 1;
             overflow-y: auto;
             padding: 18px;
-            padding-bottom: calc(90px + var(--safe-bottom));
+            padding-bottom: calc(80px + var(--safe-bottom));
             display: flex;
             flex-direction: column;
             gap: 18px;
+        }
+
+        /* ==================== VIEWS ==================== */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
         }
 
         /* ==================== CARD ==================== */
@@ -157,6 +167,7 @@
             padding: 18px;
             backdrop-filter: blur(12px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            margin-bottom: 18px;
         }
 
         /* ==================== HERO ==================== */
@@ -362,6 +373,7 @@
             font-size: 0.95rem;
             outline: none;
             transition: 0.2s;
+            margin-bottom: 8px;
         }
 
         input:focus,
@@ -502,6 +514,53 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ==================== NAVEGAÇÃO INFERIOR ==================== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
+            background: rgba(18, 13, 9, 0.95);
+            backdrop-filter: blur(18px);
+            border-top: 1px solid var(--border);
+            z-index: 25;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 1.6rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 16px;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .nav-btn span {
+            font-size: 0.7rem;
+        }
+
+        .nav-btn.active {
+            color: var(--emberLight);
+            background: rgba(224, 108, 46, 0.12);
+        }
+
+        /* ==================== ADMIN ONLY ==================== */
+        .adminOnly {
+            display: none;
+        }
+
         /* ==================== RESPONSIVO ==================== */
         @media (max-width: 380px) {
             .big-tokens { font-size: 3rem; }
@@ -553,103 +612,184 @@
             <div class="token-box">🔥 <span id="creditsAmount">0</span></div>
         </header>
 
-        <!-- Conteúdo -->
+        <!-- Conteúdo principal com views -->
         <main class="content">
-            <!-- Card principal -->
-            <section class="card hero-card">
-                <div class="hero-top">
-                    <div>
-                        <div class="hero-label">PATENTE</div>
-                        <div id="patenteDisplay" class="patente">⚔️ Estradeiro</div>
+
+            <!-- HOME -->
+            <section id="homeView" class="view active">
+                <div class="card hero-card">
+                    <div class="hero-top">
+                        <div>
+                            <div class="hero-label">PATENTE</div>
+                            <div id="patenteDisplay" class="patente">⚔️ Estradeiro</div>
+                        </div>
+                        <div class="level-circle"><span id="nivelDisplay">1</span></div>
                     </div>
-                    <div class="level-circle"><span id="nivelDisplay">1</span></div>
+                    <h2 class="hero-title">🔥 CHAMAS DA IRMANDADE</h2>
+                    <div class="big-tokens"><span id="bigCredits">0</span></div>
+                    <div class="xp-wrapper">
+                        <div class="xp-bar"><div id="xpFill" class="xp-fill"></div></div>
+                        <div id="xpText">0 XP</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🎟️</div>
+                            <div id="ticketAmount">0</div>
+                            <div class="stat-label">Tickets</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏍️</div>
+                            <div id="statusBadge">Adimplente</div>
+                            <div class="stat-label">Status</div>
+                        </div>
+                    </div>
                 </div>
-                <h2 class="hero-title">🔥 CHAMAS DA IRMANDADE</h2>
-                <div class="big-tokens"><span id="bigCredits">0</span></div>
-                <div class="xp-wrapper">
-                    <div class="xp-bar"><div id="xpFill" class="xp-fill"></div></div>
-                    <div id="xpText">0 XP</div>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">🎟️</div>
-                        <div id="ticketAmount">0</div>
-                        <div class="stat-label">Tickets</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🏍️</div>
-                        <div id="statusBadge">Adimplente</div>
-                        <div class="stat-label">Status</div>
-                    </div>
+
+                <div class="grid-menu">
+                    <button class="menu-card" onclick="showView('missoesView')"><div>⚔️</div><span>Missões</span></button>
+                    <button class="menu-card" onclick="showView('parceirosView')"><div>🤝</div><span>Parceiros</span></button>
+                    <button class="menu-card" onclick="showView('lojaView')"><div>🛒</div><span>Loja</span></button>
+                    <button class="menu-card" onclick="showView('ticketsView')"><div>🎟️</div><span>Tickets</span></button>
+                    <button class="menu-card" onclick="showView('perfilView')"><div>👤</div><span>Perfil</span></button>
+                    <button class="menu-card adminOnly" id="adminMenuBtn" onclick="showView('adminView')"><div>👑</div><span>Admin</span></button>
                 </div>
             </section>
 
-            <!-- Menu de ações -->
-            <section class="grid-menu">
-                <button class="menu-card"><div>📍</div><span>Check-in</span></button>
-                <button class="menu-card"><div>⚔️</div><span>Missões</span></button>
-                <button class="menu-card"><div>🎟️</div><span>Tickets</span></button>
-                <button class="menu-card"><div>🤝</div><span>Parceiros</span></button>
-                <button class="menu-card"><div>📷</div><span>Scanner</span></button>
-                <button class="menu-card"><div>👤</div><span>Perfil</span></button>
+            <!-- MISSÕES -->
+            <section id="missoesView" class="view">
+                <div class="card">
+                    <div class="section-title">⚔️ Missões</div>
+                    <div id="missoesList"></div>
+                </div>
             </section>
 
-            <!-- Perfil -->
-            <section class="card">
-                <div class="section-title">👤 PERFIL</div>
-                <div class="perfil-item">
-                    <label>Apelido</label>
-                    <div class="perfil-edit">
-                        <input id="perfilApelido">
-                        <button>✏️</button>
-                    </div>
+            <!-- PARCEIROS -->
+            <section id="parceirosView" class="view">
+                <div class="card">
+                    <div class="section-title">🤝 Parceiros</div>
+                    <div id="parceirosList"></div>
                 </div>
-                <div class="perfil-item">
-                    <label>Moto</label>
-                    <div class="perfil-edit">
-                        <input id="perfilMoto">
-                        <button>✏️</button>
-                    </div>
-                </div>
-                <div class="perfil-item">
-                    <label>Placa</label>
-                    <div class="perfil-edit">
-                        <input id="perfilPlaca">
-                        <button>✏️</button>
-                    </div>
-                </div>
-                <button id="savePerfilBtn" class="btn btn-primary">💾 SALVAR PERFIL</button>
             </section>
 
-            <!-- Painel do Mestre (apenas admin) -->
-            <section id="adminPanel" class="card" style="display:none;">
-                <div class="section-title">👑 PAINEL DO MESTRE</div>
-                <input id="adminUserEmail" placeholder="E-mail do membro">
-                <input id="adminTokenAmount" type="number" placeholder="Tokens">
-                <button id="mintTokensBtn" class="btn btn-primary">🔥 CUNHAR TOKENS</button>
-                <hr>
-                <input id="ticketNome" placeholder="Nome do Ticket">
-                <input id="ticketPreco" type="number" placeholder="Preço">
-                <button id="createTicketBtn" class="btn btn-primary">🎟️ CRIAR TICKET</button>
-                <hr>
-                <input id="eventoNome" placeholder="Nome do Evento">
-                <input id="eventoLocal" placeholder="Local">
-                <button id="createEventoBtn" class="btn btn-primary">🏍️ CRIAR EVENTO</button>
-                <hr>
-                <input id="parceiroNome" placeholder="Parceiro">
-                <input id="parceiroDesconto" placeholder="Desconto">
-                <button id="createPartnerBtn" class="btn btn-primary">🤝 ADICIONAR PARCEIRO</button>
+            <!-- LOJA -->
+            <section id="lojaView" class="view">
+                <div class="card">
+                    <div class="section-title">🛒 Loja</div>
+                    <div id="lojaList"></div>
+                </div>
             </section>
 
-            <button onclick="logout()" class="btn btn-outline">🚪 SAIR</button>
+            <!-- TICKETS -->
+            <section id="ticketsView" class="view">
+                <div class="card">
+                    <div class="section-title">🎟️ Meus Tickets</div>
+                    <div id="ticketsList"></div>
+                </div>
+            </section>
+
+            <!-- PERFIL -->
+            <section id="perfilView" class="view">
+                <div class="card">
+                    <div class="section-title">👤 PERFIL</div>
+                    <div class="perfil-item">
+                        <label>Apelido</label>
+                        <div class="perfil-edit">
+                            <input id="perfilApelido">
+                            <button>✏️</button>
+                        </div>
+                    </div>
+                    <div class="perfil-item">
+                        <label>Moto</label>
+                        <div class="perfil-edit">
+                            <input id="perfilMoto">
+                            <button>✏️</button>
+                        </div>
+                    </div>
+                    <div class="perfil-item">
+                        <label>Placa</label>
+                        <div class="perfil-edit">
+                            <input id="perfilPlaca">
+                            <button>✏️</button>
+                        </div>
+                    </div>
+                    <div class="perfil-item">
+                        <label>Cidade</label>
+                        <input id="perfilCidade">
+                    </div>
+                    <div class="perfil-item">
+                        <label>CPF</label>
+                        <input id="perfilCpf">
+                    </div>
+                    <div class="perfil-item">
+                        <label>Bio</label>
+                        <textarea id="perfilBio"></textarea>
+                    </div>
+                    <button id="savePerfilBtn" class="btn btn-primary">💾 SALVAR PERFIL</button>
+                </div>
+            </section>
+
+            <!-- ADMIN -->
+            <section id="adminView" class="view">
+                <div class="card">
+                    <div class="section-title">👑 PAINEL DO MESTRE</div>
+
+                    <h3 style="color:var(--emberLight); margin-bottom:8px;">👥 Membros</h3>
+                    <div id="membersList" style="margin-bottom:16px;"></div>
+
+                    <hr style="border-color:var(--border); margin:16px 0;">
+
+                    <input id="adminUserEmail" placeholder="E-mail do membro">
+                    <input id="adminTokenAmount" type="number" placeholder="Tokens">
+                    <button id="mintTokensBtn" class="btn btn-primary">🔥 CUNHAR TOKENS</button>
+
+                    <hr style="border-color:var(--border); margin:16px 0;">
+
+                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🎟️ Criar Ticket</h3>
+                    <input id="ticketNome" placeholder="Nome do Ticket">
+                    <input id="ticketPreco" type="number" placeholder="Preço">
+                    <button id="createTicketBtn" class="btn btn-primary">🎟️ CRIAR TICKET</button>
+
+                    <hr style="border-color:var(--border); margin:16px 0;">
+
+                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🏍️ Criar Evento</h3>
+                    <input id="eventoNome" placeholder="Nome do Evento">
+                    <input id="eventoLocal" placeholder="Local">
+                    <button id="createEventoBtn" class="btn btn-primary">🏍️ CRIAR EVENTO</button>
+
+                    <hr style="border-color:var(--border); margin:16px 0;">
+
+                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🤝 Adicionar Parceiro</h3>
+                    <input id="parceiroNome" placeholder="Nome do Parceiro">
+                    <input id="parceiroDesconto" placeholder="Desconto">
+                    <button id="createPartnerBtn" class="btn btn-primary">🤝 ADICIONAR PARCEIRO</button>
+
+                    <hr style="border-color:var(--border); margin:16px 0;">
+
+                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🛒 Criar Item da Loja</h3>
+                    <input id="itemNome" placeholder="Nome do Item">
+                    <input id="itemPreco" type="number" placeholder="Preço em Tokens">
+                    <button id="createItemBtn" class="btn btn-primary">🛒 CRIAR ITEM</button>
+
+                    <hr style="border-color:var(--border); margin:16px 0;">
+
+                    <h3 style="color:var(--emberLight); margin-bottom:8px;">⚔️ Criar Missão</h3>
+                    <input id="missaoNome" placeholder="Título da Missão">
+                    <input id="missaoXp" type="number" placeholder="XP">
+                    <button id="createMissaoBtn" class="btn btn-primary">⚔️ CRIAR MISSÃO</button>
+                </div>
+            </section>
+
+            <button onclick="logout()" class="btn btn-outline" style="margin-top:8px;">🚪 SAIR</button>
         </main>
-    </div>
 
-    <!-- ==================== FIREBASE + APP JS ==================== -->
-    <!-- Firebase SDKs (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+        <!-- Navegação inferior -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-view="homeView"><i class="fas fa-home"></i><span>Home</span></button>
+            <button class="nav-btn" data-view="missoesView"><i class="fas fa-crosshairs"></i><span>Missões</span></button>
+            <button class="nav-btn" data-view="lojaView"><i class="fas fa-store"></i><span>Loja</span></button>
+            <button class="nav-btn" data-view="perfilView"><i class="fas fa-user"></i><span>Perfil</span></button>
+        </nav>
+    </div>
 
     <script>
         // ======================= CONFIGURAÇÃO DO FIREBASE =======================
@@ -672,12 +812,10 @@
             console.warn("Persistência offline indisponível:", err);
         });
 
-        // Helpers
         const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
         const increment = firebase.firestore.FieldValue.increment;
         const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
 
-        // ======================= CONSTANTES =======================
         const MASTER_EMAIL = "cristophersmonteiro357@gmail.com";
         let userData = null;
 
@@ -701,7 +839,7 @@
             return '⚔️ Estradeiro';
         }
 
-        // ======================= ATUALIZAR UI =======================
+        // ======================= UI PRINCIPAL =======================
         function atualizarUI() {
             if (!userData) return;
 
@@ -720,14 +858,45 @@
             document.getElementById('perfilApelido').value = userData.perfil?.apelido || '';
             document.getElementById('perfilMoto').value = userData.perfil?.moto || '';
             document.getElementById('perfilPlaca').value = userData.perfil?.placa || '';
+            document.getElementById('perfilCidade').value = userData.perfil?.cidade || '';
+            document.getElementById('perfilCpf').value = userData.perfil?.cpf || '';
+            document.getElementById('perfilBio').value = userData.perfil?.bio || '';
             document.getElementById('statusBadge').innerText = userData.status || 'Adimplente';
 
+            const adminElements = document.querySelectorAll('.adminOnly');
             if (userData.role === 'admin') {
-                document.getElementById('adminPanel').style.display = 'block';
+                adminElements.forEach(el => el.style.display = 'flex');
+            } else {
+                adminElements.forEach(el => el.style.display = 'none');
             }
         }
 
-        // ======================= CRIAR CONTA =======================
+        // ======================= NAVEGAÇÃO ENTRE VIEWS =======================
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const navBtn = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
+            if (navBtn) navBtn.classList.add('active');
+
+            // Carregar dados específicos da view
+            if (viewId === 'missoesView') loadMissoes();
+            if (viewId === 'parceirosView') loadParceiros();
+            if (viewId === 'lojaView') loadLoja();
+            if (viewId === 'ticketsView') loadTickets();
+            if (viewId === 'adminView') loadMembers();
+        }
+
+        // Navegação pelos botões inferiores
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const viewId = btn.getAttribute('data-view');
+                showView(viewId);
+            });
+        });
+
+        // ======================= AUTH =======================
         document.getElementById('registerBtn').addEventListener('click', async () => {
             const email = document.getElementById('emailLogin').value.trim();
             const senha = document.getElementById('senhaLogin').value;
@@ -748,7 +917,14 @@
                     xp: 0,
                     tickets: 0,
                     status: 'Adimplente',
-                    perfil: { apelido: email.split('@')[0], moto: '', placa: '' },
+                    perfil: {
+                        apelido: email.split('@')[0],
+                        moto: '',
+                        placa: '',
+                        cidade: '',
+                        cpf: '',
+                        bio: ''
+                    },
                     createdAt: serverTimestamp(),
                     ticketsOwned: []
                 });
@@ -759,7 +935,6 @@
             }
         });
 
-        // ======================= LOGIN =======================
         document.getElementById('loginBtn').addEventListener('click', async () => {
             const email = document.getElementById('emailLogin').value.trim();
             const senha = document.getElementById('senhaLogin').value;
@@ -771,7 +946,6 @@
             }
         });
 
-        // ======================= RECUPERAR SENHA =======================
         document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
             const email = document.getElementById('emailLogin').value.trim();
             if (!email) {
@@ -786,13 +960,20 @@
             }
         });
 
-        // ======================= AUTH STATE =======================
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 document.getElementById('loadingData').style.display = 'flex';
                 try {
                     let snap = await db.collection('users').doc(user.uid).get();
                     if (!snap.exists) {
+                        const defaultPerfil = {
+                            apelido: user.email.split('@')[0],
+                            moto: '',
+                            placa: '',
+                            cidade: '',
+                            cpf: '',
+                            bio: ''
+                        };
                         await db.collection('users').doc(user.uid).set({
                             email: user.email,
                             role: user.email === MASTER_EMAIL ? 'admin' : 'user',
@@ -800,7 +981,7 @@
                             xp: 0,
                             tickets: 0,
                             status: 'Adimplente',
-                            perfil: { apelido: user.email.split('@')[0], moto: '', placa: '' },
+                            perfil: defaultPerfil,
                             createdAt: serverTimestamp(),
                             ticketsOwned: []
                         });
@@ -811,6 +992,7 @@
                     document.getElementById('loginOverlay').style.display = 'none';
                     document.getElementById('app').style.display = 'flex';
                     atualizarUI();
+                    showView('homeView');
                     toast('Bem-vindo à Irmandade!', 'success');
                 } catch (e) {
                     console.error(e);
@@ -823,14 +1005,17 @@
             }
         });
 
-        // ======================= SALVAR PERFIL =======================
+        // ======================= PERFIL =======================
         document.getElementById('savePerfilBtn').addEventListener('click', async () => {
             if (!userData) return;
 
             const perfil = {
                 apelido: document.getElementById('perfilApelido').value,
                 moto: document.getElementById('perfilMoto').value,
-                placa: document.getElementById('perfilPlaca').value
+                placa: document.getElementById('perfilPlaca').value,
+                cidade: document.getElementById('perfilCidade').value,
+                cpf: document.getElementById('perfilCpf').value,
+                bio: document.getElementById('perfilBio').value
             };
 
             try {
@@ -843,10 +1028,9 @@
             }
         });
 
-        // ======================= CUNHAR TOKENS (ADMIN) =======================
+        // ======================= ADMIN =======================
         document.getElementById('mintTokensBtn').addEventListener('click', async () => {
-            if (userData.role !== 'admin') return;
-
+            if (userData?.role !== 'admin') return;
             const email = document.getElementById('adminUserEmail').value.trim();
             const amount = parseInt(document.getElementById('adminTokenAmount').value);
             if (!email || !amount) { toast('Dados inválidos', 'error'); return; }
@@ -861,13 +1045,11 @@
             }
         });
 
-        // ======================= CRIAR TICKET (ADMIN) =======================
         document.getElementById('createTicketBtn').addEventListener('click', async () => {
-            if (userData.role !== 'admin') return;
+            if (userData?.role !== 'admin') return;
             const nome = document.getElementById('ticketNome').value;
             const preco = parseInt(document.getElementById('ticketPreco').value);
             if (!nome || !preco) { toast('Preencha os dados', 'error'); return; }
-
             try {
                 await db.collection('tickets').add({ nome, preco, createdAt: serverTimestamp() });
                 toast('Ticket criado!', 'success');
@@ -876,13 +1058,11 @@
             }
         });
 
-        // ======================= CRIAR EVENTO (ADMIN) =======================
         document.getElementById('createEventoBtn').addEventListener('click', async () => {
-            if (userData.role !== 'admin') return;
+            if (userData?.role !== 'admin') return;
             const nome = document.getElementById('eventoNome').value;
             const local = document.getElementById('eventoLocal').value;
             if (!nome || !local) { toast('Preencha os dados', 'error'); return; }
-
             try {
                 await db.collection('eventos').add({ nome, local, createdAt: serverTimestamp() });
                 toast('Evento criado!', 'success');
@@ -891,13 +1071,11 @@
             }
         });
 
-        // ======================= ADICIONAR PARCEIRO (ADMIN) =======================
         document.getElementById('createPartnerBtn').addEventListener('click', async () => {
-            if (userData.role !== 'admin') return;
+            if (userData?.role !== 'admin') return;
             const nome = document.getElementById('parceiroNome').value;
             const desconto = document.getElementById('parceiroDesconto').value;
             if (!nome || !desconto) { toast('Preencha os dados', 'error'); return; }
-
             try {
                 await db.collection('parceiros').add({ nome, desconto, createdAt: serverTimestamp() });
                 toast('Parceiro criado!', 'success');
@@ -906,8 +1084,155 @@
             }
         });
 
+        document.getElementById('createItemBtn').addEventListener('click', async () => {
+            if (userData?.role !== 'admin') return;
+            const nome = document.getElementById('itemNome').value;
+            const preco = parseInt(document.getElementById('itemPreco').value);
+            if (!nome || !preco) { toast('Preencha os dados', 'error'); return; }
+            try {
+                await db.collection('loja').add({ nome, preco, createdAt: serverTimestamp() });
+                toast('Item criado!', 'success');
+                loadLoja();
+            } catch (e) {
+                toast('Erro ao criar item', 'error');
+            }
+        });
+
+        document.getElementById('createMissaoBtn').addEventListener('click', async () => {
+            if (userData?.role !== 'admin') return;
+            const titulo = document.getElementById('missaoNome').value;
+            const xp = parseInt(document.getElementById('missaoXp').value);
+            if (!titulo || !xp) { toast('Preencha os dados', 'error'); return; }
+            try {
+                await db.collection('missoes').add({ titulo, xp, createdAt: serverTimestamp() });
+                toast('Missão criada!', 'success');
+                loadMissoes();
+            } catch (e) {
+                toast('Erro ao criar missão', 'error');
+            }
+        });
+
+        async function loadMembers() {
+            if (userData?.role !== 'admin') return;
+            const snap = await db.collection('users').get();
+            let html = '';
+            snap.forEach(doc => {
+                const u = doc.data();
+                html += `
+                    <div style="background:#1d1510; border-radius:16px; padding:12px; margin-bottom:8px;">
+                        <strong>${u.perfil?.apelido || 'Sem Nome'}</strong>
+                        <span style="float:right;">🔥 ${u.credits || 0}</span><br>
+                        <small style="color:var(--muted);">${u.email}</small>
+                    </div>`;
+            });
+            document.getElementById('membersList').innerHTML = html || '<p style="color:var(--muted);">Nenhum membro encontrado.</p>';
+        }
+
+        // ==================== LISTAGENS ====================
+        async function loadMissoes() {
+            const snap = await db.collection('missoes').orderBy('createdAt', 'desc').get();
+            let html = '';
+            snap.forEach(doc => {
+                const m = doc.data();
+                html += `
+                    <div class="card" style="margin-bottom:12px;">
+                        <h3>${m.titulo}</h3>
+                        <p>⚡ ${m.xp} XP</p>
+                    </div>`;
+            });
+            document.getElementById('missoesList').innerHTML = html || '<p style="color:var(--muted);">Nenhuma missão disponível.</p>';
+        }
+
+        async function loadParceiros() {
+            const snap = await db.collection('parceiros').orderBy('createdAt', 'desc').get();
+            let html = '';
+            snap.forEach(doc => {
+                const p = doc.data();
+                html += `
+                    <div class="card" style="margin-bottom:12px;">
+                        <h3>${p.nome}</h3>
+                        <p>🎁 ${p.desconto}</p>
+                    </div>`;
+            });
+            document.getElementById('parceirosList').innerHTML = html || '<p style="color:var(--muted);">Nenhum parceiro cadastrado.</p>';
+        }
+
+        async function loadLoja() {
+            const snap = await db.collection('loja').orderBy('createdAt', 'desc').get();
+            let html = '';
+            snap.forEach(doc => {
+                const item = doc.data();
+                html += `
+                    <div class="card" style="margin-bottom:12px;">
+                        <h3>${item.nome}</h3>
+                        <p>🔥 ${item.preco} tokens</p>
+                        <button class="btn btn-primary" onclick="comprarItem('${doc.id}', ${item.preco})">Comprar</button>
+                    </div>`;
+            });
+            document.getElementById('lojaList').innerHTML = html || '<p style="color:var(--muted);">Nenhum item na loja.</p>';
+        }
+
+        async function loadTickets() {
+            if (!userData) return;
+            const snap = await db.collection('tickets').get();
+            const userSnap = await db.collection('users').doc(userData.uid).get();
+            const owned = userSnap.data()?.ticketsOwned || [];
+            let html = '';
+            snap.forEach(doc => {
+                const t = doc.data();
+                const possui = owned.includes(doc.id);
+                html += `
+                    <div class="card" style="margin-bottom:12px;">
+                        <h3>${t.nome}</h3>
+                        <p>🔥 ${t.preco} tokens ${possui ? '<span style="color:var(--success);">✔ Adquirido</span>' : ''}</p>
+                        ${!possui ? `<button class="btn btn-primary" onclick="comprarTicket('${doc.id}', ${t.preco})">Comprar Ticket</button>` : ''}
+                    </div>`;
+            });
+            document.getElementById('ticketsList').innerHTML = html || '<p style="color:var(--muted);">Nenhum ticket disponível.</p>';
+        }
+
+        async function comprarItem(id, preco) {
+            if (!userData) return;
+            if ((userData.credits || 0) < preco) {
+                toast('Tokens insuficientes', 'error');
+                return;
+            }
+            try {
+                await db.collection('users').doc(userData.uid).update({
+                    credits: increment(-preco)
+                });
+                userData.credits -= preco;
+                atualizarUI();
+                toast('Compra realizada!', 'success');
+                loadLoja();
+            } catch (e) {
+                toast('Erro ao comprar', 'error');
+            }
+        }
+
+        async function comprarTicket(id, preco) {
+            if (!userData) return;
+            if ((userData.credits || 0) < preco) {
+                toast('Tokens insuficientes', 'error');
+                return;
+            }
+            try {
+                await db.collection('users').doc(userData.uid).update({
+                    credits: increment(-preco),
+                    ticketsOwned: arrayUnion(id)
+                });
+                userData.credits -= preco;
+                atualizarUI();
+                toast('Ticket adquirido!', 'success');
+                loadTickets();
+            } catch (e) {
+                toast('Erro ao comprar ticket', 'error');
+            }
+        }
+
         // ======================= EDITAR NICKNAME =======================
         document.getElementById('editNicknameBtn').addEventListener('click', () => {
+            showView('perfilView');
             document.getElementById('perfilApelido').focus();
         });
 
