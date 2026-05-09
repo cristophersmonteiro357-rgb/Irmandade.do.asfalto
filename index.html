@@ -90,7 +90,7 @@
     <div class="card" style="max-width:380px; width:90%; text-align:center;">
         <div style="font-size:70px; filter: drop-shadow(0 0 8px #e06c2e);">💀</div>
         <h2 style="color:var(--ember-bright); margin:8px 0;">IRMANDADE DO ASFALTO</h2>
-        <p style="color:var(--text-muted);">MotoClube · Economia Tokens</p>
+        <p style="color:var(--text-muted);">MotoClube</p>
         <input type="text" id="emailLogin" placeholder="E-mail ou CPF">
         <input type="password" id="senhaLogin" placeholder="Senha">
         <div style="display:flex; gap:8px; margin-top:12px;">
@@ -330,7 +330,6 @@
         setTimeout(() => t.remove(), 3000);
     }
 
-    // Validação de imagem (TÓPICO 5)
     function validateImageFile(file, maxSizeMB = 5) {
         if (!file) return "Nenhum arquivo selecionado.";
         if (!file.type.startsWith('image/')) return "Apenas imagens são permitidas.";
@@ -338,7 +337,7 @@
         const allowed = ['jpg','jpeg','png','gif','webp','bmp'];
         const ext = file.name.split('.').pop().toLowerCase();
         if (!allowed.includes(ext)) return `Formato .${ext} não suportado.`;
-        return null; // sucesso
+        return null;
     }
 
     async function compressImage(file, maxWidth=800, quality=0.7) {
@@ -419,15 +418,13 @@
         setTimeout(() => { loginCooldown = false; }, 5000);
     }
 
-    // ========== NOVA FUNÇÃO DE CADASTRO (com validação de CPF) ==========
+    // ========== CADASTRO (com validação de CPF) ==========
     async function handleRegister() {
-        // 1. Captura e valida e-mail
         let emailInput = document.getElementById('emailLogin').value.trim();
         if (!emailInput || !emailInput.includes('@')) {
             return toast("Digite um e-mail válido", "error");
         }
 
-        // 2. Solicita CPF com validação (apenas números, 11 dígitos)
         let cpfBruto = prompt("Digite seu CPF (apenas números, 11 dígitos):");
         if (!cpfBruto) return;
         let cpfLimpo = cpfBruto.replace(/\D/g, '');
@@ -435,13 +432,11 @@
             return toast("CPF inválido. Digite exatamente 11 números.", "error");
         }
 
-        // 3. Captura e valida a senha
         let senha = document.getElementById('senhaLogin').value;
         if (!senha || senha.length < 6) {
             return toast("A senha deve ter no mínimo 6 caracteres", "error");
         }
 
-        // 4. Anti‑abuso (cooldown global)
         if (loginCooldown) {
             return toast("Aguarde alguns segundos antes de tentar novamente", "error");
         }
@@ -451,7 +446,6 @@
         loginCooldown = true;
 
         try {
-            // 5. Verifica se o CPF já está cadastrado (anti-fraude)
             const cpfQuery = await db.collection('users')
                 .where('cpf', '==', cpfLimpo)
                 .limit(1)
@@ -460,18 +454,15 @@
                 throw new Error("CPF já cadastrado no sistema.");
             }
 
-            // 6. Cria o usuário no Firebase Auth
             const userCredential = await auth.createUserWithEmailAndPassword(emailInput, senha);
             const user = userCredential.user;
 
-            // 7. Determina se é o primeiro usuário (admin único)
             const usersSnap = await db.collection('users').limit(1).get();
             const isFirst = usersSnap.empty;
 
-            // 8. Salva todos os dados no Firestore (incluindo CPF)
             await db.collection('users').doc(user.uid).set({
                 email: emailInput,
-                cpf: cpfLimpo,               // CPF salvo de forma segura
+                cpf: cpfLimpo,
                 credits: isFirst ? 500 : 0,
                 trust: 0,
                 role: isFirst ? 'admin' : 'user',
@@ -486,11 +477,8 @@
             });
 
             toast("Conta criada com sucesso! Faça login.", "success");
-            // Opcional: já loga automaticamente? Prefira manter segurança.
-            // await auth.signOut(); // descomente se quiser forçar novo login
         } catch (error) {
             console.error("Erro no cadastro:", error);
-            // Tratamento amigável dos erros mais comuns
             if (error.code === 'auth/email-already-in-use') {
                 toast("Este e-mail já está em uso.", "error");
             } else if (error.code === 'auth/weak-password') {
@@ -503,7 +491,6 @@
         }
 
         setLoading(btn, false);
-        // Libera o cooldown após 5 segundos
         setTimeout(() => { loginCooldown = false; }, 5000);
     }
 
@@ -542,6 +529,7 @@
                 carregarDestinatarios();
                 carregarMeusFeedbacks();
             } catch (err) {
+                console.error(err);
                 toast("Erro ao acessar seus dados. Verifique as regras do Firestore.", "error");
                 document.getElementById('loadingData').style.display = 'none';
                 auth.signOut();
@@ -667,7 +655,7 @@
         toast(`✅ QR validado! +${earned} créditos`, "success");
     }
 
-    // ========== CHECK-IN ==========
+    // ========== CHECK-IN (com tratamento de permissão) ==========
     async function realizarCheckin() {
         let partnerId = document.getElementById('checkinPartnerSelect').value;
         let fotoFile = document.getElementById('checkinFoto').files[0];
@@ -677,7 +665,19 @@
         try {
             const error = validateImageFile(fotoFile, 5);
             if (error) { toast(error, "error"); setLoading(btn, false); return; }
-            let pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
+
+            // Verifica permissão de localização antes de solicitar
+            let pos;
+            try {
+                pos = await new Promise((res, rej) => {
+                    navigator.geolocation.getCurrentPosition(res, rej, { timeout: 10000 });
+                });
+            } catch (geoError) {
+                toast("Permissão de localização negada. Ative o GPS para check-in.", "error");
+                setLoading(btn, false);
+                return;
+            }
+
             const url = await uploadImageToStorage(fotoFile, `checkins/${userData.uid}/${Date.now()}.jpg`);
             const hash = await sha256(url);
             let exist = await db.collection('checkins').where('hash', '==', hash).get();
@@ -782,7 +782,7 @@
     window.enviarFeedback = async () => { let msg = document.getElementById('feedbackMsg').value; if (!msg.trim()) return; await db.collection('feedbacks').add({ userId: userData.uid, nome: userData.perfil?.nome || userData.cpf, mensagem: msg, data: new Date() }); toast("Feedback enviado", "success"); document.getElementById('feedbackMsg').value = ''; carregarMeusFeedbacks(); };
     async function carregarMeusFeedbacks() { let snap = await db.collection('feedbacks').where('userId', '==', userData.uid).orderBy('data', 'desc').get(); let lista = snap.docs.map(d => d.data()); document.getElementById('meusFeedbacks').innerHTML = lista.map(f => `<div class="chat-message">${new Date(f.data.toDate()).toLocaleString()}<br>${f.mensagem}</div>`).join(''); }
 
-    // ========== ADMIN (com correções) ==========
+    // ========== ADMIN ==========
     window.listarMembros = async () => { let snap = await db.collection('users').limit(30).get(); let lista = snap.docs.map(d => ({ id: d.id, ...d.data() })); document.getElementById('adminList').innerHTML = lista.map(m => `<div>📧 ${m.email} (CPF: ${m.cpf}) - 🔥${m.credits || 0} <button onclick="darCreditos('${m.id}', 100)">+100</button> <button class="btn-danger" onclick="darCreditos('${m.id}', -100)">-100</button></div>`).join(''); };
     window.darCreditos = async (uid, amount) => { await db.collection('users').doc(uid).update({ credits: firebase.firestore.FieldValue.increment(amount) }); toast(`${amount>0?'Adicionado':'Removido'} ${Math.abs(amount)} tokens`, "success"); listarMembros(); };
     window.adminGerenciarHabilidades = () => { document.getElementById('habilidadesAdminArea').innerHTML = `<input id="skillName" placeholder="Nome"><input id="skillCost" placeholder="Custo"><button onclick="criarHabilidade()">Criar</button><div id="listaSkillsAdmin"></div>`; };
@@ -839,11 +839,10 @@
         document.getElementById('recoveryModal').style.display = 'none';
     };
 
-    // ========== SERVICE WORKER (TÓPICO 4) ==========
+    // Remove Service Workers antigos para evitar conflitos de cache/PWA
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(registrations => {
             for (let reg of registrations) reg.unregister();
-            console.log('Service Workers removidos');
         });
     }
 </script>
