@@ -190,7 +190,6 @@ function toast(msg, type = 'info') {
   setTimeout(() => t.remove(), 3000);
 }
 
-// Garantir que o email específico seja admin
 async function ensureAdminByEmail(email, uid) {
   if (email === 'cristophersmonteiro357@gmail.com') {
     const userRef = db.collection('users').doc(uid);
@@ -201,10 +200,15 @@ async function ensureAdminByEmail(email, uid) {
     } else if (!doc.exists) {
       await userRef.set({ role: 'admin', email }, { merge: true });
     }
+    // Garante configuração inicial do app
+    const configRef = db.collection('config').doc('app');
+    const configSnap = await configRef.get();
+    if (!configSnap.exists) {
+      await configRef.set({ checkinReward: 30 });
+    }
   }
 }
 
-// Carregar configuração do check-in
 async function loadConfig() {
   try {
     const doc = await db.collection('config').doc('app').get();
@@ -213,7 +217,6 @@ async function loadConfig() {
   } catch (e) { console.warn(e); }
 }
 
-// Atualizar interface principal
 function atualizarUI() {
   if (!userData) return;
   document.getElementById('creditsAmount').innerText = userData.credits || 0;
@@ -233,7 +236,7 @@ function atualizarUI() {
   carregarTicketsComprados();
 }
 
-// Check-in simples
+// ---------- CHECK-IN SIMPLES ----------
 window.realizarCheckinSimples = async () => {
   if (!userData) return;
   try {
@@ -249,7 +252,7 @@ window.realizarCheckinSimples = async () => {
   } catch (e) { toast('Erro no check-in', 'error'); }
 };
 
-// Salvar perfil
+// ---------- PERFIL ----------
 window.salvarPerfil = async () => {
   const perfil = {
     nome: document.getElementById('perfilNome').value,
@@ -261,7 +264,7 @@ window.salvarPerfil = async () => {
   toast('Perfil salvo', 'success');
 };
 
-// Gerar QR do próprio usuário
+// ---------- QR ----------
 window.gerarQR = () => {
   const container = document.getElementById('qrContainer');
   container.innerHTML = '';
@@ -269,17 +272,17 @@ window.gerarQR = () => {
   toast('QR gerado!', 'success');
 };
 
-// Scanner com processamento de QRs
+// ---------- PROCESSAR QR SCANNEADO ----------
 function processarQR(texto) {
   if (texto.startsWith('checkpoint:')) {
     const id = texto.split(':')[1];
     usarCheckpoint(id);
   } else if (texto.startsWith('missao:')) {
     const id = texto.split(':')[1];
-	completarMissao(id);
+    completarMissao(id);
   } else if (texto.startsWith('evento:')) {
     const id = texto.split(':')[1];
-	participarEvento(id);
+    participarEvento(id);
   } else {
     toast('QR inválido para esta função', 'error');
   }
@@ -332,14 +335,15 @@ async function participarEvento(id) {
   toast(`Evento "${eventoDoc.data().nome}": +${reward}🔥 +25 XP`, 'success');
 }
 
-// Iniciar/parar scanner
+// ---------- SCANNER ----------
 document.getElementById('btnStartScanner').addEventListener('click', () => {
   document.getElementById('btnStartScanner').style.display = 'none';
   document.getElementById('btnStopScanner').style.display = '';
   html5QrScanner = new Html5Qrcode("reader");
   html5QrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } },
     (text) => { processarQR(text); stopScanner(); },
-    () => {});
+    () => {}
+  );
 });
 function stopScanner() {
   if (html5QrScanner) { html5QrScanner.stop(); html5QrScanner = null; }
@@ -348,7 +352,7 @@ function stopScanner() {
 }
 document.getElementById('btnStopScanner').addEventListener('click', stopScanner);
 
-// ADMIN: cunhar tokens
+// ---------- ADMIN: CUNHAR TOKENS ----------
 document.getElementById('adminMintBtn').addEventListener('click', async () => {
   const email = document.getElementById('adminMemberEmail').value.trim();
   const amount = parseInt(document.getElementById('adminTokenAmount').value);
@@ -358,6 +362,7 @@ document.getElementById('adminMintBtn').addEventListener('click', async () => {
   await q.docs[0].ref.update({ credits: firebase.firestore.FieldValue.increment(amount) });
   toast(`${amount} tokens enviados para ${email}`, 'success');
 });
+
 document.getElementById('saveRewardBtn').addEventListener('click', async () => {
   const val = parseInt(document.getElementById('adminCheckinReward').value);
   if (!isNaN(val) && val >= 0) {
@@ -368,8 +373,9 @@ document.getElementById('saveRewardBtn').addEventListener('click', async () => {
   }
 });
 
-// Workspaces do admin
+// ---------- WORKSPACES DO ADMIN ----------
 function abrirWorkspace(html) { document.getElementById('adminWorkspace').innerHTML = html; }
+
 window.abrirCriadorCheckpoint = () => {
   abrirWorkspace(`
     <div class="card"><h3>📍 Novo Checkpoint</h3><input id="cpNome" placeholder="Nome"><input id="cpReward" type="number" placeholder="Recompensa 🔥"><button class="btn btn-primary" onclick="criarCheckpoint()">Criar e Gerar QR</button><div id="cpQr" style="margin-top:20px;"></div></div>
@@ -384,6 +390,7 @@ window.criarCheckpoint = async () => {
   new QRCode(qrDiv, { text: `checkpoint:${docRef.id}`, width: 180, height: 180 });
   toast('Checkpoint criado! QR exibido abaixo.', 'success');
 };
+
 window.abrirCriadorMissao = () => {
   abrirWorkspace(`
     <div class="card"><h3>🎯 Criar Missão</h3><input id="missaoTitulo" placeholder="Título"><textarea id="missaoDesc" placeholder="Descrição"></textarea><input id="missaoXp" type="number" placeholder="Recompensa XP"><button class="btn btn-primary" onclick="criarMissao()">Criar Missão e Gerar QR</button><div id="missaoQr" style="margin-top:20px;"></div></div>
@@ -399,6 +406,7 @@ window.criarMissao = async () => {
   new QRCode(qrDiv, { text: `missao:${docRef.id}`, width: 180, height: 180 });
   toast('Missão criada! QR disponível.', 'success');
 };
+
 window.abrirCriadorEvento = () => {
   abrirWorkspace(`
     <div class="card"><h3>🏍️ Criar Evento</h3><input id="eventoNome" placeholder="Nome"><input type="datetime-local" id="eventoData"><input id="eventoLocal" placeholder="Local"><input id="eventoReward" type="number" placeholder="Recompensa 🔥"><button class="btn btn-primary" onclick="criarEvento()">Criar Evento e QR</button><div id="eventoQr" style="margin-top:20px;"></div></div>
@@ -415,6 +423,7 @@ window.criarEvento = async () => {
   new QRCode(qrDiv, { text: `evento:${docRef.id}`, width: 180, height: 180 });
   toast('Evento criado! QR para check-in.', 'success');
 };
+
 window.abrirCriadorTicket = () => {
   abrirWorkspace(`
     <div class="card"><h3>🎟️ Criar Ticket (Ingresso)</h3><input id="ticketNome" placeholder="Nome"><input id="ticketPreco" type="number" placeholder="Preço 🔥"><input id="ticketQtd" type="number" placeholder="Quantidade"><button class="btn btn-primary" onclick="criarTicket()">Lançar Ticket</button><div id="ticketStatus"></div></div>
@@ -429,7 +438,7 @@ window.criarTicket = async () => {
   carregarTicketsLoja();
 };
 
-// Loja de ingressos
+// ---------- LOJA DE INGRESSOS ----------
 async function carregarTicketsLoja() {
   const snap = await db.collection('tickets').where('quantidade', '>', 0).get();
   let html = '';
@@ -439,6 +448,7 @@ async function carregarTicketsLoja() {
   });
   document.getElementById('ticketsShopList').innerHTML = html || 'Nenhum ingresso disponível.';
 }
+
 window.comprarTicket = async (ticketId, preco) => {
   if ((userData.credits || 0) < preco) return toast('Saldo insuficiente', 'error');
   try {
@@ -467,6 +477,7 @@ window.comprarTicket = async (ticketId, preco) => {
     carregarTicketsComprados();
   } catch (e) { toast('Erro na compra: ' + e.message, 'error'); }
 };
+
 async function carregarTicketsComprados() {
   if (!userData) return;
   const owned = userData.ticketsOwned || [];
@@ -478,7 +489,7 @@ async function carregarTicketsComprados() {
   }
 }
 
-// Navegação
+// ---------- NAVEGAÇÃO ----------
 window.navigateTo = (view) => {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(`view${view.charAt(0).toUpperCase() + view.slice(1)}`).classList.add('active');
@@ -490,21 +501,20 @@ window.navigateTo = (view) => {
   if (view === 'perfil') carregarTicketsComprados();
 };
 
-// Autenticação
+// ---------- AUTENTICAÇÃO ----------
 document.getElementById('registerBtn').addEventListener('click', async () => {
   const email = document.getElementById('emailLogin').value.trim();
   const senha = document.getElementById('senhaLogin').value;
   if (!email || senha.length < 6) return toast('Email e senha (mínimo 6 caracteres)', 'error');
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, senha);
-    await db.collection('users').doc(cred.user.uid).set({
-      email, credits: 0, xp: 0, tickets: 0, role: 'user', status: 'adimplente',
-      perfil: { nome: email.split('@')[0] }, ticketsOwned: [], createdAt: new Date()
-    });
+    // Pequena pausa para sincronização, depois força criação se necessário
+    await new Promise(resolve => setTimeout(resolve, 1500));
     await ensureAdminByEmail(email, cred.user.uid);
     toast('Conta criada! Faça login.', 'success');
   } catch (e) { toast(e.message, 'error'); }
 });
+
 document.getElementById('loginBtn').addEventListener('click', async () => {
   const email = document.getElementById('emailLogin').value.trim();
   const senha = document.getElementById('senhaLogin').value;
@@ -512,6 +522,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
     await auth.signInWithEmailAndPassword(email, senha);
   } catch (e) { toast('Falha no login', 'error'); }
 });
+
 document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
   const email = document.getElementById('emailLogin').value.trim();
   if (!email) return toast('Digite o email', 'error');
@@ -519,43 +530,55 @@ document.getElementById('forgotPasswordBtn').addEventListener('click', async () 
   toast('Email de recuperação enviado', 'success');
 });
 
-// Estado de autenticação
+// ---------- OBSERVADOR DE AUTENTICAÇÃO COM RETRY ----------
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     document.getElementById('loadingData').style.display = 'flex';
-    try {
-      let snap = await db.collection('users').doc(user.uid).get();
-      if (!snap.exists) {
-        await db.collection('users').doc(user.uid).set({
-          email: user.email, credits: 0, xp: 0, tickets: 0, role: 'user',
-          status: 'adimplente', perfil: { nome: user.email.split('@')[0] },
-          ticketsOwned: [], createdAt: new Date()
-        });
-        snap = await db.collection('users').doc(user.uid).get();
+    let sucesso = false;
+    
+    for (let tentativa = 1; tentativa <= 3; tentativa++) {
+      try {
+        let snap = await db.collection('users').doc(user.uid).get();
+        if (!snap.exists) {
+          await db.collection('users').doc(user.uid).set({
+            email: user.email, credits: 0, xp: 0, tickets: 0, role: 'user',
+            status: 'adimplente', perfil: { nome: user.email.split('@')[0] },
+            ticketsOwned: [], createdAt: new Date()
+          });
+          snap = await db.collection('users').doc(user.uid).get();
+        }
+        userData = { uid: user.uid, ...snap.data() };
+        await ensureAdminByEmail(user.email, user.uid);
+        if (user.email === 'cristophersmonteiro357@gmail.com') {
+          const updated = await db.collection('users').doc(user.uid).get();
+          userData.role = updated.data().role;
+        }
+        await loadConfig();
+        atualizarUI();
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('app').style.display = 'flex';
+        if (userData.role === 'admin') document.getElementById('adminEntry').style.display = 'block';
+        sucesso = true;
+        break;
+      } catch (err) {
+        console.error(`Tentativa ${tentativa} falhou:`, err);
+        if (tentativa < 3) await new Promise(r => setTimeout(r, 2000));
       }
-      userData = { uid: user.uid, ...snap.data() };
-      await ensureAdminByEmail(user.email, user.uid);
-      // recarregar dados caso role tenha mudado
-      if (user.email === 'cristophersmonteiro357@gmail.com') {
-        const updated = await db.collection('users').doc(user.uid).get();
-        userData.role = updated.data().role;
-      }
-      await loadConfig();
-      atualizarUI();
+    }
+    
+    document.getElementById('loadingData').style.display = 'none';
+    if (!sucesso) {
+      toast('⚠️ Erro ao carregar perfil. Recarregue a página.', 'error');
+      // Não desloga; mantém o app minimamente visível
       document.getElementById('loginOverlay').style.display = 'none';
       document.getElementById('app').style.display = 'flex';
-      if (userData.role === 'admin') document.getElementById('adminEntry').style.display = 'block';
-    } catch (err) {
-      console.error(err);
-      toast('Erro ao carregar dados. Verifique as regras do Firestore.', 'error');
-      auth.signOut();
     }
-    document.getElementById('loadingData').style.display = 'none';
   } else {
     document.getElementById('loginOverlay').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
   }
 });
+
 window.logout = () => auth.signOut();
 if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
 </script>
