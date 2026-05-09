@@ -42,7 +42,6 @@
         .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-primary { background: linear-gradient(135deg, #b9591f, #e06c2e); color: #0a0502; border: none; box-shadow: 0 2px 8px rgba(224,108,46,0.3); }
         .btn-outline { background: transparent; border: 1px solid var(--ember); color: var(--ember-bright); }
-        .btn-danger { background: #8b3a2a; border-color: #c55a3a; color: white; }
         .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
         .stats-row { display: flex; justify-content: space-between; background: #1a1512; border-radius: 40px; padding: 12px; margin-top: 8px; }
         .avatar-circle { width: 56px; height: 56px; background: #2e241f; border-radius: 50%; border: 2px solid var(--ember); display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -51,35 +50,13 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,3,2,0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 8px 8px calc(8px + var(--safe-bottom)); border-top: 1px solid var(--border-ember); z-index: 20; }
         .nav-item { display: flex; flex-direction: column; align-items: center; background: none; border: none; color: var(--text-muted); font-size: 0.7rem; padding: 6px; gap: 4px; cursor: pointer; }
         .nav-item.active { color: var(--ember-bright); text-shadow: 0 0 4px var(--ember); }
-        .gallery { display: flex; overflow-x: auto; gap: 12px; padding: 8px 0; }
-        .gallery-item { min-width: 100px; height: 100px; background: #1a1512; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-ember); }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-        .mural-horizontal { display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto; padding: 8px; background: #1f170f; border-radius: 28px; }
-        .mural-item { background: #2a2018; border-radius: 20px; padding: 8px 15px; border-left: 3px solid var(--ember); }
-        .chat-message { background: #2a2018; border-radius: 20px; padding: 8px 12px; margin-bottom: 6px; }
-        .chat-message.self { background: #4a3424; text-align: right; }
-        .skill-tree { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; }
-        .skill-card { background: #2a2018; border-radius: 20px; padding: 12px; width: 140px; text-align: center; border: 1px solid var(--border-ember); cursor: pointer; }
-        .skill-card.unlocked { background: #4a3424; border-color: var(--gold); }
-        .badge-medal { display: inline-block; background: #2a2a1a; border-radius: 40px; padding: 4px 12px; margin: 4px; }
-        input, select, textarea { width: 100%; padding: 12px; background: #1c140f; border: 1px solid #3a2a20; border-radius: 20px; color: white; margin: 6px 0; }
-        .profile-field { margin-bottom: 16px; }
-        .profile-field label { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
-        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .flex-btns { display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap; }
-        .admin-log { font-size: 0.7rem; padding: 8px; border-bottom: 1px solid var(--border-ember); }
         .xp-bar { background: #2e241f; height: 8px; border-radius: 10px; margin: 8px 0; }
         .plan-badge, .status-badge { font-size: 0.7rem; background: #241e1a; padding: 2px 8px; border-radius: 20px; }
         .loading-full { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 300; flex-direction: column; gap: 16px; }
-        .hidden { display: none; }
-        #reader { border-radius: 16px; overflow: hidden; background: #111; min-height: 240px; }
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 6px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        input, select, textarea { width: 100%; padding: 12px; background: #1c140f; border: 1px solid #3a2a20; border-radius: 20px; color: white; margin: 6px 0; }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-analytics-compat.js"></script>
 </head>
 <body>
 <div class="bg-flame"></div>
@@ -91,7 +68,7 @@
         <div style="font-size:70px; filter: drop-shadow(0 0 8px #e06c2e);">💀</div>
         <h2 style="color:var(--ember-bright); margin:8px 0;">IRMANDADE DO ASFALTO</h2>
         <p style="color:var(--text-muted);">MotoClube</p>
-        <input type="text" id="emailLogin" placeholder="E-mail ou CPF">
+        <input type="text" id="emailLogin" placeholder="E-mail">
         <input type="password" id="senhaLogin" placeholder="Senha">
         <div style="display:flex; gap:8px; margin-top:12px;">
             <button class="btn btn-primary" style="flex:1" id="loginBtn">⚡ ENTRAR</button>
@@ -104,32 +81,19 @@
     </div>
 </div>
 
-<!-- Modal Recuperação -->
-<div id="recoveryModal" style="position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:1000; display:none; align-items:center; justify-content:center;">
-    <div class="card" style="max-width:400px; width:90%;">
-        <h3>Recuperar senha</h3>
-        <p>Enviaremos um link para redefinir sua senha.</p>
-        <input type="email" id="recoveryEmail" placeholder="seu@email.com">
-        <button class="btn btn-primary" id="sendEmailResetBtn" style="width:100%">Enviar link</button>
-        <div class="flex-btns" style="margin-top:16px;">
-            <button class="btn btn-outline" id="closeRecoveryModal">Fechar</button>
-        </div>
-    </div>
-</div>
-
 <!-- Loading -->
 <div id="loadingData" style="display:none;" class="loading-full">
     <div class="spinner" style="width:40px; height:40px;"></div>
-    <span>Carregando seus dados...</span>
+    <span>Conectando ao clube...</span>
 </div>
 
-<!-- App Principal -->
+<!-- App Principal (MVP) -->
 <div id="app">
     <div class="topbar">
         <div class="logo"><i class="fas fa-skull"></i><span>Asfalto</span></div>
         <div style="display:flex; gap:12px; align-items:center;">
             <div><span id="creditsAmount">0</span> 🔥</div>
-            <div class="avatar-circle" style="width:40px;height:40px; cursor:pointer;" onclick="navigateTo('perfil')"><span id="avatarIcon">💀</span></div>
+            <div class="avatar-circle" style="width:40px;height:40px; cursor:pointer;" onclick="navigateTo('perfil')"><span>💀</span></div>
         </div>
     </div>
     <div class="content">
@@ -146,21 +110,11 @@
                 <div onclick="navigateTo('qr')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-qrcode"></i></div><span>Meu QR</span></div>
                 <div onclick="navigateTo('scanner')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-camera"></i></div><span>Escanear</span></div>
                 <div onclick="navigateTo('checkin')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-map-marker-alt"></i></div><span>Check-in</span></div>
-                <div onclick="navigateTo('nf')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-receipt"></i></div><span>Nota Fiscal</span></div>
-                <div onclick="navigateTo('partners')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-store"></i></div><span>Parceiros</span></div>
-                <div onclick="navigateTo('gallery')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-images"></i></div><span>Galeria</span></div>
-                <div onclick="navigateTo('missoes')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-tasks"></i></div><span>Missões</span></div>
-                <div onclick="navigateTo('ranking')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-trophy"></i></div><span>Ranking</span></div>
+                <div onclick="navigateTo('perfil')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-user"></i></div><span>Perfil</span></div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
-                <button class="btn btn-outline btn-sm" onclick="navigateTo('sorteios')">🎲 Sorteios</button>
-                <button class="btn btn-outline btn-sm" onclick="navigateTo('habilidades')"><i class="fas fa-brain"></i> Habilidades</button>
-                <button class="btn btn-outline btn-sm" onclick="navigateTo('conquistas')"><i class="fas fa-medal"></i> Conquistas</button>
-                <button class="btn btn-outline btn-sm" onclick="navigateTo('chatGlobal')"><i class="fas fa-globe"></i> Mural</button>
-                <button class="btn btn-outline btn-sm" onclick="navigateTo('chatPrivado')"><i class="fas fa-lock"></i> Privado</button>
-                <button class="btn btn-outline btn-sm" onclick="navigateTo('brindes')"><i class="fas fa-gift"></i> Brindes</button>
-                <button class="btn btn-outline btn-sm" onclick="navigateTo('feedback')"><i class="fas fa-comment"></i> Feedback</button>
-                <button id="adminBtn" style="display:none;" class="btn btn-primary btn-sm" onclick="navigateTo('admin')">👑 Conselho</button>
+                <button class="btn btn-outline btn-sm" onclick="navigateTo('qr')">QR</button>
+                <button class="btn btn-outline btn-sm" onclick="navigateTo('checkin')">Check-in</button>
                 <button class="btn btn-outline btn-sm" onclick="logout()">🚪 Sair</button>
             </div>
         </div>
@@ -169,8 +123,7 @@
         <div class="view" id="viewQr">
             <div class="card"><h3><i class="fas fa-qrcode"></i> Meu QR Code</h3>
                 <div id="qrContainer" style="text-align:center; min-height:200px;"></div>
-                <button class="btn btn-primary btn-block" onclick="generateQR()">🔥 Gerar QR Seguro</button>
-                <p class="text-muted" style="font-size:10px; margin-top:8px;">Válido por 5 min • Assinado</p>
+                <button class="btn btn-primary" onclick="gerarQR()">🔥 Gerar QR</button>
             </div>
         </div>
 
@@ -178,7 +131,7 @@
         <div class="view" id="viewScanner">
             <div class="card"><h3><i class="fas fa-camera"></i> Escanear QR</h3>
                 <div id="reader"></div>
-                <div class="flex-btns" style="margin-top:12px;">
+                <div style="margin-top:12px; display:flex; gap:8px;">
                     <button class="btn btn-primary" id="btnStartScanner">📷 Iniciar</button>
                     <button class="btn btn-outline" id="btnStopScanner" style="display:none;">⏹️ Parar</button>
                 </div>
@@ -188,662 +141,312 @@
         <!-- PERFIL -->
         <div class="view" id="viewPerfil">
             <div class="card"><h3><i class="fas fa-user-circle"></i> Meu Perfil</h3>
-                <div style="display:flex; gap:16px; align-items:center; margin-bottom:16px;">
-                    <div class="avatar-circle" style="width:80px;height:80px;" id="profilePicPreview"><span>💀</span></div>
-                    <div><button class="btn btn-sm" id="uploadProfileBtn">Alterar Foto</button><input type="file" id="profilePicInput" accept="image/*" style="display:none;"></div>
-                </div>
                 <div class="profile-field"><label>Nome</label><input id="perfilNome" placeholder="Seu nome"></div>
-                <div class="profile-field"><label>Idade</label><input id="perfilIdade" type="number"></div>
-                <div class="profile-field"><label>Habilitado (CNH)</label><select id="perfilHabilitado"><option>sim</option><option>não</option></select></div>
                 <div class="profile-field"><label>Moto</label><input id="perfilMoto" placeholder="Modelo"></div>
                 <div class="profile-field"><label>Placa</label><input id="perfilPlaca" placeholder="ABC-1234"></div>
                 <button class="btn btn-primary" onclick="salvarPerfil()">Salvar</button>
             </div>
-            <div class="card"><h3>📜 Meus Check-ins</h3><div id="meusCheckinsList"></div></div>
-            <div class="card"><h3>🎨 Tema</h3><input type="color" id="themeColor" onchange="mudarCorTema(this.value)"><button class="btn btn-outline btn-sm" onclick="toggleDark()">Modo Escuro</button></div>
         </div>
 
-        <!-- CHECK-IN -->
+        <!-- CHECK-IN (simplificado, sem geolocalização obrigatória) -->
         <div class="view" id="viewCheckin">
-            <div class="card"><h3><i class="fas fa-camera"></i> Check-in Parceiro</h3>
-                <select id="checkinPartnerSelect"></select>
-                <input type="file" id="checkinFoto" accept="image/*" capture="environment">
-                <button class="btn btn-primary" id="checkinBtn">Registrar</button>
-            </div>
-        </div>
-
-        <!-- NOTA FISCAL -->
-        <div class="view" id="viewNf">
-            <div class="card"><h3>🧾 Nota Fiscal</h3>
-                <input id="valorNF" placeholder="Valor R$" type="number" step="0.01">
-                <input type="file" id="nfFoto" accept="image/*" capture="environment">
-                <button class="btn btn-primary" id="nfBtn">Validar</button>
-            </div>
-        </div>
-
-        <!-- PARCEIROS -->
-        <div class="view" id="viewPartners"><div class="card"><h3>🏪 Parceiros</h3><div id="partnersList"></div></div></div>
-
-        <!-- MISSÕES -->
-        <div class="view" id="viewMissoes"><div class="card"><h3>⚔️ Missões</h3><div id="missionsList"></div></div></div>
-
-        <!-- RANKING -->
-        <div class="view" id="viewRanking"><div class="card"><h3>🏅 Ranking</h3><div id="rankingList"></div></div></div>
-
-        <!-- SORTEIOS -->
-        <div class="view" id="viewSorteios"><div class="card"><h3>🎲 Sorteios</h3><div id="sorteiosList"></div><button class="btn btn-primary btn-sm" onclick="comprarTicket()">Comprar ingresso (50💰)</button><div id="meusTickets"></div></div></div>
-
-        <!-- HABILIDADES -->
-        <div class="view" id="viewHabilidades">
-            <div class="card"><h3>🌲 Árvore de Habilidades</h3><p>Pontos: <strong id="skillPointsDisplay">0</strong></p><div id="skillsTree" class="skill-tree"></div></div>
-        </div>
-
-        <!-- CONQUISTAS -->
-        <div class="view" id="viewConquistas"><div class="card"><h3>🏅 Conquistas</h3><div id="achievementsList"></div></div></div>
-
-        <!-- CHAT GLOBAL -->
-        <div class="view" id="viewChatGlobal">
-            <div class="card"><h3><i class="fas fa-globe"></i> Mural Global</h3><div id="globalMural" class="mural-horizontal"></div><input id="msgGlobal" placeholder="Sua mensagem..."><button class="btn btn-primary" id="globalMsgBtn">Enviar</button></div>
-        </div>
-
-        <!-- CHAT PRIVADO -->
-        <div class="view" id="viewChatPrivado">
-            <div class="card"><h3><i class="fas fa-lock"></i> Chat Privado</h3><select id="destinatarioSelect"></select><div id="privateChatArea" style="max-height:300px; overflow-y:auto;"></div><input id="msgPrivada" placeholder="Mensagem"><button class="btn btn-primary" id="privMsgBtn">Enviar</button></div>
-        </div>
-
-        <!-- BRINDES -->
-        <div class="view" id="viewBrindes"><div class="card"><h3>🎁 Kit Alimentos</h3><button class="btn btn-primary" onclick="trocarIngressoPorKit()">Trocar 1 ingresso por Kit</button></div></div>
-
-        <!-- FEEDBACK -->
-        <div class="view" id="viewFeedback"><div class="card"><h3>📝 Sugestões/Reclamações</h3><textarea id="feedbackMsg" rows="3"></textarea><button class="btn btn-primary" id="feedbackBtn">Enviar</button><div id="meusFeedbacks"></div></div></div>
-
-        <!-- GALERIA -->
-        <div class="view" id="viewGallery"><div class="card"><h3>📸 Galeria</h3><div id="galleryContainer" class="gallery"></div><button class="btn btn-outline btn-sm" id="addGalleryBtn">Adicionar Foto</button></div></div>
-
-        <!-- ADMIN -->
-        <div class="view" id="viewAdmin">
-            <div class="card"><h3>👑 Conselho + Assistente Financeiro</h3>
-                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-                    <button class="btn btn-outline btn-sm" onclick="listarMembros()">Membros</button>
-                    <button class="btn btn-primary btn-sm" onclick="adminGerenciarHabilidades()">Habilidades</button>
-                    <button class="btn btn-primary btn-sm" onclick="adminGerenciarConquistas()">Conquistas</button>
-                    <button class="btn btn-primary btn-sm" onclick="adminGerenciarEventos()">Eventos</button>
-                    <button class="btn btn-success btn-sm" onclick="adminDefinirClasse()">Classe</button>
-                    <button class="btn btn-outline btn-sm" onclick="gerenciarParceiros()">Parceiros</button>
-                    <button class="btn btn-primary btn-sm" onclick="mintCreditsComValidacao()">Cunhar Tokens</button>
-                    <button class="btn btn-warning btn-sm" onclick="configurarRecompensas()">Recompensas</button>
-                    <button class="btn btn-info btn-sm" onclick="definirTaxaCambio()">Taxa Câmbio</button>
-                    <button class="btn btn-secondary btn-sm" onclick="verRelatorioFinanceiro()">Relatório</button>
-                    <button class="btn btn-outline btn-sm" onclick="verAdminLogs()">📋 Logs Admin</button>
-                </div>
-                <div id="adminList"></div>
-                <div id="parceirosAdminArea"></div>
-                <div id="habilidadesAdminArea"></div>
-                <div id="conquistasAdminArea"></div>
-                <div id="eventosArea"></div>
-                <div id="relatorioFinanceiro"></div>
-                <div id="adminLogsArea"></div>
+            <div class="card"><h3><i class="fas fa-camera"></i> Check-in</h3>
+                <p style="font-size:0.8rem; color:var(--text-muted);">Registre sua presença no ponto de encontro.</p>
+                <button class="btn btn-primary" id="checkinSimplesBtn" onclick="realizarCheckinSimples()">Registrar Check-in (+30🔥)</button>
+                <p id="checkinStatus" style="margin-top:8px; font-size:0.8rem;"></p>
             </div>
         </div>
     </div>
     <div class="bottom-nav">
-        <button class="nav-item" data-view="home" onclick="navigateTo('home')"><i class="fas fa-home"></i><span>Home</span></button>
+        <button class="nav-item active" data-view="home" onclick="navigateTo('home')"><i class="fas fa-home"></i><span>Home</span></button>
         <button class="nav-item" data-view="qr" onclick="navigateTo('qr')"><i class="fas fa-qrcode"></i><span>QR</span></button>
         <button class="nav-item" data-view="checkin" onclick="navigateTo('checkin')"><i class="fas fa-camera"></i><span>Check</span></button>
         <button class="nav-item" data-view="perfil" onclick="navigateTo('perfil')"><i class="fas fa-user"></i><span>Perfil</span></button>
-        <button class="nav-item" data-view="gallery" onclick="navigateTo('gallery')"><i class="fas fa-image"></i><span>Galeria</span></button>
     </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
 <script>
-    // ==================== FIREBASE CONFIG (REAL) ====================
+    // Configuração do Firebase (substitua pelas suas credenciais se necessário)
     const firebaseConfig = {
         apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
         authDomain: "clube-de-vantagens-d748e.firebaseapp.com",
-        databaseURL: "https://clube-de-vantagens-d748e-default-rtdb.firebaseio.com",
         projectId: "clube-de-vantagens-d748e",
         storageBucket: "clube-de-vantagens-d748e.firebasestorage.app",
         messagingSenderId: "774730191238",
-        appId: "1:774730191238:web:9af24eddfafb18f1351c07",
-        measurementId: "G-8V0WCRB0QQ"
+        appId: "1:774730191238:web:9af24eddfafb18f1351c07"
     };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
-    const analytics = firebase.analytics();
 
-    let currentUser = null, userData = {}, allSkills = [], allAchievements = [], privateListener = null;
+    let userData = null;
     let html5QrScanner = null;
-    let exchangeRate = 0.05, totalTokens = 0, reserva = 10000;
-    let loginCooldown = false;
 
-    // ========== UTILITÁRIOS ==========
+    // Toast
     function toast(msg, type='info') {
-        let c = document.getElementById('toastStack');
-        let t = document.createElement('div');
-        t.className = `toast toast-${type}`;
-        if (type === 'error') t.classList.add('toast-error');
-        if (type === 'success') t.classList.add('toast-success');
+        const stack = document.getElementById('toastStack');
+        const t = document.createElement('div');
+        t.className = `toast ${type === 'error' ? 'toast-error' : type === 'success' ? 'toast-success' : ''}`;
         t.innerText = msg;
-        c.appendChild(t);
+        stack.appendChild(t);
         setTimeout(() => t.remove(), 3000);
     }
 
-    function validateImageFile(file, maxSizeMB = 5) {
-        if (!file) return "Nenhum arquivo selecionado.";
-        if (!file.type.startsWith('image/')) return "Apenas imagens são permitidas.";
-        if (file.size > maxSizeMB * 1024 * 1024) return `Imagem muito grande (máx ${maxSizeMB}MB).`;
-        const allowed = ['jpg','jpeg','png','gif','webp','bmp'];
-        const ext = file.name.split('.').pop().toLowerCase();
-        if (!allowed.includes(ext)) return `Formato .${ext} não suportado.`;
-        return null;
-    }
+    // ========== AUTENTICAÇÃO (MVP) ==========
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+        const email = document.getElementById('emailLogin').value.trim();
+        const senha = document.getElementById('senhaLogin').value;
+        if (!email || !senha) return toast('Preencha e-mail e senha', 'error');
 
-    async function compressImage(file, maxWidth=800, quality=0.7) {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width, height = img.height;
-                    if (width > maxWidth) { height = (height * maxWidth) / width; width = maxWidth; }
-                    canvas.width = width; canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    async function uploadImageToStorage(file, path) {
-        const error = validateImageFile(file, 5);
-        if (error) throw new Error(error);
-        const blob = file.size > 100000 ? await compressImage(file, 800, 0.7) : file;
-        const ref = storage.ref().child(path);
-        await ref.put(blob);
-        return await ref.getDownloadURL();
-    }
-
-    async function sha256(str) {
-        const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    async function logAdminAction(action, details) {
-        if (!userData || userData.role !== 'admin') return;
-        await db.collection('admin_logs').add({
-            adminUid: userData.uid,
-            adminCpf: userData.cpf,
-            action,
-            details,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-    }
-
-    function setLoading(btn, isLoading) {
-        if (isLoading) {
-            btn.disabled = true;
-            btn.dataset.originalText = btn.innerHTML;
-            btn.innerHTML = '<span class="spinner"></span> Carregando...';
-        } else {
-            btn.disabled = false;
-            btn.innerHTML = btn.dataset.originalText || btn.innerHTML;
-        }
-    }
-
-    // ========== AUTENTICAÇÃO ==========
-    async function handleLogin() {
-        if (loginCooldown) return toast("Aguarde alguns segundos antes de tentar novamente", "error");
-        let input = document.getElementById('emailLogin').value.trim();
-        let pass = document.getElementById('senhaLogin').value;
-        if (!input || !pass) return toast("Preencha e-mail/CPF e senha", "error");
-        const btn = document.getElementById('loginBtn');
-        setLoading(btn, true);
-        loginCooldown = true;
         try {
-            let email = input;
-            if (/^\d+$/.test(input)) email = `${input}@cpf.irmandade.app`;
-            await auth.signInWithEmailAndPassword(email, pass);
-            toast("Login realizado com sucesso!", "success");
+            await auth.signInWithEmailAndPassword(email, senha);
+            toast('Login efetuado!', 'success');
         } catch (e) {
-            toast(e.message, "error");
-            loginCooldown = false;
+            console.error(e);
+            if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-login-credentials') {
+                toast('E-mail ou senha inválidos. Se não tiver conta, crie uma.', 'error');
+            } else if (e.code === 'auth/too-many-requests') {
+                toast('Muitas tentativas. Aguarde um pouco.', 'error');
+            } else {
+                toast(e.message, 'error');
+            }
         }
-        setLoading(btn, false);
-        setTimeout(() => { loginCooldown = false; }, 5000);
-    }
+    });
 
-    // ========== CADASTRO (com validação de CPF) ==========
-    async function handleRegister() {
-        let emailInput = document.getElementById('emailLogin').value.trim();
-        if (!emailInput || !emailInput.includes('@')) {
-            return toast("Digite um e-mail válido", "error");
-        }
-
-        let cpfBruto = prompt("Digite seu CPF (apenas números, 11 dígitos):");
-        if (!cpfBruto) return;
-        let cpfLimpo = cpfBruto.replace(/\D/g, '');
-        if (cpfLimpo.length !== 11 || !/^\d{11}$/.test(cpfLimpo)) {
-            return toast("CPF inválido. Digite exatamente 11 números.", "error");
-        }
-
-        let senha = document.getElementById('senhaLogin').value;
-        if (!senha || senha.length < 6) {
-            return toast("A senha deve ter no mínimo 6 caracteres", "error");
-        }
-
-        if (loginCooldown) {
-            return toast("Aguarde alguns segundos antes de tentar novamente", "error");
-        }
-
-        const btn = document.getElementById('registerBtn');
-        setLoading(btn, true);
-        loginCooldown = true;
+    document.getElementById('registerBtn').addEventListener('click', async () => {
+        const email = document.getElementById('emailLogin').value.trim();
+        const senha = document.getElementById('senhaLogin').value;
+        if (!email || !senha) return toast('Digite e-mail e senha para criar conta', 'error');
+        if (senha.length < 6) return toast('Senha deve ter ao menos 6 caracteres', 'error');
 
         try {
-            const cpfQuery = await db.collection('users')
-                .where('cpf', '==', cpfLimpo)
-                .limit(1)
-                .get();
-            if (!cpfQuery.empty) {
-                throw new Error("CPF já cadastrado no sistema.");
-            }
-
-            const userCredential = await auth.createUserWithEmailAndPassword(emailInput, senha);
-            const user = userCredential.user;
-
-            const usersSnap = await db.collection('users').limit(1).get();
-            const isFirst = usersSnap.empty;
-
-            await db.collection('users').doc(user.uid).set({
-                email: emailInput,
-                cpf: cpfLimpo,
-                credits: isFirst ? 500 : 0,
+            const cred = await auth.createUserWithEmailAndPassword(email, senha);
+            // Cria documento do usuário no Firestore
+            await db.collection('users').doc(cred.user.uid).set({
+                email: email,
+                credits: 0,
                 trust: 0,
-                role: isFirst ? 'admin' : 'user',
+                role: 'user',
                 status: 'adimplente',
-                perfil: { nome: emailInput.split('@')[0] },
+                perfil: { nome: email.split('@')[0] },
                 tickets: 0,
-                skillPoints: isFirst ? 10 : 0,
                 plano: 0,
-                habilidades: [],
-                conquistas: [],
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
-
-            toast("Conta criada com sucesso! Faça login.", "success");
-        } catch (error) {
-            console.error("Erro no cadastro:", error);
-            if (error.code === 'auth/email-already-in-use') {
-                toast("Este e-mail já está em uso.", "error");
-            } else if (error.code === 'auth/weak-password') {
-                toast("Senha muito fraca. Use ao menos 6 caracteres.", "error");
-            } else if (error.code === 'auth/invalid-email') {
-                toast("Formato de e-mail inválido.", "error");
+            toast('Conta criada! Faça login.', 'success');
+        } catch (e) {
+            console.error(e);
+            if (e.code === 'auth/email-already-in-use') {
+                toast('Este e-mail já está cadastrado.', 'error');
+            } else if (e.code === 'auth/weak-password') {
+                toast('Senha muito fraca (mínimo 6 caracteres).', 'error');
             } else {
-                toast(error.message || "Erro ao criar conta.", "error");
+                toast(e.message, 'error');
             }
         }
+    });
 
-        setLoading(btn, false);
-        setTimeout(() => { loginCooldown = false; }, 5000);
-    }
+    document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
+        const email = document.getElementById('emailLogin').value.trim();
+        if (!email) return toast('Digite seu e-mail para recuperar a senha', 'error');
+        try {
+            await auth.sendPasswordResetEmail(email);
+            toast(`Link de recuperação enviado para ${email}`, 'success');
+        } catch (e) {
+            toast(e.message, 'error');
+        }
+    });
 
-    window.logout = () => { auth.signOut(); };
+    window.logout = () => auth.signOut();
 
-    // ========== onAuthStateChanged ==========
+    // ========== ESTADO DA AUTENTICAÇÃO ==========
     auth.onAuthStateChanged(async (user) => {
         if (user) {
             document.getElementById('loadingData').style.display = 'flex';
             try {
-                const userRef = db.collection('users').doc(user.uid);
-                let docSnap = await userRef.get();
+                const docSnap = await db.collection('users').doc(user.uid).get();
                 if (!docSnap.exists) {
-                    const isFirst = (await db.collection('users').limit(1).get()).empty;
-                    await userRef.set({
+                    // Cria doc mínimo caso não exista (ex.: primeiro acesso)
+                    await db.collection('users').doc(user.uid).set({
                         email: user.email,
-                        cpf: user.email.includes('@cpf.irmandade.app') ? user.email.split('@')[0] : '',
-                        credits: isFirst ? 500 : 0,
+                        credits: 0,
                         trust: 0,
-                        role: isFirst ? 'admin' : 'user',
+                        role: 'user',
                         status: 'adimplente',
                         perfil: { nome: user.email.split('@')[0] },
                         tickets: 0,
-                        skillPoints: isFirst ? 10 : 0,
                         plano: 0,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    docSnap = await userRef.get();
+                    const newDoc = await db.collection('users').doc(user.uid).get();
+                    userData = { uid: user.uid, ...newDoc.data() };
+                } else {
+                    userData = { uid: user.uid, ...docSnap.data() };
                 }
-                userData = { uid: user.uid, ...docSnap.data() };
                 document.getElementById('loadingData').style.display = 'none';
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('app').style.display = 'flex';
-                renderUI();
-                carregarMuralGlobal();
-                carregarDestinatarios();
-                carregarMeusFeedbacks();
+                atualizarUI();
             } catch (err) {
                 console.error(err);
-                toast("Erro ao acessar seus dados. Verifique as regras do Firestore.", "error");
-                document.getElementById('loadingData').style.display = 'none';
-                auth.signOut();
+                // Se o erro for de permissão no Firestore, ainda permite acesso básico
+                if (err.code === 'permission-denied') {
+                    toast('Aviso: permissões do Firestore precisam ser ajustadas. Usando modo offline.', 'error');
+                    userData = {
+                        uid: user.uid,
+                        email: user.email,
+                        credits: 0,
+                        trust: 0,
+                        role: 'user',
+                        status: 'adimplente',
+                        perfil: { nome: user.email.split('@')[0] },
+                        tickets: 0,
+                        plano: 0
+                    };
+                    document.getElementById('loadingData').style.display = 'none';
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('app').style.display = 'flex';
+                    atualizarUI();
+                } else {
+                    toast('Erro ao carregar dados. Tente novamente.', 'error');
+                    document.getElementById('loadingData').style.display = 'none';
+                }
             }
         } else {
+            userData = null;
             document.getElementById('loginOverlay').style.display = 'flex';
             document.getElementById('app').style.display = 'none';
             document.getElementById('loadingData').style.display = 'none';
         }
     });
 
-    // ========== RENDER PRINCIPAL ==========
-    async function renderUI() {
+    // ========== ATUALIZAR INTERFACE ==========
+    function atualizarUI() {
         if (!userData) return;
         document.getElementById('creditsAmount').innerText = userData.credits || 0;
         document.getElementById('bigCredits').innerText = userData.credits || 0;
         document.getElementById('ticketAmount').innerText = userData.tickets || 0;
         document.getElementById('trustScore').innerText = userData.trust || 0;
-        document.getElementById('skillPointsDisplay').innerText = userData.skillPoints || 0;
         const planos = ['Associado', 'Bronze', 'Prata', 'Ouro', 'Platina', 'Diamante'];
         document.getElementById('planBadge').innerText = planos[userData.plano || 0];
         document.getElementById('statusBadge').innerHTML = userData.status === 'adimplente' ? '✅ Adimplente' : '⚠️ Inadimplente';
-        document.getElementById('adminBtn').style.display = userData.role === 'admin' ? 'inline-flex' : 'none';
-        if (userData.perfil?.fotoURL) {
-            const preview = document.getElementById('profilePicPreview');
-            if (preview) preview.innerHTML = `<img src="${userData.perfil.fotoURL}" style="width:100%;height:100%;object-fit:cover;">`;
+
+        if (userData.perfil) {
+            document.getElementById('perfilNome').value = userData.perfil.nome || '';
+            document.getElementById('perfilMoto').value = userData.perfil.moto || '';
+            document.getElementById('perfilPlaca').value = userData.perfil.placa || '';
         }
-        carregarMissoes(); carregarRanking(); carregarSorteios(); carregarCheckins(); carregarGaleria(); carregarParceiros(); carregarHabilidades(); carregarConquistas();
     }
 
-    async function addCredits(amt, xp = 0) {
-        if (!userData.uid) return;
-        await db.collection('users').doc(userData.uid).update({
-            credits: firebase.firestore.FieldValue.increment(amt),
-            trust: firebase.firestore.FieldValue.increment(xp)
-        });
-    }
+    // ========== CHECK-IN SIMPLES (sem geolocalização) ==========
+    window.realizarCheckinSimples = async () => {
+        if (!userData) return toast('Faça login primeiro', 'error');
+        try {
+            await db.collection('checkins').add({
+                userId: userData.uid,
+                data: new Date(),
+                tipo: 'simples'
+            });
+            await db.collection('users').doc(userData.uid).update({
+                credits: firebase.firestore.FieldValue.increment(30),
+                trust: firebase.firestore.FieldValue.increment(10)
+            });
+            userData.credits += 30;
+            userData.trust += 10;
+            atualizarUI();
+            document.getElementById('checkinStatus').innerText = '✅ Check-in registrado! +30🔥';
+            toast('Check-in realizado!', 'success');
+        } catch (e) {
+            console.error(e);
+            if (e.code === 'permission-denied') {
+                toast('Sem permissão para escrever no Firestore. Verifique as regras.', 'error');
+            } else {
+                toast('Erro ao registrar check-in.', 'error');
+            }
+        }
+    };
 
     // ========== PERFIL ==========
-    async function salvarPerfil() {
-        let perfil = {
+    window.salvarPerfil = async () => {
+        if (!userData) return toast('Faça login primeiro', 'error');
+        const perfil = {
             nome: document.getElementById('perfilNome').value,
-            idade: parseInt(document.getElementById('perfilIdade').value) || 0,
-            habilitado: document.getElementById('perfilHabilitado').value,
             moto: document.getElementById('perfilMoto').value,
             placa: document.getElementById('perfilPlaca').value
         };
-        await db.collection('users').doc(userData.uid).update({ perfil });
-        toast("Perfil salvo", "success");
-    }
-
-    document.getElementById('uploadProfileBtn')?.addEventListener('click', () => document.getElementById('profilePicInput').click());
-    document.getElementById('profilePicInput')?.addEventListener('change', async (e) => {
-        let file = e.target.files[0];
-        if (!file) return;
-        const btn = document.getElementById('uploadProfileBtn');
-        setLoading(btn, true);
         try {
-            const url = await uploadImageToStorage(file, `profile/${userData.uid}/${Date.now()}.jpg`);
-            await db.collection('users').doc(userData.uid).update({ 'perfil.fotoURL': url });
-            toast("Foto atualizada!", "success");
-            renderUI();
-        } catch (err) { toast(err.message, "error"); }
-        setLoading(btn, false);
-    });
+            await db.collection('users').doc(userData.uid).update({ perfil });
+            userData.perfil = perfil;
+            toast('Perfil salvo!', 'success');
+        } catch (e) {
+            toast('Erro ao salvar perfil.', 'error');
+        }
+    };
 
     // ========== QR CODE ==========
-    const HMAC_KEY = "IRMANDADE_SECRET_KEY_2024";
-    async function generateSecureQRData(uid) {
-        const nonce = Date.now().toString() + Math.random().toString(36);
-        const timestamp = Date.now();
-        const expiresAt = timestamp + 5 * 60 * 1000;
-        const sign = await hmac(`${uid}:${timestamp}:${nonce}`, HMAC_KEY);
-        return JSON.stringify({ uid, timestamp, nonce, expiresAt, version: '2.0', sign });
-    }
-    async function hmac(msg, key) {
-        const enc = new TextEncoder();
-        const k = await crypto.subtle.importKey('raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-        const sig = await crypto.subtle.sign('HMAC', k, enc.encode(msg));
-        return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-    async function validateQRData(str) {
-        try {
-            const data = JSON.parse(str);
-            if (!data.expiresAt || Date.now() > data.expiresAt) return { valid: false, reason: 'QR expirado.' };
-            const expected = await hmac(`${data.uid}:${data.timestamp}:${data.nonce}`, HMAC_KEY);
-            if (data.sign !== expected) return { valid: false, reason: 'Assinatura inválida.' };
-            const used = await db.collection('usedQrHashes').doc(str.substring(0, 64)).get();
-            if (used.exists) return { valid: false, reason: 'QR já utilizado.' };
-            await db.collection('usedQrHashes').doc(str.substring(0, 64)).set({ usedAt: new Date() });
-            return { valid: true, uid: data.uid };
-        } catch(e) { return { valid: false, reason: 'Formato inválido.' }; }
-    }
-    window.generateQR = async () => {
-        const qrDiv = document.getElementById('qrContainer');
-        qrDiv.innerHTML = '';
-        if (!userData.uid) return toast("Faça login primeiro.", "error");
-        const qrData = await generateSecureQRData(userData.uid);
-        new QRCode(qrDiv, { text: qrData, width: 180, height: 180, colorDark: '#e06c2e', colorLight: '#ffffff' });
-        toast("QR gerado! Válido por 5 minutos.", "success");
+    window.gerarQR = () => {
+        const container = document.getElementById('qrContainer');
+        container.innerHTML = '';
+        if (!userData) return toast('Faça login primeiro', 'error');
+        // Gera QR simples com UID
+        new QRCode(container, {
+            text: userData.uid,
+            width: 180,
+            height: 180,
+            colorDark: '#e06c2e',
+            colorLight: '#ffffff'
+        });
+        toast('QR gerado!', 'success');
     };
-    window.startScanner = () => {
-        if (!userData.uid) return toast("Faça login primeiro.", "error");
+
+    // ========== SCANNER ==========
+    document.getElementById('btnStartScanner').addEventListener('click', () => {
+        if (!userData) return toast('Faça login primeiro', 'error');
         document.getElementById('btnStartScanner').style.display = 'none';
         document.getElementById('btnStopScanner').style.display = '';
         html5QrScanner = new Html5Qrcode("reader");
-        html5QrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } },
-            async (text) => { await processScannedQR(text); stopScanner(); },
+        html5QrScanner.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            (text) => {
+                toast(`QR lido: ${text.substring(0,15)}...`, 'success');
+                stopScanner();
+            },
             () => {}
-        ).catch(() => { stopScanner(); toast("Erro na câmera.", "error"); });
-    };
-    window.stopScanner = () => {
-        if (html5QrScanner) { html5QrScanner.stop().catch(()=>{}); html5QrScanner = null; }
+        ).catch(() => {
+            stopScanner();
+            toast('Erro ao acessar a câmera.', 'error');
+        });
+    });
+
+    document.getElementById('btnStopScanner').addEventListener('click', stopScanner);
+    function stopScanner() {
+        if (html5QrScanner) {
+            html5QrScanner.stop().catch(() => {});
+            html5QrScanner = null;
+        }
         document.getElementById('btnStartScanner').style.display = '';
         document.getElementById('btnStopScanner').style.display = 'none';
-    };
-    async function processScannedQR(text) {
-        const result = await validateQRData(text);
-        if (!result.valid) return toast("QR inválido: " + result.reason, "error");
-        if (result.uid === userData.uid) return toast("Você não pode escanear seu próprio QR.", "error");
-        const earned = 50 + Math.floor(Math.random() * 30);
-        await addCredits(earned, Math.floor(earned * 0.4));
-        toast(`✅ QR validado! +${earned} créditos`, "success");
     }
-
-    // ========== CHECK-IN (com tratamento de permissão) ==========
-    async function realizarCheckin() {
-        let partnerId = document.getElementById('checkinPartnerSelect').value;
-        let fotoFile = document.getElementById('checkinFoto').files[0];
-        if (!partnerId || !fotoFile) return toast("Selecione parceiro e foto", "error");
-        const btn = document.getElementById('checkinBtn');
-        setLoading(btn, true);
-        try {
-            const error = validateImageFile(fotoFile, 5);
-            if (error) { toast(error, "error"); setLoading(btn, false); return; }
-
-            // Verifica permissão de localização antes de solicitar
-            let pos;
-            try {
-                pos = await new Promise((res, rej) => {
-                    navigator.geolocation.getCurrentPosition(res, rej, { timeout: 10000 });
-                });
-            } catch (geoError) {
-                toast("Permissão de localização negada. Ative o GPS para check-in.", "error");
-                setLoading(btn, false);
-                return;
-            }
-
-            const url = await uploadImageToStorage(fotoFile, `checkins/${userData.uid}/${Date.now()}.jpg`);
-            const hash = await sha256(url);
-            let exist = await db.collection('checkins').where('hash', '==', hash).get();
-            if (!exist.empty) { toast("Foto duplicada! Fraude", 'error'); setLoading(btn, false); return; }
-            await db.collection('checkins').add({
-                userId: userData.uid, partnerId, imageUrl: url, lat: pos.coords.latitude,
-                lng: pos.coords.longitude, hash, data: new Date()
-            });
-            await addCredits(30, 10);
-            toast("Check-in +30🔥", 'success');
-            carregarCheckins();
-            document.getElementById('checkinFoto').value = '';
-        } catch (err) { toast(err.message, "error"); }
-        setLoading(btn, false);
-    }
-
-    async function carregarCheckins() {
-        let snap = await db.collection('checkins').where('userId', '==', userData.uid).orderBy('data', 'desc').limit(20).get();
-        let lista = snap.docs.map(d => d.data());
-        document.getElementById('meusCheckinsList').innerHTML = lista.map(c => `<div class="card"><img src="${c.imageUrl}" style="width:100%;max-height:150px;object-fit:cover;border-radius:12px;"><div>${new Date(c.data.toDate()).toLocaleString()}</div></div>`).join('');
-    }
-
-    // ========== NOTA FISCAL ==========
-    async function enviarNF() {
-        let valor = parseFloat(document.getElementById('valorNF').value);
-        let fotoFile = document.getElementById('nfFoto').files[0];
-        if (!valor || !fotoFile) return toast("Preencha valor e foto", "error");
-        const btn = document.getElementById('nfBtn');
-        setLoading(btn, true);
-        try {
-            const error = validateImageFile(fotoFile, 5);
-            if (error) { toast(error, "error"); setLoading(btn, false); return; }
-            const url = await uploadImageToStorage(fotoFile, `notas/${userData.uid}/${Date.now()}.jpg`);
-            const hash = await sha256(url);
-            let exist = await db.collection('notas').where('hash', '==', hash).get();
-            if (!exist.empty) { toast("Nota já utilizada!", 'error'); setLoading(btn, false); return; }
-            let cred = Math.floor(valor * 10);
-            await db.collection('notas').add({ userId: userData.uid, valor, imageUrl: url, hash, data: new Date() });
-            await addCredits(cred, cred * 0.3);
-            toast(`Nota válida! +${cred}🔥`, 'success');
-            document.getElementById('nfFoto').value = '';
-            document.getElementById('valorNF').value = '';
-        } catch (err) { toast(err.message, "error"); }
-        setLoading(btn, false);
-    }
-
-    // ========== PARCEIROS ==========
-    async function carregarParceiros() {
-        let snap = await db.collection('partners').get();
-        let partners = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        let html = partners.map(p => `<div class="card"><strong>${p.name}</strong> - ${p.category}<br>💰 ${p.price || 10}🔥<button class="btn btn-primary btn-sm" onclick="pagarParceiro('${p.id}',${p.price || 10})">Pagar</button></div>`).join('');
-        document.getElementById('partnersList').innerHTML = html;
-        let select = document.getElementById('checkinPartnerSelect');
-        if (select) select.innerHTML = partners.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
-    }
-    window.pagarParceiro = async (id, custo) => {
-        if ((userData.credits || 0) < custo) return toast("Saldo insuficiente", "error");
-        await db.collection('users').doc(userData.uid).update({ credits: firebase.firestore.FieldValue.increment(-custo) });
-        toast(`Pagamento de ${custo} tokens realizado!`, "success");
-    };
-
-    // ========== MISSÕES ==========
-    let missions = [{ id: 'm1', title: 'Visitar Parceiro', reward: 40 }, { id: 'm2', title: 'Nota Fiscal', reward: 30 }, { id: 'm3', title: 'Check-in', reward: 25 }];
-    function carregarMissoes() { document.getElementById('missionsList').innerHTML = missions.map(m => `<div class="card"><div>${m.title}</div><div>+${m.reward}🔥</div><button class="btn btn-primary btn-sm" onclick="cumprirMissao('${m.id}')">Cumprir</button></div>`).join(''); }
-    window.cumprirMissao = async (id) => { let m = missions.find(i => i.id === id); if (m) { await addCredits(m.reward, m.reward * 0.3); toast(`Missão ${m.title} concluída!`, "success"); } };
-
-    // ========== RANKING ==========
-    async function carregarRanking() { let snap = await db.collection('users').orderBy('trust', 'desc').limit(30).get(); let lista = snap.docs.map(d => d.data()); document.getElementById('rankingList').innerHTML = lista.map((u, i) => `<div>${i+1}. ${u.perfil?.nome || u.cpf} - 🔥${u.credits || 0}</div>`).join(''); }
-
-    // ========== SORTEIOS ==========
-    async function comprarTicket() { if ((userData.credits||0) < 50) return toast("Tokens insuficientes", "error"); await db.collection('users').doc(userData.uid).update({ credits: firebase.firestore.FieldValue.increment(-50), tickets: firebase.firestore.FieldValue.increment(1) }); toast("Ingresso comprado!", "success"); }
-    async function carregarSorteios() { let snap = await db.collection('sorteios').get(); let lista = snap.docs.map(d => d.data()); document.getElementById('sorteiosList').innerHTML = lista.map(s => `<div>🎲 ${s.nome} - Prêmio: ${s.premio}</div>`).join('') || '<p>Nenhum sorteio ativo</p>'; document.getElementById('meusTickets').innerHTML = `🎟️ Seus ingressos: ${userData.tickets || 0}`; }
-
-    // ========== GALERIA ==========
-    async function carregarGaleria() { let snap = await db.collection('galeria').orderBy('data', 'desc').limit(30).get(); let fotos = snap.docs.map(d => d.data()); document.getElementById('galleryContainer').innerHTML = fotos.map(f => `<div class="gallery-item"><img src="${f.imageUrl}"></div>`).join(''); }
-    document.getElementById('addGalleryBtn')?.addEventListener('click', () => { let input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.onchange = async (e) => { let file = e.target.files[0]; if (!file) return; const error = validateImageFile(file, 5); if (error) return toast(error, "error"); const url = await uploadImageToStorage(file, `galeria/${userData.uid}/${Date.now()}.jpg`); await db.collection('galeria').add({ userId: userData.uid, imageUrl: url, data: new Date() }); carregarGaleria(); toast("Foto adicionada!", "success"); }; input.click(); });
-
-    // ========== HABILIDADES ==========
-    async function carregarHabilidades() { let snap = await db.collection('skills').get(); if (snap.empty) { await db.collection('skills').doc('skill1').set({ id: 'skill1', name: 'Visão de Águia', desc: '+10% scans', cost: 2 }); snap = await db.collection('skills').get(); } allSkills = snap.docs.map(d => d.data()); let userSkills = userData.habilidades || []; document.getElementById('skillsTree').innerHTML = allSkills.map(s => `<div class="skill-card ${userSkills.includes(s.id)?'unlocked':''}" onclick="comprarHabilidade('${s.id}')"><strong>${s.name}</strong><br>${s.desc}<br>Custo: ${s.cost} pts</div>`).join(''); }
-    window.comprarHabilidade = async (id) => { let skill = allSkills.find(s => s.id === id); if (!skill) return; if ((userData.skillPoints||0) < skill.cost) return toast("Pontos insuficientes", "error"); if ((userData.habilidades||[]).includes(id)) return toast("Já possui", "error"); await db.collection('users').doc(userData.uid).update({ habilidades: firebase.firestore.FieldValue.arrayUnion(id), skillPoints: firebase.firestore.FieldValue.increment(-skill.cost) }); toast(`Habilidade ${skill.name} adquirida!`, "success"); carregarHabilidades(); };
-
-    // ========== CONQUISTAS ==========
-    async function carregarConquistas() { let snap = await db.collection('achievements').get(); if (snap.empty) { await db.collection('achievements').doc('ach1').set({ id: 'ach1', name: 'Primeiro Scan', desc: 'Escanear 1 QR' }); snap = await db.collection('achievements').get(); } allAchievements = snap.docs.map(d => d.data()); let userAch = userData.conquistas || []; document.getElementById('achievementsList').innerHTML = allAchievements.map(a => `<span class="badge-medal">${a.name} ${userAch.includes(a.id)?'🏅':'🔒'}</span>`).join(''); }
-
-    // ========== CHAT GLOBAL ==========
-    function getTempoGlobal() { let p = userData.plano || 0; if (p >= 5) return 120000; if (p >= 4) return 45000; return null; }
-    window.enviarMensagemGlobal = async () => { let tempo = getTempoGlobal(); if (!tempo) return toast("Seu plano não pode postar no mural", "error"); let msg = document.getElementById('msgGlobal').value; if (!msg.trim()) return; await db.collection('globalChat').add({ uid: userData.uid, nome: userData.perfil?.nome || userData.cpf, texto: msg, expira: Date.now() + tempo, data: new Date() }); document.getElementById('msgGlobal').value = ''; };
-    function carregarMuralGlobal() { db.collection('globalChat').where('expira', '>', Date.now()).orderBy('data', 'desc').onSnapshot(snap => { let msgs = snap.docs.map(d => d.data()); document.getElementById('globalMural').innerHTML = msgs.map(m => `<div class="mural-item"><strong>${m.nome}</strong>: ${m.texto}</div>`).join(''); }); }
-
-    // ========== CHAT PRIVADO ==========
-    async function derivarChave(u1, u2) { let seed = u1 < u2 ? u1+u2 : u2+u1; return await crypto.subtle.digest('SHA-256', new TextEncoder().encode(seed)); }
-    async function criptografar(texto, chave) { let iv = crypto.getRandomValues(new Uint8Array(12)); let enc = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, chave, new TextEncoder().encode(texto)); return { ciphertext: Array.from(new Uint8Array(enc)), iv: Array.from(iv) }; }
-    async function descriptografar(obj, chave) { let dec = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: new Uint8Array(obj.iv) }, chave, new Uint8Array(obj.ciphertext)); return new TextDecoder().decode(dec); }
-    window.enviarMensagemPrivada = async () => { let dest = document.getElementById('destinatarioSelect').value; if (!dest) return; let msg = document.getElementById('msgPrivada').value; if (!msg.trim()) return; let chave = await derivarChave(userData.uid, dest); let encrypted = await criptografar(msg, chave); await db.collection('privateChat').add({ from: userData.uid, to: dest, encrypted, timestamp: Date.now() }); document.getElementById('msgPrivada').value = ''; };
-    async function carregarChatPrivado(dest) { if (privateListener) privateListener(); privateListener = db.collection('privateChat').where('from', 'in', [[userData.uid, dest], [dest, userData.uid]]).orderBy('timestamp').onSnapshot(async snap => { let chave = await derivarChave(userData.uid, dest); let msgs = []; for (let doc of snap.docs) { let d = doc.data(); try { let texto = await descriptografar(d.encrypted, chave); msgs.push({ from: d.from, texto, timestamp: d.timestamp }); } catch (e) {} } document.getElementById('privateChatArea').innerHTML = msgs.map(m => `<div class="chat-message ${m.from===userData.uid?'self':''}"><strong>${m.from===userData.uid?'Você':dest}</strong>: ${m.texto}<br><small>${new Date(m.timestamp).toLocaleTimeString()}</small></div>`).join(''); }); }
-    async function carregarDestinatarios() { let snap = await db.collection('users').get(); let membros = snap.docs.filter(d => d.id !== userData.uid).map(d => ({ id: d.id, nome: d.data().perfil?.nome || d.data().cpf })); let sel = document.getElementById('destinatarioSelect'); if (sel) sel.innerHTML = membros.map(m => `<option value="${m.id}">${m.nome}</option>`).join(''); if (membros.length) carregarChatPrivado(membros[0].id); }
-
-    // ========== BRINDES ==========
-    window.trocarIngressoPorKit = async () => { if ((userData.tickets||0) < 1) return toast("Sem ingressos", "error"); await db.collection('users').doc(userData.uid).update({ tickets: firebase.firestore.FieldValue.increment(-1) }); toast("Kit alimentos solicitado!", "success"); };
-
-    // ========== FEEDBACK ==========
-    window.enviarFeedback = async () => { let msg = document.getElementById('feedbackMsg').value; if (!msg.trim()) return; await db.collection('feedbacks').add({ userId: userData.uid, nome: userData.perfil?.nome || userData.cpf, mensagem: msg, data: new Date() }); toast("Feedback enviado", "success"); document.getElementById('feedbackMsg').value = ''; carregarMeusFeedbacks(); };
-    async function carregarMeusFeedbacks() { let snap = await db.collection('feedbacks').where('userId', '==', userData.uid).orderBy('data', 'desc').get(); let lista = snap.docs.map(d => d.data()); document.getElementById('meusFeedbacks').innerHTML = lista.map(f => `<div class="chat-message">${new Date(f.data.toDate()).toLocaleString()}<br>${f.mensagem}</div>`).join(''); }
-
-    // ========== ADMIN ==========
-    window.listarMembros = async () => { let snap = await db.collection('users').limit(30).get(); let lista = snap.docs.map(d => ({ id: d.id, ...d.data() })); document.getElementById('adminList').innerHTML = lista.map(m => `<div>📧 ${m.email} (CPF: ${m.cpf}) - 🔥${m.credits || 0} <button onclick="darCreditos('${m.id}', 100)">+100</button> <button class="btn-danger" onclick="darCreditos('${m.id}', -100)">-100</button></div>`).join(''); };
-    window.darCreditos = async (uid, amount) => { await db.collection('users').doc(uid).update({ credits: firebase.firestore.FieldValue.increment(amount) }); toast(`${amount>0?'Adicionado':'Removido'} ${Math.abs(amount)} tokens`, "success"); listarMembros(); };
-    window.adminGerenciarHabilidades = () => { document.getElementById('habilidadesAdminArea').innerHTML = `<input id="skillName" placeholder="Nome"><input id="skillCost" placeholder="Custo"><button onclick="criarHabilidade()">Criar</button><div id="listaSkillsAdmin"></div>`; };
-    window.mintCreditsComValidacao = async () => { let email = prompt("E-mail do usuário:"); let amt = parseInt(prompt("Tokens (máx 1000):")); if (amt > 1000) return toast("Máx 1000"); let q = await db.collection('users').where('email', '==', email).get(); if (!q.empty) await q.docs[0].ref.update({ credits: firebase.firestore.FieldValue.increment(amt) }); toast(`+${amt} tokens para ${email}`, "success"); };
-    window.configurarRecompensas = () => toast("Função em desenvolvimento");
-    window.definirTaxaCambio = () => { let nova = parseFloat(prompt("Nova taxa (1 token = ?)")); if (!isNaN(nova)) exchangeRate = nova; toast(`Taxa alterada para ${nova}`); };
-    window.verRelatorioFinanceiro = () => { document.getElementById('relatorioFinanceiro').innerHTML = `<div class="card">Reserva: ${reserva} tokens | Circulação: ${totalTokens}</div>`; };
-    window.verAdminLogs = async () => { let snap = await db.collection('admin_logs').orderBy('timestamp', 'desc').limit(50).get(); let logs = snap.docs.map(d => d.data()); document.getElementById('adminLogsArea').innerHTML = `<h4>Últimas ações</h4>${logs.map(l => `<div class="admin-log">${l.action} - ${JSON.stringify(l.details)} - ${l.timestamp?.toDate().toLocaleString()}</div>`).join('')}`; };
-    window.adminGerenciarConquistas = () => { document.getElementById('conquistasAdminArea').innerHTML = `<input id="achName" placeholder="Nome"><button onclick="criarConquista()">Criar</button><div id="listaConquistasAdmin"></div>`; };
-    window.adminGerenciarEventos = () => { document.getElementById('eventosArea').innerHTML = `<input id="eventName" placeholder="Nome"><input id="eventMult" placeholder="Multiplicador"><input type="datetime-local" id="eventEnd"><button onclick="criarEvento()">Criar</button><div id="listaEventos"></div>`; };
-    window.adminDefinirClasse = async () => { let email = prompt("E-mail do usuário:"); let classe = prompt("Nova classe:"); if (email && classe) { let q = await db.collection('users').where('email', '==', email).get(); if (!q.empty) await q.docs[0].ref.update({ classe }); toast(`Classe alterada para ${classe}`); } };
-    window.gerenciarParceiros = () => { document.getElementById('parceirosAdminArea').innerHTML = `<input id="parNome" placeholder="Nome"><input id="parCat" placeholder="Categoria"><input id="parPrice" placeholder="Preço"><button onclick="criarParceiroAdmin()">Criar</button><div id="listaParceirosAdmin"></div>`; };
-    window.criarHabilidade = async () => { let name = document.getElementById('skillName').value, cost = parseInt(document.getElementById('skillCost').value); let id = Date.now().toString(); await db.collection('skills').doc(id).set({ id, name, desc: "Personalizada", cost }); toast("Habilidade criada"); adminGerenciarHabilidades(); };
-    window.criarConquista = async () => { let name = document.getElementById('achName').value; let id = Date.now().toString(); await db.collection('achievements').doc(id).set({ id, name, desc: "Nova conquista" }); toast("Conquista criada"); adminGerenciarConquistas(); };
-    window.criarEvento = async () => { let name = document.getElementById('eventName').value, mult = parseFloat(document.getElementById('eventMult').value), end = new Date(document.getElementById('eventEnd').value).getTime(); let id = Date.now().toString(); await db.collection('events').doc(id).set({ id, name, multiplier: mult, endDate: end }); toast("Evento criado"); adminGerenciarEventos(); };
-    window.criarParceiroAdmin = async () => { let name = document.getElementById('parNome').value, cat = document.getElementById('parCat').value, price = parseInt(document.getElementById('parPrice').value); let id = Date.now().toString(); await db.collection('partners').doc(id).set({ id, name, category: cat, price }); toast("Parceiro criado"); gerenciarParceiros(); };
 
     // ========== NAVEGAÇÃO ==========
-    function navigateTo(view) {
+    window.navigateTo = (view) => {
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        const viewId = `view${view.charAt(0).toUpperCase() + view.slice(1)}`;
-        const el = document.getElementById(viewId);
-        if (el) el.classList.add('active');
+        document.getElementById(`view${view.charAt(0).toUpperCase() + view.slice(1)}`).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-        let btn = document.querySelector(`.nav-item[data-view="${view}"]`);
+        const btn = document.querySelector(`.nav-item[data-view="${view}"]`);
         if (btn) btn.classList.add('active');
-        if (view === 'admin' && userData.role === 'admin') listarMembros();
-        if (view === 'chatPrivado') carregarDestinatarios();
         if (view === 'scanner') stopScanner();
-    }
-    window.navigateTo = navigateTo;
-
-    // ========== TEMAS ==========
-    window.mudarCorTema = (cor) => { document.documentElement.style.setProperty('--ember', cor); document.documentElement.style.setProperty('--ember-bright', cor); };
-    window.toggleDark = () => { document.body.style.background = document.body.style.background === '#050302' ? '#1a120c' : '#050302'; };
-
-    // ========== EVENT LISTENERS ==========
-    document.getElementById('loginBtn').onclick = handleLogin;
-    document.getElementById('registerBtn').onclick = handleRegister;
-    document.getElementById('checkinBtn').onclick = realizarCheckin;
-    document.getElementById('nfBtn').onclick = enviarNF;
-    document.getElementById('globalMsgBtn').onclick = enviarMensagemGlobal;
-    document.getElementById('privMsgBtn').onclick = enviarMensagemPrivada;
-    document.getElementById('feedbackBtn').onclick = enviarFeedback;
-    document.getElementById('btnStartScanner').onclick = startScanner;
-    document.getElementById('btnStopScanner').onclick = stopScanner;
-    document.getElementById('forgotPasswordBtn').onclick = () => document.getElementById('recoveryModal').style.display = 'flex';
-    document.getElementById('closeRecoveryModal').onclick = () => document.getElementById('recoveryModal').style.display = 'none';
-    document.getElementById('sendEmailResetBtn').onclick = async () => {
-        let email = document.getElementById('recoveryEmail').value;
-        if (!email) return toast("Digite o e-mail");
-        await auth.sendPasswordResetEmail(email);
-        toast("Link enviado para " + email, "success");
-        document.getElementById('recoveryModal').style.display = 'none';
     };
 
-    // Remove Service Workers antigos para evitar conflitos de cache/PWA
+    // Remove service workers antigos para evitar conflitos
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(registrations => {
-            for (let reg of registrations) reg.unregister();
-        });
+        navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
     }
 </script>
 </body>
