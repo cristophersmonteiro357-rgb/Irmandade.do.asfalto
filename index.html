@@ -1,476 +1,75 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Irmandade do Asfalto</title>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
-    <!-- Firebase SDKs (compat) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
     <style>
-        /* ==================== RESET & VARIÁVEIS ==================== */
+        :root {
+            --orange: #ff7b00;
+            --orange-light: #ffae42;
+            --card: #161616;
+            --card2: #1f1f1f;
+            --border: rgba(255, 123, 0, .2);
+            --success: #2e7d32;
+            --danger: #c55a3a;
+            --gold: #ffd700;
+            --text: #f5f5f5;
+            --muted: #999;
+            --safe-bottom: env(safe-area-inset-bottom, 16px);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
-        :root {
-            --bg: #050302;
-            --card: #120d09;
-            --surface: #1d1510;
-            --ember: #e06c2e;
-            --emberLight: #ff9b57;
-            --gold: #d4af37;
-            --text: #f5ede0;
-            --muted: #8b7765;
-            --border: rgba(224, 108, 46, 0.25);
-            --success: #2e7d32;
-            --danger: #c55a3a;
-            --safe-bottom: env(safe-area-inset-bottom, 16px);
-            font-family: Inter, system-ui, sans-serif;
-        }
-
         body {
-            background:
-                radial-gradient(circle at top, rgba(224, 108, 46, 0.15), transparent 35%),
-                var(--bg);
+            background: #0b0b0b;
             color: var(--text);
             height: 100vh;
             overflow: hidden;
-            position: relative;
         }
 
-        /* ==================== FUNDO RPG ==================== */
-        .bg-flame {
-            position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(circle at 20% 20%, rgba(255, 120, 40, 0.08), transparent 30%),
-                radial-gradient(circle at 80% 70%, rgba(255, 80, 20, 0.06), transparent 30%);
-            animation: flameMove 8s infinite alternate ease-in-out;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes flameMove {
-            0% { transform: scale(1) translateY(0px); }
-            100% { transform: scale(1.08) translateY(-10px); }
-        }
-
-        /* ==================== APP ==================== */
-        #app {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* ==================== TOPO ==================== */
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background: rgba(5, 3, 2, 0.88);
-            backdrop-filter: blur(18px);
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 30;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            background: linear-gradient(135deg, #2d1a10, #140b07);
-            border: 1px solid var(--border);
-            box-shadow: 0 0 18px rgba(224, 108, 46, 0.25);
-        }
-
-        .logo-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 1.1rem;
-            font-weight: 800;
-        }
-
-        .logo-title button {
-            background: none;
+        button, input, textarea {
             border: none;
-            color: var(--emberLight);
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .logo-subtitle {
-            font-size: 0.72rem;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .token-box {
-            padding: 10px 16px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, rgba(224, 108, 46, 0.15), rgba(255, 140, 74, 0.08));
-            border: 1px solid var(--border);
-            font-weight: 700;
-            color: var(--emberLight);
-            box-shadow: 0 0 18px rgba(224, 108, 46, 0.15);
-        }
-
-        /* ==================== CONTEÚDO ==================== */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 18px;
-            padding-bottom: calc(80px + var(--safe-bottom));
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        /* ==================== VIEWS ==================== */
-        .view {
-            display: none;
-        }
-
-        .view.active {
-            display: block;
-        }
-
-        /* ==================== CARD ==================== */
-        .card {
-            background: rgba(18, 13, 9, 0.88);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 18px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-            margin-bottom: 18px;
-        }
-
-        /* ==================== HERO ==================== */
-        .hero-card {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-card::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(224, 108, 46, 0.08), transparent 40%);
-            pointer-events: none;
-        }
-
-        .hero-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 18px;
-        }
-
-        .hero-label {
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-            color: var(--muted);
-            margin-bottom: 4px;
-        }
-
-        .patente {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--gold);
-        }
-
-        .level-circle {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 900;
-            background: radial-gradient(circle, rgba(255, 140, 74, 0.3), rgba(224, 108, 46, 0.08));
-            border: 2px solid rgba(255, 140, 74, 0.4);
-            box-shadow: 0 0 22px rgba(224, 108, 46, 0.25);
-        }
-
-        .hero-title {
-            font-size: 1rem;
-            letter-spacing: 1px;
-            color: var(--muted);
-            margin-bottom: 6px;
-        }
-
-        .big-tokens {
-            font-size: 4rem;
-            font-weight: 900;
-            color: var(--emberLight);
-            text-shadow: 0 0 20px rgba(255, 120, 40, 0.35);
-            margin-bottom: 18px;
-        }
-
-        /* ==================== XP ==================== */
-        .xp-wrapper {
-            margin-bottom: 18px;
-        }
-
-        .xp-bar {
-            height: 12px;
-            border-radius: 20px;
-            overflow: hidden;
-            background: #221812;
-            margin-bottom: 8px;
-        }
-
-        .xp-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ff7a2f, #ffb36d);
-            border-radius: 20px;
-            transition: 0.4s;
-            box-shadow: 0 0 18px rgba(255, 140, 74, 0.3);
-        }
-
-        #xpText {
-            font-size: 0.85rem;
-            color: var(--muted);
-        }
-
-        /* ==================== GRID ==================== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .stat-card {
-            padding: 16px;
-            border-radius: 22px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            text-align: center;
-            transition: 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .stat-icon {
-            font-size: 1.4rem;
-            margin-bottom: 8px;
-        }
-
-        .stat-label {
-            font-size: 0.75rem;
-            margin-top: 6px;
-            color: var(--muted);
-        }
-
-        /* ==================== MENU ==================== */
-        .grid-menu {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-        }
-
-        .menu-card {
-            border: none;
-            border-radius: 24px;
-            padding: 22px 14px;
-            background: linear-gradient(135deg, rgba(255, 120, 40, 0.08), rgba(255, 255, 255, 0.02));
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-size: 1rem;
-            font-weight: 700;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.25s;
-            min-height: 120px;
-        }
-
-        .menu-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 0 22px rgba(224, 108, 46, 0.18);
-        }
-
-        .menu-card div {
-            font-size: 2rem;
-        }
-
-        /* ==================== PERFIL ==================== */
-        .section-title {
-            font-size: 1rem;
-            font-weight: 800;
-            margin-bottom: 14px;
-            color: var(--emberLight);
-        }
-
-        .perfil-item {
-            margin-bottom: 14px;
-        }
-
-        .perfil-item label {
-            display: block;
-            font-size: 0.82rem;
-            margin-bottom: 6px;
-            color: var(--muted);
-        }
-
-        .perfil-edit {
-            display: flex;
-            gap: 10px;
-        }
-
-        .perfil-edit button {
-            width: 52px;
-            border: none;
-            border-radius: 16px;
-            background: linear-gradient(135deg, #b9591f, #e06c2e);
-            color: #140a06;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* ==================== INPUTS ==================== */
-        input,
-        textarea {
-            width: 100%;
-            padding: 14px;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: #1d1510;
-            color: white;
-            font-size: 0.95rem;
             outline: none;
-            transition: 0.2s;
-            margin-bottom: 8px;
+            font-family: inherit;
         }
 
-        input:focus,
-        textarea:focus {
-            border-color: rgba(255, 140, 74, 0.4);
-            box-shadow: 0 0 12px rgba(255, 140, 74, 0.12);
-        }
+        button { cursor: pointer; }
 
-        /* ==================== BOTÕES ==================== */
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 20px;
-            font-size: 0.95rem;
-            font-weight: 800;
-            cursor: pointer;
-            transition: 0.25s;
-            margin-top: 10px;
-        }
+        .hidden { display: none !important; }
 
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #b9591f, #ff8c4a);
-            color: #140a06;
-            box-shadow: 0 0 18px rgba(224, 108, 46, 0.25);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--emberLight);
-        }
-
-        /* ==================== LOGIN ==================== */
-        #loginOverlay {
-            position: fixed;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.92);
-            z-index: 200;
-            padding: 20px;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 380px;
-            padding: 28px;
-            border-radius: 32px;
-            background: rgba(18, 13, 9, 0.95);
-            border: 1px solid var(--border);
-            text-align: center;
-            backdrop-filter: blur(18px);
-            box-shadow: 0 0 40px rgba(224, 108, 46, 0.12);
-        }
-
-        .login-skull {
-            font-size: 5rem;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 0 12px rgba(255, 120, 40, 0.4));
-        }
-
-        .login-card h1 {
-            font-size: 1.4rem;
-            margin-bottom: 6px;
-            color: var(--emberLight);
-        }
-
-        .login-card p {
-            margin-bottom: 20px;
-            color: var(--muted);
-        }
-
-        /* ==================== LOADING ==================== */
-        .loading-full {
+        /* ============ LOADING ============ */
+        .loading-overlay {
             position: fixed;
             inset: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             gap: 16px;
-            background: rgba(0, 0, 0, 0.92);
-            z-index: 300;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 999;
         }
 
         .spinner {
-            width: 46px;
-            height: 46px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: var(--emberLight);
+            border-top-color: var(--orange);
             animation: spin 0.8s linear infinite;
         }
 
@@ -478,395 +77,440 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ==================== TOAST ==================== */
-        .toast-stack {
+        /* ============ TOAST ============ */
+        #toastContainer {
             position: fixed;
-            top: 14px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
+            z-index: 1000;
             width: 90%;
-            max-width: 360px;
-            z-index: 999;
+            max-width: 400px;
         }
 
         .toast {
-            padding: 14px;
-            border-radius: 18px;
-            font-weight: 600;
-            background: #221812;
-            border-left: 4px solid var(--ember);
+            padding: 14px 20px;
+            border-radius: 16px;
+            font-weight: 700;
+            background: #1d1d1d;
+            border-left: 4px solid var(--orange);
             animation: toastIn 0.25s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
-        .toast-success {
-            border-left-color: var(--success);
-        }
-
-        .toast-error {
-            border-left-color: var(--danger);
-        }
+        .toast-success { border-left-color: var(--success); }
+        .toast-error { border-left-color: var(--danger); }
 
         @keyframes toastIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ==================== NAVEGAÇÃO INFERIOR ==================== */
-        .bottom-nav {
+        /* ============ LOGIN ============ */
+        #authScreen {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            padding: 20px;
+            z-index: 50;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            background: #121212;
+            padding: 32px;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            border: 1px solid var(--border);
+            box-shadow: 0 0 40px rgba(255, 123, 0, 0.1);
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--orange);
+        }
+
+        .auth-card input {
+            padding: 16px;
+            background: #1d1d1d;
+            border-radius: 16px;
+            color: white;
+            transition: box-shadow 0.2s;
+        }
+
+        .auth-card input:focus {
+            box-shadow: 0 0 15px rgba(255, 123, 0, 0.3);
+        }
+
+        .btn {
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 800;
+            transition: transform 0.1s, opacity 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-primary {
+            background: var(--orange);
+            color: black;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--orange);
+            color: var(--orange);
+        }
+
+        /* ============ APP ============ */
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #101010;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 22px;
+            color: var(--orange);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo button {
+            background: none;
+            color: var(--orange-light);
+            font-size: 16px;
+            padding: 4px;
+        }
+
+        .token-box {
+            background: #1b1b1b;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-weight: 800;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 18px;
+            padding-bottom: calc(100px + var(--safe-bottom));
+        }
+
+        .card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 24px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,.05);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--orange);
+        }
+
+        .hero {
+            padding: 24px;
+            border-radius: 30px;
+            background: linear-gradient(145deg, #1a1a1a, #0e0e0e);
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero h2 { font-size: 28px; margin-bottom: 6px; }
+
+        .rank-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+
+        .rank-bronze { background: rgba(205, 127, 50, 0.2); color: #cd7f32; }
+        .rank-prata { background: rgba(192, 192, 192, 0.2); color: #c0c0c0; }
+        .rank-ouro { background: rgba(255, 215, 0, 0.2); color: #ffd700; }
+        .rank-platina { background: rgba(0, 217, 255, 0.2); color: #00d9ff; }
+        .rank-diamante { background: rgba(125, 249, 255, 0.2); color: #7df9ff; }
+        .rank-lendario { background: rgba(255, 61, 0, 0.2); color: #ff3d00; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .status-ok { background: rgba(46, 125, 50, 0.2); color: #4caf50; }
+        .status-bad { background: rgba(255, 61, 0, 0.2); color: #ff3d00; }
+
+        .muted { color: var(--muted); }
+
+        .xp-bar {
+            height: 14px;
+            background: #262626;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 16px;
+        }
+
+        .xp-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff7b00, #ffb347);
+            transition: width 0.4s ease;
+            border-radius: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .mini-card {
+            background: var(--card2);
+            padding: 16px;
+            border-radius: 18px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .view { display: none; }
+        .view.active { display: block; }
+
+        input, textarea {
+            width: 100%;
+            padding: 16px;
+            background: #1d1d1d;
+            color: white;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            transition: box-shadow 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            box-shadow: 0 0 15px rgba(255, 123, 0, 0.2);
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             display: flex;
             justify-content: space-around;
-            align-items: center;
-            padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
-            background: rgba(18, 13, 9, 0.95);
-            backdrop-filter: blur(18px);
+            background: #121212;
+            padding: 12px 16px calc(12px + var(--safe-bottom));
             border-top: 1px solid var(--border);
-            z-index: 25;
+            z-index: 20;
         }
 
         .nav-btn {
             background: none;
-            border: none;
             color: var(--muted);
-            font-size: 1.6rem;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 16px;
-            transition: 0.2s;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-
-        .nav-btn span {
-            font-size: 0.7rem;
+            font-size: 18px;
+            padding: 8px 16px;
+            border-radius: 12px;
+            transition: 0.2s;
         }
 
         .nav-btn.active {
-            color: var(--emberLight);
-            background: rgba(224, 108, 46, 0.12);
+            color: var(--orange);
+            background: rgba(255, 123, 0, 0.1);
         }
 
-        /* ==================== ADMIN ONLY ==================== */
-        .adminOnly {
-            display: none;
+        .partner-card {
+            background: #1c1c1c;
+            padding: 16px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* ==================== RESPONSIVO ==================== */
+        .admin-only { display: none; }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: #333;
+            margin: 20px 0;
+        }
+
         @media (max-width: 380px) {
-            .big-tokens { font-size: 3rem; }
-            .menu-card { min-height: 100px; }
-        }
-
-        /* ==================== LISTAS (inventário, ranking, facções) ==================== */
-        .item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: var(--surface);
-            border-radius: 16px;
-            margin-bottom: 8px;
-        }
-
-        .rank-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--surface);
-            border-radius: 16px;
-            margin-bottom: 8px;
-        }
-
-        .rank-pos {
-            font-weight: 900;
-            font-size: 1.2rem;
-            color: var(--gold);
-            width: 32px;
-            text-align: center;
-        }
-
-        .fac-item {
-            padding: 14px;
-            background: var(--surface);
-            border-radius: 16px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
+            .hero h2 { font-size: 22px; }
+            .auth-card { padding: 24px; }
         }
     </style>
 </head>
 <body>
-    <!-- Fundo animado -->
-    <div class="bg-flame"></div>
 
-    <!-- Container de toasts -->
-    <div id="toastStack" class="toast-stack"></div>
+    <!-- TOAST -->
+    <div id="toastContainer"></div>
 
-    <!-- ==================== LOGIN ==================== -->
-    <div id="loginOverlay">
-        <div class="login-card">
-            <div class="login-skull">💀</div>
-            <h1>IRMANDADE DO ASFALTO</h1>
-            <p>Motoclube RPG</p>
-            <input type="email" id="emailLogin" placeholder="Seu e-mail">
-            <input type="password" id="senhaLogin" placeholder="Sua senha">
-            <button id="loginBtn" class="btn btn-primary">⚡ ENTRAR</button>
-            <button id="registerBtn" class="btn btn-outline">🛡️ CRIAR CONTA</button>
-            <button id="forgotPasswordBtn" class="btn btn-outline">🔑 RECUPERAR SENHA</button>
+    <!-- LOADING -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <span>Carregando...</span>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="authScreen">
+        <div class="auth-card">
+            <div class="auth-title">💀 IRMANDADE</div>
+            <input id="emailLogin" type="email" placeholder="Seu email" autocomplete="email">
+            <input id="senhaLogin" type="password" placeholder="Sua senha" autocomplete="current-password">
+            <button class="btn btn-primary" id="loginBtn">⚡ ENTRAR</button>
+            <button class="btn btn-outline" id="registerBtn">🛡️ CRIAR CONTA</button>
+            <button class="btn btn-outline" id="forgotPasswordBtn" style="font-size:14px;">🔑 Recuperar senha</button>
         </div>
     </div>
 
-    <!-- ==================== LOADING ==================== -->
-    <div id="loadingData" class="loading-full" style="display:none;">
-        <div class="spinner"></div>
-        <span>Conectando à Irmandade...</span>
-    </div>
-
-    <!-- ==================== APP PRINCIPAL ==================== -->
-    <div id="app">
-        <!-- Topo -->
-        <header class="topbar">
-            <div class="logo-area">
-                <div class="logo-icon">💀</div>
-                <div>
-                    <div class="logo-title">
-                        <span id="nicknameDisplay">Asfalto</span>
-                        <button id="editNicknameBtn">✏️</button>
-                    </div>
-                    <div class="logo-subtitle">Irmandade Oficial</div>
-                </div>
+    <!-- APP PRINCIPAL -->
+    <div id="app" class="hidden">
+        <header>
+            <div class="logo">
+                💀 IRMANDADE
             </div>
-            <div class="token-box">🔥 <span id="creditsAmount">0</span></div>
+            <div class="token-box">🔥 <span id="tokensDisplay">0</span></div>
         </header>
 
-        <!-- Conteúdo principal com views -->
-        <main class="content">
-
+        <main>
             <!-- HOME -->
-            <section id="homeView" class="view active">
-                <div class="card hero-card">
-                    <div class="hero-top">
+            <div class="view active" id="homeView">
+                <div class="hero">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                         <div>
-                            <div class="hero-label">PATENTE</div>
-                            <div id="patenteDisplay" class="patente">⚔️ Estradeiro</div>
+                            <h2 id="nicknameDisplay">Membro</h2>
+                            <div id="rankBadge" class="rank-badge rank-bronze">Bronze</div>
+                            <div id="statusBadge" class="status-badge status-ok">Adimplente</div>
                         </div>
-                        <div class="level-circle"><span id="nivelDisplay">1</span></div>
+                        <button class="btn-outline" style="padding:8px 12px; font-size:14px;" onclick="showView('perfilView')">
+                            ✏️ Editar
+                        </button>
                     </div>
-                    <h2 class="hero-title">🔥 CHAMAS DA IRMANDADE</h2>
-                    <div class="big-tokens"><span id="bigCredits">0</span></div>
-                    <div class="xp-wrapper">
-                        <div class="xp-bar"><div id="xpFill" class="xp-fill"></div></div>
-                        <div id="xpText">0 XP</div>
+                    <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+                    <div style="margin-top:10px; display:flex; justify-content:space-between;">
+                        <span id="xpText" class="muted">0 XP</span>
+                        <span id="levelText" class="muted">Lv.1</span>
                     </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">🎟️</div>
-                            <div id="ticketAmount">0</div>
-                            <div class="stat-label">Tickets</div>
+                    <div class="grid">
+                        <div class="mini-card">
+                            <div style="font-size:26px;">⚡</div>
+                            <div id="xpAmount">0</div>
+                            <div class="muted">XP Total</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">🏍️</div>
-                            <div id="statusBadge">Adimplente</div>
-                            <div class="stat-label">Status</div>
+                        <div class="mini-card">
+                            <div style="font-size:26px;">🏍️</div>
+                            <div id="cityText">-</div>
+                            <div class="muted">Cidade</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid-menu">
-                    <button class="menu-card" onclick="showView('missoesView')"><div>⚔️</div><span>Missões</span></button>
-                    <button class="menu-card" onclick="showView('parceirosView')"><div>🤝</div><span>Parceiros</span></button>
-                    <button class="menu-card" onclick="showView('lojaView')"><div>🛒</div><span>Loja</span></button>
-                    <button class="menu-card" onclick="showView('ticketsView')"><div>🎟️</div><span>Tickets</span></button>
-                    <button class="menu-card" onclick="showView('inventarioView')"><div>🎒</div><span>Inventário</span></button>
-                    <button class="menu-card" onclick="showView('rankingView')"><div>🏆</div><span>Ranking</span></button>
-                    <button class="menu-card" onclick="showView('faccoesView')"><div>🏴</div><span>Facções</span></button>
-                    <button class="menu-card" onclick="showView('perfilView')"><div>👤</div><span>Perfil</span></button>
-                    <button class="menu-card adminOnly" id="adminMenuBtn" onclick="showView('adminView')"><div>👑</div><span>Admin</span></button>
-                </div>
-            </section>
-
-            <!-- MISSÕES -->
-            <section id="missoesView" class="view">
-                <div class="card">
-                    <div class="section-title">⚔️ Missões</div>
-                    <div id="missoesList"></div>
-                </div>
-            </section>
-
-            <!-- PARCEIROS -->
-            <section id="parceirosView" class="view">
                 <div class="card">
                     <div class="section-title">🤝 Parceiros</div>
-                    <div id="parceirosList"></div>
+                    <div id="partnersList"></div>
                 </div>
-            </section>
-
-            <!-- LOJA -->
-            <section id="lojaView" class="view">
-                <div class="card">
-                    <div class="section-title">🛒 Loja</div>
-                    <div id="lojaList"></div>
-                </div>
-            </section>
-
-            <!-- TICKETS -->
-            <section id="ticketsView" class="view">
-                <div class="card">
-                    <div class="section-title">🎟️ Meus Tickets</div>
-                    <div id="ticketsList"></div>
-                </div>
-            </section>
-
-            <!-- INVENTÁRIO -->
-            <section id="inventarioView" class="view">
-                <div class="card">
-                    <div class="section-title">🎒 Inventário</div>
-                    <div id="inventarioList"></div>
-                </div>
-            </section>
-
-            <!-- RANKING -->
-            <section id="rankingView" class="view">
-                <div class="card">
-                    <div class="section-title">🏆 Ranking de XPs</div>
-                    <div id="rankingList"></div>
-                </div>
-            </section>
-
-            <!-- FACÇÕES -->
-            <section id="faccoesView" class="view">
-                <div class="card">
-                    <div class="section-title">🏴 Facções</div>
-                    <div id="faccoesList"></div>
-                </div>
-            </section>
+            </div>
 
             <!-- PERFIL -->
-            <section id="perfilView" class="view">
+            <div class="view" id="perfilView">
                 <div class="card">
-                    <div class="section-title">👤 PERFIL</div>
-                    <div class="perfil-item">
-                        <label>Apelido</label>
-                        <div class="perfil-edit">
-                            <input id="perfilApelido">
-                            <button>✏️</button>
-                        </div>
-                    </div>
-                    <div class="perfil-item">
-                        <label>Moto</label>
-                        <div class="perfil-edit">
-                            <input id="perfilMoto">
-                            <button>✏️</button>
-                        </div>
-                    </div>
-                    <div class="perfil-item">
-                        <label>Placa</label>
-                        <div class="perfil-edit">
-                            <input id="perfilPlaca">
-                            <button>✏️</button>
-                        </div>
-                    </div>
-                    <div class="perfil-item">
-                        <label>Cidade</label>
-                        <input id="perfilCidade">
-                    </div>
-                    <div class="perfil-item">
-                        <label>CPF</label>
-                        <input id="perfilCpf">
-                    </div>
-                    <div class="perfil-item">
-                        <label>Bio</label>
-                        <textarea id="perfilBio"></textarea>
-                    </div>
-                    <button id="savePerfilBtn" class="btn btn-primary">💾 SALVAR PERFIL</button>
+                    <div class="section-title">👤 Perfil</div>
+                    <input id="nicknameInput" placeholder="Apelido">
+                    <input id="bikeInput" placeholder="Moto">
+                    <input id="cityInput" placeholder="Cidade">
+                    <textarea id="bioInput" placeholder="Biografia"></textarea>
+                    <button class="btn btn-primary" id="savePerfilBtn">💾 SALVAR PERFIL</button>
                 </div>
-            </section>
+            </div>
 
             <!-- ADMIN -->
-            <section id="adminView" class="view">
+            <div class="view" id="adminView">
                 <div class="card">
-                    <div class="section-title">👑 PAINEL DO MESTRE</div>
+                    <div class="section-title">👑 Painel Admin</div>
 
-                    <h3 style="color:var(--emberLight); margin-bottom:8px;">👥 Membros</h3>
-                    <div id="membersList" style="margin-bottom:16px;"></div>
+                    <input id="rewardEmail" placeholder="Email do usuário">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                        <input id="rewardTokens" type="number" placeholder="Tokens" value="0">
+                        <input id="rewardXp" type="number" placeholder="XP" value="0">
+                    </div>
+                    <button class="btn btn-primary" id="rewardBtn">🔥 ENVIAR RECOMPENSA</button>
 
-                    <hr style="border-color:var(--border); margin:16px 0;">
+                    <hr>
 
-                    <input id="adminUserEmail" placeholder="E-mail do membro">
-                    <input id="adminTokenAmount" type="number" placeholder="Tokens">
-                    <input id="adminXpAmount" type="number" placeholder="XP (opcional)">
-                    <button id="mintTokensBtn" class="btn btn-primary">🔥 CUNHAR RECOMPENSA</button>
-
-                    <hr style="border-color:var(--border); margin:16px 0;">
-
-                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🎟️ Criar Ticket</h3>
-                    <input id="ticketNome" placeholder="Nome do Ticket">
-                    <input id="ticketPreco" type="number" placeholder="Preço">
-                    <button id="createTicketBtn" class="btn btn-primary">🎟️ CRIAR TICKET</button>
-
-                    <hr style="border-color:var(--border); margin:16px 0;">
-
-                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🏍️ Criar Evento</h3>
-                    <input id="eventoNome" placeholder="Nome do Evento">
-                    <input id="eventoLocal" placeholder="Local">
-                    <button id="createEventoBtn" class="btn btn-primary">🏍️ CRIAR EVENTO</button>
-
-                    <hr style="border-color:var(--border); margin:16px 0;">
-
-                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🤝 Adicionar Parceiro</h3>
-                    <input id="parceiroNome" placeholder="Nome do Parceiro">
-                    <input id="parceiroDesconto" placeholder="Desconto">
-                    <button id="createPartnerBtn" class="btn btn-primary">🤝 ADICIONAR PARCEIRO</button>
-
-                    <hr style="border-color:var(--border); margin:16px 0;">
-
-                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🛒 Criar Item da Loja</h3>
-                    <input id="itemNome" placeholder="Nome do Item">
-                    <input id="itemPreco" type="number" placeholder="Preço em Tokens">
-                    <button id="createItemBtn" class="btn btn-primary">🛒 CRIAR ITEM</button>
-
-                    <hr style="border-color:var(--border); margin:16px 0;">
-
-                    <h3 style="color:var(--emberLight); margin-bottom:8px;">⚔️ Criar Missão</h3>
-                    <input id="missaoNome" placeholder="Título da Missão">
-                    <input id="missaoXp" type="number" placeholder="XP">
-                    <input id="missaoTokens" type="number" placeholder="Tokens (recompensa)">
-                    <button id="createMissaoBtn" class="btn btn-primary">⚔️ CRIAR MISSÃO</button>
-
-                    <hr style="border-color:var(--border); margin:16px 0;">
-
-                    <h3 style="color:var(--emberLight); margin-bottom:8px;">🏴 Criar Facção</h3>
-                    <input id="faccaoNome" placeholder="Nome da Facção">
-                    <input id="faccaoDesc" placeholder="Descrição">
-                    <button id="createFaccaoBtn" class="btn btn-primary">🏴 CRIAR FACÇÃO</button>
+                    <input id="partnerName" placeholder="Nome do parceiro">
+                    <input id="partnerDiscount" placeholder="Desconto (ex: 20% OFF)">
+                    <button class="btn btn-primary" id="createPartnerBtn">🤝 CRIAR PARCEIRO</button>
                 </div>
-            </section>
+            </div>
 
-            <button onclick="logout()" class="btn btn-outline" style="margin-top:8px;">🚪 SAIR</button>
+            <button class="btn btn-outline" style="width:100%; margin-top:20px;" id="logoutBtn">
+                🚪 SAIR
+            </button>
         </main>
 
-        <!-- Navegação inferior -->
-        <nav class="bottom-nav">
-            <button class="nav-btn active" data-view="homeView"><i class="fas fa-home"></i><span>Home</span></button>
-            <button class="nav-btn" data-view="missoesView"><i class="fas fa-crosshairs"></i><span>Missões</span></button>
-            <button class="nav-btn" data-view="lojaView"><i class="fas fa-store"></i><span>Loja</span></button>
-            <button class="nav-btn" data-view="rankingView"><i class="fas fa-trophy"></i><span>Ranking</span></button>
-            <button class="nav-btn" data-view="perfilView"><i class="fas fa-user"></i><span>Perfil</span></button>
+        <nav>
+            <button class="nav-btn active" data-view="homeView">
+                <i class="fas fa-home"></i><span style="font-size:10px;">Home</span>
+            </button>
+            <button class="nav-btn" data-view="perfilView">
+                <i class="fas fa-user"></i><span style="font-size:10px;">Perfil</span>
+            </button>
+            <button class="nav-btn admin-only" data-view="adminView">
+                <i class="fas fa-crown"></i><span style="font-size:10px;">Admin</span>
+            </button>
         </nav>
     </div>
 
     <script>
-        // ======================= CONFIGURAÇÃO DO FIREBASE =======================
+        // ==================== CONFIGURAÇÃO FIREBASE ====================
         const firebaseConfig = {
             apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
             authDomain: "clube-de-vantagens-d748e.firebaseapp.com",
@@ -882,123 +526,162 @@
         const db = firebase.firestore();
 
         // Cache offline
-        db.enablePersistence({ synchronizeTabs: true }).catch(err => {
-            console.warn("Persistência offline indisponível:", err);
-        });
+        db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
-        const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
         const increment = firebase.firestore.FieldValue.increment;
+        const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
         const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
 
         const MASTER_EMAIL = "cristophersmonteiro357@gmail.com";
-        let userData = null;
 
-        // ======================= TOAST =======================
+        let currentUser = null;
+        let userListener = null; // Referência para unsubscribe
+
+        // ==================== UTILITÁRIOS ====================
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
         function toast(msg, type = 'info') {
-            const stack = document.getElementById('toastStack');
+            const container = document.getElementById('toastContainer');
             const t = document.createElement('div');
-            t.className = `toast ${type === 'error' ? 'toast-error' : type === 'success' ? 'toast-success' : ''}`;
+            t.className = `toast ${type === 'success' ? 'toast-success' : type === 'error' ? 'toast-error' : ''}`;
             t.innerText = msg;
-            stack.appendChild(t);
+            container.appendChild(t);
             setTimeout(() => t.remove(), 3000);
         }
 
-        // ======================= PATENTES =======================
-        function calcularPatente(xp) {
-            if (xp >= 5000) return '👑 Lenda do Asfalto';
-            if (xp >= 2500) return '🔥 Senhor das Estradas';
-            if (xp >= 1000) return '⚔️ Cavaleiro da Chama';
-            if (xp >= 500) return '🛡️ Moto Guardião';
-            if (xp >= 200) return '🏍️ Estradeiro Elite';
-            return '⚔️ Estradeiro';
+        function disableButton(btn, text = 'Aguarde...') {
+            btn.disabled = true;
+            btn.dataset.originalText = btn.innerText;
+            btn.innerText = text;
         }
 
-        // ======================= UI PRINCIPAL =======================
-        function atualizarUI() {
-            if (!userData) return;
+        function enableButton(btn) {
+            btn.disabled = false;
+            if (btn.dataset.originalText) btn.innerText = btn.dataset.originalText;
+            delete btn.dataset.originalText;
+        }
 
-            const xp = userData.xp || 0;
-            const nivel = Math.floor(xp / 100) + 1;
-            const progress = xp % 100;
+        // ==================== SISTEMA RPG ====================
+        function getLevel(xp) {
+            return Math.floor((xp || 0) / 100) + 1;
+        }
 
-            document.getElementById('creditsAmount').innerText = userData.credits || 0;
-            document.getElementById('bigCredits').innerText = userData.credits || 0;
-            document.getElementById('ticketAmount').innerText = userData.tickets || 0;
-            document.getElementById('nivelDisplay').innerText = nivel;
+        function getRank(xp) {
+            if (xp >= 3000) return { nome: 'Lendário', classe: 'rank-lendario' };
+            if (xp >= 1500) return { nome: 'Diamante', classe: 'rank-diamante' };
+            if (xp >= 700) return { nome: 'Platina', classe: 'rank-platina' };
+            if (xp >= 300) return { nome: 'Ouro', classe: 'rank-ouro' };
+            if (xp >= 100) return { nome: 'Prata', classe: 'rank-prata' };
+            return { nome: 'Bronze', classe: 'rank-bronze' };
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            const view = document.getElementById(viewId);
+            if (view) view.classList.add('active');
+
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const navBtn = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
+            if (navBtn) navBtn.classList.add('active');
+
+            if (viewId === 'homeView') loadPartners();
+        }
+
+        // ==================== UI ====================
+        function updateUI() {
+            if (!currentUser) return;
+
+            const xp = currentUser.xp || 0;
+            const tokens = currentUser.tokens || 0;
+            const rank = getRank(xp);
+            const level = getLevel(xp);
+            const status = currentUser.status || 'adimplente';
+
+            // Header
+            document.getElementById('tokensDisplay').innerText = tokens;
+
+            // Home
+            document.getElementById('nicknameDisplay').innerText = currentUser.profile?.nickname || 'Membro';
+            document.getElementById('xpAmount').innerText = xp;
             document.getElementById('xpText').innerText = `${xp} XP`;
-            document.getElementById('xpFill').style.width = `${progress}%`;
-            document.getElementById('patenteDisplay').innerText = calcularPatente(xp);
-            document.getElementById('nicknameDisplay').innerText = userData.perfil?.apelido || 'Asfalto';
-            document.getElementById('perfilApelido').value = userData.perfil?.apelido || '';
-            document.getElementById('perfilMoto').value = userData.perfil?.moto || '';
-            document.getElementById('perfilPlaca').value = userData.perfil?.placa || '';
-            document.getElementById('perfilCidade').value = userData.perfil?.cidade || '';
-            document.getElementById('perfilCpf').value = userData.perfil?.cpf || '';
-            document.getElementById('perfilBio').value = userData.perfil?.bio || '';
-            document.getElementById('statusBadge').innerText = userData.status || 'Adimplente';
+            document.getElementById('cityText').innerText = currentUser.profile?.city || '-';
+            document.getElementById('levelText').innerText = `Lv.${level}`;
+            document.getElementById('xpFill').style.width = `${(xp % 100)}%`;
 
-            const adminElements = document.querySelectorAll('.adminOnly');
-            if (userData.role === 'admin') {
+            // Rank badge
+            const rankEl = document.getElementById('rankBadge');
+            rankEl.innerText = rank.nome;
+            rankEl.className = `rank-badge ${rank.classe}`;
+
+            // Status badge
+            const statusEl = document.getElementById('statusBadge');
+            statusEl.innerText = status === 'adimplente' ? 'Adimplente' : status.toUpperCase();
+            statusEl.className = `status-badge ${status === 'adimplente' ? 'status-ok' : 'status-bad'}`;
+
+            // Perfil form
+            document.getElementById('nicknameInput').value = currentUser.profile?.nickname || '';
+            document.getElementById('bikeInput').value = currentUser.profile?.bike || '';
+            document.getElementById('cityInput').value = currentUser.profile?.city || '';
+            document.getElementById('bioInput').value = currentUser.profile?.bio || '';
+
+            // Admin
+            const adminElements = document.querySelectorAll('.admin-only');
+            if (currentUser.role === 'admin') {
                 adminElements.forEach(el => el.style.display = 'flex');
             } else {
                 adminElements.forEach(el => el.style.display = 'none');
             }
         }
 
-        // ======================= NAVEGAÇÃO ENTRE VIEWS =======================
-        function showView(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
+        // ==================== LISTENER COM LIMPEZA ====================
+        function listenUser() {
+            // Remove listener anterior se existir
+            if (userListener) userListener();
 
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            const navBtn = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
-            if (navBtn) navBtn.classList.add('active');
-
-            // Carregar dados específicos da view
-            if (viewId === 'missoesView') loadMissoes();
-            if (viewId === 'parceirosView') loadParceiros();
-            if (viewId === 'lojaView') loadLoja();
-            if (viewId === 'ticketsView') loadTickets();
-            if (viewId === 'inventarioView') loadInventario();
-            if (viewId === 'rankingView') loadRanking();
-            if (viewId === 'faccoesView') loadFaccoes();
-            if (viewId === 'adminView') loadMembers();
+            userListener = db.collection('users')
+                .doc(currentUser.uid)
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        currentUser = { uid: doc.id, ...doc.data() };
+                        updateUI();
+                    }
+                }, (error) => {
+                    console.error('Erro no listener:', error);
+                });
         }
 
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const viewId = btn.getAttribute('data-view');
-                showView(viewId);
-            });
-        });
-
-        // ======================= AUTH =======================
-        document.getElementById('registerBtn').addEventListener('click', async () => {
+        // ==================== AUTENTICAÇÃO ====================
+        document.getElementById('registerBtn').addEventListener('click', async function() {
             const email = document.getElementById('emailLogin').value.trim();
             const senha = document.getElementById('senhaLogin').value;
 
             if (!email || senha.length < 6) {
-                toast('Senha mínima: 6 caracteres', 'error');
+                toast('Senha deve ter no mínimo 6 caracteres', 'error');
                 return;
             }
 
+            disableButton(this, 'Criando...');
+            showLoading();
+
             try {
                 const cred = await auth.createUserWithEmailAndPassword(email, senha);
-                const role = email === MASTER_EMAIL ? 'admin' : 'user';
 
                 await db.collection('users').doc(cred.user.uid).set({
                     email,
-                    role,
-                    credits: 0,
+                    role: email === MASTER_EMAIL ? 'admin' : 'user',
+                    tokens: 0,
                     xp: 0,
-                    tickets: 0,
-                    status: 'Adimplente',
-                    perfil: {
-                        apelido: email.split('@')[0],
-                        moto: '',
-                        placa: '',
-                        cidade: '',
-                        cpf: '',
+                    status: 'adimplente',
+                    profile: {
+                        nickname: email.split('@')[0],
+                        bike: '',
+                        city: '',
                         bio: ''
                     },
                     createdAt: serverTimestamp(),
@@ -1006,59 +689,95 @@
                     inventory: []
                 });
 
-                toast('Conta criada!', 'success');
+                toast('Conta criada com sucesso!', 'success');
             } catch (e) {
-                toast(e.message, 'error');
+                console.error('Erro ao registrar:', e);
+                if (e.code === 'auth/email-already-in-use') {
+                    toast('Este email já está cadastrado', 'error');
+                } else if (e.code === 'auth/weak-password') {
+                    toast('Senha muito fraca', 'error');
+                } else {
+                    toast('Erro ao criar conta: ' + e.message, 'error');
+                }
+            } finally {
+                enableButton(this);
+                hideLoading();
             }
         });
 
-        document.getElementById('loginBtn').addEventListener('click', async () => {
+        document.getElementById('loginBtn').addEventListener('click', async function() {
             const email = document.getElementById('emailLogin').value.trim();
             const senha = document.getElementById('senhaLogin').value;
 
-            try {
-                await auth.signInWithEmailAndPassword(email, senha);
-            } catch (e) {
-                toast('Falha no login', 'error');
-            }
-        });
-
-        document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
-            const email = document.getElementById('emailLogin').value.trim();
-            if (!email) {
-                toast('Digite seu email', 'error');
+            if (!email || !senha) {
+                toast('Preencha email e senha', 'error');
                 return;
             }
+
+            disableButton(this, 'Entrando...');
+            showLoading();
+
             try {
-                await auth.sendPasswordResetEmail(email);
-                toast('Email enviado', 'success');
+                await auth.signInWithEmailAndPassword(email, senha);
+                // Auth state listener cuida do resto
             } catch (e) {
-                toast(e.message, 'error');
+                console.error('Erro ao logar:', e);
+                if (e.code === 'auth/user-not-found') {
+                    toast('Usuário não encontrado', 'error');
+                } else if (e.code === 'auth/wrong-password') {
+                    toast('Senha incorreta', 'error');
+                } else if (e.code === 'auth/invalid-email') {
+                    toast('Email inválido', 'error');
+                } else {
+                    toast('Falha no login: ' + e.message, 'error');
+                }
+            } finally {
+                enableButton(this);
+                hideLoading();
             }
         });
 
+        document.getElementById('forgotPasswordBtn').addEventListener('click', async function() {
+            const email = document.getElementById('emailLogin').value.trim();
+            if (!email) {
+                toast('Digite seu email para recuperar a senha', 'error');
+                return;
+            }
+
+            disableButton(this, 'Enviando...');
+            try {
+                await auth.sendPasswordResetEmail(email);
+                toast('Email de recuperação enviado!', 'success');
+            } catch (e) {
+                console.error('Erro ao recuperar senha:', e);
+                toast('Erro ao enviar email: ' + e.message, 'error');
+            } finally {
+                enableButton(this);
+            }
+        });
+
+        // Auth state
         auth.onAuthStateChanged(async (user) => {
             if (user) {
-                document.getElementById('loadingData').style.display = 'flex';
+                showLoading();
                 try {
                     let snap = await db.collection('users').doc(user.uid).get();
+
                     if (!snap.exists) {
-                        const defaultPerfil = {
-                            apelido: user.email.split('@')[0],
-                            moto: '',
-                            placa: '',
-                            cidade: '',
-                            cpf: '',
+                        // Criar documento se não existir (fallback)
+                        const defaultProfile = {
+                            nickname: user.email.split('@')[0],
+                            bike: '',
+                            city: '',
                             bio: ''
                         };
                         await db.collection('users').doc(user.uid).set({
                             email: user.email,
                             role: user.email === MASTER_EMAIL ? 'admin' : 'user',
-                            credits: 0,
+                            tokens: 0,
                             xp: 0,
-                            tickets: 0,
-                            status: 'Adimplente',
-                            perfil: defaultPerfil,
+                            status: 'adimplente',
+                            profile: defaultProfile,
                             createdAt: serverTimestamp(),
                             ticketsOwned: [],
                             inventory: []
@@ -1066,345 +785,199 @@
                         snap = await db.collection('users').doc(user.uid).get();
                     }
 
-                    userData = { uid: user.uid, ...snap.data() };
-                    document.getElementById('loginOverlay').style.display = 'none';
-                    document.getElementById('app').style.display = 'flex';
-                    atualizarUI();
+                    currentUser = { uid: user.uid, ...snap.data() };
+
+                    document.getElementById('authScreen').classList.add('hidden');
+                    document.getElementById('app').classList.remove('hidden');
+
+                    updateUI();
+                    listenUser();
+                    loadPartners();
                     showView('homeView');
+
                     toast('Bem-vindo à Irmandade!', 'success');
                 } catch (e) {
-                    console.error(e);
-                    toast('Erro ao carregar perfil', 'error');
+                    console.error('Erro ao carregar perfil:', e);
+                    toast('Erro ao carregar dados do perfil', 'error');
                 }
-                document.getElementById('loadingData').style.display = 'none';
+                hideLoading();
             } else {
-                document.getElementById('loginOverlay').style.display = 'flex';
-                document.getElementById('app').style.display = 'none';
+                // Limpar listener ao deslogar
+                if (userListener) {
+                    userListener();
+                    userListener = null;
+                }
+                currentUser = null;
+
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('app').classList.add('hidden');
             }
         });
 
-        // ======================= PERFIL =======================
-        document.getElementById('savePerfilBtn').addEventListener('click', async () => {
-            if (!userData) return;
+        // ==================== PERFIL ====================
+        document.getElementById('savePerfilBtn').addEventListener('click', async function() {
+            if (!currentUser) return;
 
-            const perfil = {
-                apelido: document.getElementById('perfilApelido').value,
-                moto: document.getElementById('perfilMoto').value,
-                placa: document.getElementById('perfilPlaca').value,
-                cidade: document.getElementById('perfilCidade').value,
-                cpf: document.getElementById('perfilCpf').value,
-                bio: document.getElementById('perfilBio').value
+            const profile = {
+                nickname: document.getElementById('nicknameInput').value.trim() || currentUser.profile?.nickname || 'Membro',
+                bike: document.getElementById('bikeInput').value.trim(),
+                city: document.getElementById('cityInput').value.trim(),
+                bio: document.getElementById('bioInput').value.trim()
             };
 
+            disableButton(this, 'Salvando...');
             try {
-                await db.collection('users').doc(userData.uid).update({ perfil });
-                userData.perfil = perfil;
-                atualizarUI();
-                toast('Perfil atualizado!', 'success');
+                await db.collection('users').doc(currentUser.uid).update({ profile });
+                currentUser.profile = profile;
+                updateUI();
+                toast('Perfil salvo com sucesso!', 'success');
             } catch (e) {
-                toast('Erro ao salvar perfil', 'error');
+                console.error('Erro ao salvar perfil:', e);
+                toast('Erro ao salvar perfil: ' + e.message, 'error');
+            } finally {
+                enableButton(this);
             }
         });
 
-        // ======================= ADMIN =======================
-        document.getElementById('mintTokensBtn').addEventListener('click', async () => {
-            if (userData?.role !== 'admin') return;
-            const email = document.getElementById('adminUserEmail').value.trim();
-            const tokens = parseInt(document.getElementById('adminTokenAmount').value) || 0;
-            const xp = parseInt(document.getElementById('adminXpAmount').value) || 0;
-            if (!email || (tokens === 0 && xp === 0)) { toast('Dados inválidos', 'error'); return; }
-
+        // ==================== PARCEIROS ====================
+        async function loadPartners() {
             try {
-                const q = await db.collection('users').where('email', '==', email).limit(1).get();
-                if (q.empty) { toast('Usuário não encontrado', 'error'); return; }
-                const updateData = {};
-                if (tokens > 0) updateData.credits = increment(tokens);
-                if (xp > 0) updateData.xp = increment(xp);
-                await q.docs[0].ref.update(updateData);
-                toast(`Recompensa enviada!`, 'success');
-            } catch (e) {
-                toast('Erro ao cunhar', 'error');
-            }
-        });
+                const snap = await db.collection('partners')
+                    .orderBy('createdAt', 'desc')
+                    .limit(20)
+                    .get();
 
-        document.getElementById('createTicketBtn').addEventListener('click', async () => {
-            if (userData?.role !== 'admin') return;
-            const nome = document.getElementById('ticketNome').value;
-            const preco = parseInt(document.getElementById('ticketPreco').value);
-            if (!nome || !preco) { toast('Preencha os dados', 'error'); return; }
-            try {
-                await db.collection('tickets').add({ nome, preco, createdAt: serverTimestamp() });
-                toast('Ticket criado!', 'success');
-            } catch (e) {
-                toast('Erro ao criar ticket', 'error');
-            }
-        });
-
-        document.getElementById('createEventoBtn').addEventListener('click', async () => {
-            if (userData?.role !== 'admin') return;
-            const nome = document.getElementById('eventoNome').value;
-            const local = document.getElementById('eventoLocal').value;
-            if (!nome || !local) { toast('Preencha os dados', 'error'); return; }
-            try {
-                await db.collection('eventos').add({ nome, local, createdAt: serverTimestamp() });
-                toast('Evento criado!', 'success');
-            } catch (e) {
-                toast('Erro ao criar evento', 'error');
-            }
-        });
-
-        document.getElementById('createPartnerBtn').addEventListener('click', async () => {
-            if (userData?.role !== 'admin') return;
-            const nome = document.getElementById('parceiroNome').value;
-            const desconto = document.getElementById('parceiroDesconto').value;
-            if (!nome || !desconto) { toast('Preencha os dados', 'error'); return; }
-            try {
-                await db.collection('parceiros').add({ nome, desconto, createdAt: serverTimestamp() });
-                toast('Parceiro criado!', 'success');
-            } catch (e) {
-                toast('Erro ao criar parceiro', 'error');
-            }
-        });
-
-        document.getElementById('createItemBtn').addEventListener('click', async () => {
-            if (userData?.role !== 'admin') return;
-            const nome = document.getElementById('itemNome').value;
-            const preco = parseInt(document.getElementById('itemPreco').value);
-            if (!nome || !preco) { toast('Preencha os dados', 'error'); return; }
-            try {
-                await db.collection('loja').add({ nome, preco, createdAt: serverTimestamp() });
-                toast('Item criado!', 'success');
-                loadLoja();
-            } catch (e) {
-                toast('Erro ao criar item', 'error');
-            }
-        });
-
-        document.getElementById('createMissaoBtn').addEventListener('click', async () => {
-            if (userData?.role !== 'admin') return;
-            const titulo = document.getElementById('missaoNome').value;
-            const xp = parseInt(document.getElementById('missaoXp').value) || 0;
-            const tokens = parseInt(document.getElementById('missaoTokens').value) || 0;
-            if (!titulo || (xp === 0 && tokens === 0)) { toast('Preencha os dados', 'error'); return; }
-            try {
-                await db.collection('missoes').add({ titulo, xp, tokens, createdAt: serverTimestamp() });
-                toast('Missão criada!', 'success');
-                loadMissoes();
-            } catch (e) {
-                toast('Erro ao criar missão', 'error');
-            }
-        });
-
-        document.getElementById('createFaccaoBtn').addEventListener('click', async () => {
-            if (userData?.role !== 'admin') return;
-            const nome = document.getElementById('faccaoNome').value;
-            const desc = document.getElementById('faccaoDesc').value;
-            if (!nome) { toast('Preencha o nome', 'error'); return; }
-            try {
-                await db.collection('faccoes').add({ nome, desc, createdAt: serverTimestamp() });
-                toast('Facção criada!', 'success');
-                loadFaccoes();
-            } catch (e) {
-                toast('Erro ao criar facção', 'error');
-            }
-        });
-
-        async function loadMembers() {
-            if (userData?.role !== 'admin') return;
-            const snap = await db.collection('users').get();
-            let html = '';
-            snap.forEach(doc => {
-                const u = doc.data();
-                html += `
-                    <div style="background:#1d1510; border-radius:16px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong>${u.perfil?.apelido || 'Sem Nome'}</strong>
-                            <small style="color:var(--muted); display:block;">${u.email}</small>
-                        </div>
-                        <div style="text-align:right;">
-                            <span>🔥 ${u.credits || 0}</span><br>
-                            <span style="font-size:0.8rem;">⚡ ${u.xp || 0} XP</span>
-                        </div>
-                    </div>`;
-            });
-            document.getElementById('membersList').innerHTML = html || '<p style="color:var(--muted);">Nenhum membro encontrado.</p>';
-        }
-
-        // ==================== LISTAGENS ====================
-        async function loadMissoes() {
-            const snap = await db.collection('missoes').orderBy('createdAt', 'desc').get();
-            let html = '';
-            snap.forEach(doc => {
-                const m = doc.data();
-                html += `
-                    <div class="card" style="margin-bottom:12px;">
-                        <h3>${m.titulo}</h3>
-                        <p>⚡ ${m.xp || 0} XP &nbsp;|&nbsp; 🔥 ${m.tokens || 0} tokens</p>
-                    </div>`;
-            });
-            document.getElementById('missoesList').innerHTML = html || '<p style="color:var(--muted);">Nenhuma missão disponível.</p>';
-        }
-
-        async function loadParceiros() {
-            const snap = await db.collection('parceiros').orderBy('createdAt', 'desc').get();
-            let html = '';
-            snap.forEach(doc => {
-                const p = doc.data();
-                html += `
-                    <div class="card" style="margin-bottom:12px;">
-                        <h3>${p.nome}</h3>
-                        <p>🎁 ${p.desconto}</p>
-                    </div>`;
-            });
-            document.getElementById('parceirosList').innerHTML = html || '<p style="color:var(--muted);">Nenhum parceiro cadastrado.</p>';
-        }
-
-        async function loadLoja() {
-            const snap = await db.collection('loja').orderBy('createdAt', 'desc').get();
-            let html = '';
-            snap.forEach(doc => {
-                const item = doc.data();
-                html += `
-                    <div class="card" style="margin-bottom:12px;">
-                        <h3>${item.nome}</h3>
-                        <p>🔥 ${item.preco} tokens</p>
-                        <button class="btn btn-primary" onclick="comprarItem('${doc.id}', '${item.nome}', ${item.preco})">Comprar</button>
-                    </div>`;
-            });
-            document.getElementById('lojaList').innerHTML = html || '<p style="color:var(--muted);">Nenhum item na loja.</p>';
-        }
-
-        async function loadTickets() {
-            if (!userData) return;
-            const snap = await db.collection('tickets').get();
-            const userSnap = await db.collection('users').doc(userData.uid).get();
-            const owned = userSnap.data()?.ticketsOwned || [];
-            let html = '';
-            snap.forEach(doc => {
-                const t = doc.data();
-                const possui = owned.includes(doc.id);
-                html += `
-                    <div class="card" style="margin-bottom:12px;">
-                        <h3>${t.nome}</h3>
-                        <p>🔥 ${t.preco} tokens ${possui ? '<span style="color:var(--success);">✔ Adquirido</span>' : ''}</p>
-                        ${!possui ? `<button class="btn btn-primary" onclick="comprarTicket('${doc.id}', ${t.preco})">Comprar Ticket</button>` : ''}
-                    </div>`;
-            });
-            document.getElementById('ticketsList').innerHTML = html || '<p style="color:var(--muted);">Nenhum ticket disponível.</p>';
-        }
-
-        async function loadInventario() {
-            if (!userData) return;
-            const userSnap = await db.collection('users').doc(userData.uid).get();
-            const inventory = userSnap.data()?.inventory || [];
-            if (inventory.length === 0) {
-                document.getElementById('inventarioList').innerHTML = '<p style="color:var(--muted);">Inventário vazio.</p>';
-                return;
-            }
-            // Buscar detalhes dos itens na loja
-            const lojaSnap = await db.collection('loja').get();
-            const lojaItems = {};
-            lojaSnap.forEach(doc => { lojaItems[doc.id] = doc.data(); });
-
-            let html = '';
-            inventory.forEach(itemId => {
-                const item = lojaItems[itemId];
-                if (item) {
-                    html += `<div class="item-row"><span>${item.nome}</span><span style="color:var(--muted);">🔥 ${item.preco}</span></div>`;
+                let html = '';
+                if (snap.empty) {
+                    html = '<p class="muted" style="text-align:center;">Nenhum parceiro cadastrado ainda.</p>';
                 } else {
-                    html += `<div class="item-row"><span>Item desconhecido</span></div>`;
+                    snap.forEach(doc => {
+                        const p = doc.data();
+                        html += `
+                            <div class="partner-card">
+                                <h3>🤝 ${p.name || 'Parceiro'}</h3>
+                                <p style="margin-top:6px; color:var(--orange);">🎁 ${p.discount || 'Desconto exclusivo'}</p>
+                            </div>`;
+                    });
                 }
-            });
-            document.getElementById('inventarioList').innerHTML = html;
+
+                document.getElementById('partnersList').innerHTML = html;
+            } catch (e) {
+                console.error('Erro ao carregar parceiros:', e);
+                document.getElementById('partnersList').innerHTML = '<p class="muted">Erro ao carregar parceiros.</p>';
+            }
         }
 
-        async function loadRanking() {
-            const snap = await db.collection('users').orderBy('xp', 'desc').limit(20).get();
-            let html = '';
-            let pos = 1;
-            snap.forEach(doc => {
-                const u = doc.data();
-                html += `
-                    <div class="rank-item">
-                        <div class="rank-pos">#${pos++}</div>
-                        <div style="flex:1;">
-                            <strong>${u.perfil?.apelido || 'Sem Nome'}</strong>
-                            <div style="color:var(--muted); font-size:0.8rem;">${calcularPatente(u.xp || 0)}</div>
-                        </div>
-                        <div style="font-weight:700;">⚡ ${u.xp || 0} XP</div>
-                    </div>`;
-            });
-            document.getElementById('rankingList').innerHTML = html || '<p style="color:var(--muted);">Nenhum jogador no ranking.</p>';
-        }
-
-        async function loadFaccoes() {
-            const snap = await db.collection('faccoes').orderBy('createdAt', 'desc').get();
-            let html = '';
-            snap.forEach(doc => {
-                const f = doc.data();
-                html += `
-                    <div class="fac-item">
-                        <h3>🏴 ${f.nome}</h3>
-                        <p style="color:var(--muted);">${f.desc || 'Sem descrição'}</p>
-                    </div>`;
-            });
-            document.getElementById('faccoesList').innerHTML = html || '<p style="color:var(--muted);">Nenhuma facção criada.</p>';
-        }
-
-        // ==================== COMPRAS ====================
-        async function comprarItem(id, nome, preco) {
-            if (!userData) return;
-            if ((userData.credits || 0) < preco) {
-                toast('Tokens insuficientes', 'error');
+        // ==================== ADMIN ====================
+        document.getElementById('rewardBtn').addEventListener('click', async function() {
+            if (!currentUser || currentUser.role !== 'admin') {
+                toast('Acesso negado', 'error');
                 return;
             }
-            try {
-                await db.collection('users').doc(userData.uid).update({
-                    credits: increment(-preco),
-                    inventory: arrayUnion(id)
-                });
-                userData.credits -= preco;
-                if (!userData.inventory) userData.inventory = [];
-                userData.inventory.push(id);
-                atualizarUI();
-                toast(`${nome} comprado!`, 'success');
-                loadLoja();
-                loadInventario();
-            } catch (e) {
-                toast('Erro ao comprar', 'error');
-            }
-        }
 
-        async function comprarTicket(id, preco) {
-            if (!userData) return;
-            if ((userData.credits || 0) < preco) {
-                toast('Tokens insuficientes', 'error');
+            const email = document.getElementById('rewardEmail').value.trim();
+            const tokens = parseInt(document.getElementById('rewardTokens').value) || 0;
+            const xp = parseInt(document.getElementById('rewardXp').value) || 0;
+
+            if (!email) {
+                toast('Informe o email do usuário', 'error');
                 return;
             }
-            try {
-                await db.collection('users').doc(userData.uid).update({
-                    credits: increment(-preco),
-                    ticketsOwned: arrayUnion(id)
-                });
-                userData.credits -= preco;
-                atualizarUI();
-                toast('Ticket adquirido!', 'success');
-                loadTickets();
-            } catch (e) {
-                toast('Erro ao comprar ticket', 'error');
-            }
-        }
 
-        // ======================= EDITAR NICKNAME =======================
-        document.getElementById('editNicknameBtn').addEventListener('click', () => {
-            showView('perfilView');
-            document.getElementById('perfilApelido').focus();
+            if (tokens === 0 && xp === 0) {
+                toast('Informe pelo menos tokens ou XP', 'error');
+                return;
+            }
+
+            disableButton(this, 'Enviando...');
+            try {
+                const q = await db.collection('users')
+                    .where('email', '==', email)
+                    .limit(1)
+                    .get();
+
+                if (q.empty) {
+                    toast('Usuário não encontrado', 'error');
+                    enableButton(this);
+                    return;
+                }
+
+                const updateData = {};
+                if (tokens > 0) updateData.tokens = increment(tokens);
+                if (xp > 0) updateData.xp = increment(xp);
+
+                await q.docs[0].ref.update(updateData);
+
+                toast(`Recompensa enviada para ${email}!`, 'success');
+
+                // Limpar campos
+                document.getElementById('rewardEmail').value = '';
+                document.getElementById('rewardTokens').value = '0';
+                document.getElementById('rewardXp').value = '0';
+            } catch (e) {
+                console.error('Erro ao enviar recompensa:', e);
+                toast('Erro ao enviar recompensa: ' + e.message, 'error');
+            } finally {
+                enableButton(this);
+            }
         });
 
-        // ======================= LOGOUT =======================
-        window.logout = () => auth.signOut();
+        document.getElementById('createPartnerBtn').addEventListener('click', async function() {
+            if (!currentUser || currentUser.role !== 'admin') {
+                toast('Acesso negado', 'error');
+                return;
+            }
 
-        // ======================= LIMPEZA DE SERVICE WORKERS =======================
+            const name = document.getElementById('partnerName').value.trim();
+            const discount = document.getElementById('partnerDiscount').value.trim();
+
+            if (!name || !discount) {
+                toast('Preencha todos os campos do parceiro', 'error');
+                return;
+            }
+
+            disableButton(this, 'Criando...');
+            try {
+                await db.collection('partners').add({
+                    name,
+                    discount,
+                    createdBy: currentUser.uid,
+                    createdAt: serverTimestamp()
+                });
+
+                toast('Parceiro criado com sucesso!', 'success');
+
+                // Limpar campos
+                document.getElementById('partnerName').value = '';
+                document.getElementById('partnerDiscount').value = '';
+
+                loadPartners();
+            } catch (e) {
+                console.error('Erro ao criar parceiro:', e);
+                toast('Erro ao criar parceiro: ' + e.message, 'error');
+            } finally {
+                enableButton(this);
+            }
+        });
+
+        // ==================== NAVEGAÇÃO ====================
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const viewId = btn.dataset.view;
+                showView(viewId);
+            });
+        });
+
+        // ==================== LOGOUT ====================
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (userListener) {
+                userListener();
+                userListener = null;
+            }
+            auth.signOut();
+        });
+
+        // ==================== LIMPEZA SERVICE WORKERS ====================
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
         }
