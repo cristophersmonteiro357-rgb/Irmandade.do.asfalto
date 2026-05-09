@@ -3,1485 +3,561 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-
 <title>Irmandade do Asfalto · MotoClube</title>
-
 <link rel="manifest" href="data:application/manifest+json,{ &quot;name&quot;: &quot;Irmandade do Asfalto&quot;, &quot;short_name&quot;: &quot;MotoClube&quot;, &quot;start_url&quot;: &quot;.&quot;, &quot;display&quot;: &quot;standalone&quot;, &quot;theme_color&quot;: &quot;#e06c2e&quot;, &quot;background_color&quot;: &quot;#050302&quot; }">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-
 <style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg-deep:#050302; --bg-card:#0f0c0a; --surface:#1a1512; --ember:#e06c2e;
+  --ember-bright:#ff8c4a; --gold:#d4af37; --text-primary:#f5ede0; --text-muted:#8a7a6a;
+  --border-ember:rgba(224,108,46,0.4); --safe-bottom:env(safe-area-inset-bottom,16px);
+  --font-body:'Inter',system-ui,sans-serif;
 }
-
-:root{
---bg-deep:#050302;
---bg-card:#0f0c0a;
---surface:#1a1512;
---ember:#e06c2e;
---ember-bright:#ff8c4a;
---gold:#d4af37;
---text-primary:#f5ede0;
---text-muted:#8a7a6a;
---border-ember:rgba(224,108,46,0.4);
---safe-bottom:env(safe-area-inset-bottom,16px);
---font-body:'Inter',system-ui,sans-serif;
-}
-
-body{
-background:var(--bg-deep);
-color:var(--text-primary);
-font-family:var(--font-body);
-height:100vh;
-overflow:hidden;
-}
-
-.bg-flame{
-position:fixed;
-inset:0;
-background:
-radial-gradient(
-ellipse at 30% 20%,
-rgba(224,108,46,0.1) 0%,
-transparent 70%
-);
-background-size:80px;
-pointer-events:none;
-z-index:0;
-}
-
-.toast-stack{
-position:fixed;
-top:16px;
-left:50%;
-transform:translateX(-50%);
-z-index:400;
-width:90%;
-max-width:360px;
-display:flex;
-flex-direction:column;
-gap:8px;
-}
-
-.toast{
-padding:12px;
-border-radius:16px;
-background:#1f1a14e6;
-backdrop-filter:blur(10px);
-border-left:4px solid var(--ember);
-color:white;
-}
-
-.toast-error{
-border-left-color:#c55a3a;
-}
-
-.toast-success{
-border-left-color:#2e7d32;
-}
-
-#app{
-display:none;
-flex-direction:column;
-height:100%;
-position:relative;
-z-index:2;
-}
-
-.topbar{
-padding:12px 16px;
-display:flex;
-justify-content:space-between;
-background:rgba(5,3,2,0.85);
-backdrop-filter:blur(20px);
-border-bottom:1px solid var(--border-ember);
-}
-
-.logo{
-display:flex;
-align-items:center;
-gap:8px;
-font-weight:800;
-}
-
-.logo i{
-font-size:28px;
-color:var(--ember);
-}
-
-.content{
-flex:1;
-overflow-y:auto;
-padding:16px;
-padding-bottom:100px;
-}
-
-.view{
-display:none;
-flex-direction:column;
-gap:20px;
-}
-
-.view.active{
-display:flex;
-}
-
-.card{
-background:rgba(26,21,18,0.85);
-border-radius:28px;
-padding:20px;
-border:1px solid var(--border-ember);
-}
-
-.btn{
-border:none;
-border-radius:40px;
-padding:10px 20px;
-font-weight:600;
-cursor:pointer;
-background:#241e1a;
-color:white;
-border:1px solid var(--border-ember);
-width:100%;
-margin-top:8px;
-}
-
-.btn-primary{
-background:linear-gradient(135deg,#b9591f,#e06c2e);
-color:#0a0502;
-border:none;
-}
-
-.btn-outline{
-background:transparent;
-border:1px solid var(--ember);
-color:var(--ember-bright);
-}
-
-.stats-row{
-display:flex;
-justify-content:space-between;
-background:#1a1512;
-border-radius:40px;
-padding:12px;
-margin-top:8px;
-}
-
-.avatar-circle{
-width:56px;
-height:56px;
-background:#2e241f;
-border-radius:50%;
-border:2px solid var(--ember);
-display:flex;
-align-items:center;
-justify-content:center;
-overflow:hidden;
-}
-
-.grid-2col{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px;
-margin:8px 0;
-text-align:center;
-cursor:pointer;
-}
-
-.bottom-nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:rgba(5,3,2,0.95);
-display:flex;
-justify-content:space-around;
-padding:8px 8px calc(8px + var(--safe-bottom));
-border-top:1px solid var(--border-ember);
-z-index:20;
-}
-
-.nav-item{
-display:flex;
-flex-direction:column;
-align-items:center;
-background:none;
-border:none;
-color:var(--text-muted);
-font-size:0.7rem;
-padding:6px;
-gap:4px;
-cursor:pointer;
-}
-
-.nav-item.active{
-color:var(--ember-bright);
-}
-
-.xp-bar{
-background:#2e241f;
-height:8px;
-border-radius:10px;
-margin:8px 0;
-overflow:hidden;
-}
-
-input,
-textarea{
-width:100%;
-padding:12px;
-background:#1c140f;
-border:1px solid #3a2a20;
-border-radius:20px;
-color:white;
-margin:6px 0;
-}
-
-.admin-panel{
-border:1px dashed var(--gold);
-background:#1e1814;
-margin-top:12px;
-padding:12px;
-border-radius:20px;
-}
-
-.loading-full{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,0.9);
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:300;
-flex-direction:column;
-gap:16px;
-}
-
-.spinner{
-display:inline-block;
-width:40px;
-height:40px;
-border:3px solid rgba(255,255,255,0.3);
-border-top-color:white;
-border-radius:50%;
-animation:spin 0.8s linear infinite;
-}
-
-@keyframes spin{
-to{
-transform:rotate(360deg);
-}
-}
-
+body { background:var(--bg-deep); color:var(--text-primary); font-family:var(--font-body); height:100vh; overflow:hidden; }
+.bg-flame { position:fixed; inset:0; background:radial-gradient(ellipse at 30% 20%, rgba(224,108,46,0.1) 0%, transparent 70%); background-size:80px; pointer-events:none; z-index:0; }
+.toast-stack { position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:400; width:90%; max-width:360px; display:flex; flex-direction:column; gap:8px; }
+.toast { padding:12px; border-radius:16px; background:#1f1a14e6; backdrop-filter:blur(10px); border-left:4px solid var(--ember); color:white; }
+.toast-error { border-left-color:#c55a3a; }
+.toast-success { border-left-color:#2e7d32; }
+#app { display:none; flex-direction:column; height:100%; position:relative; z-index:2; }
+.topbar { padding:12px 16px; display:flex; justify-content:space-between; background:rgba(5,3,2,0.85); backdrop-filter:blur(20px); border-bottom:1px solid var(--border-ember); }
+.logo { display:flex; align-items:center; gap:8px; font-weight:800; }
+.logo i { font-size:28px; color:var(--ember); }
+.content { flex:1; overflow-y:auto; padding:16px; padding-bottom:100px; }
+.view { display:none; flex-direction:column; gap:20px; }
+.view.active { display:flex; }
+.card { background:rgba(26,21,18,0.85); border-radius:28px; padding:20px; border:1px solid var(--border-ember); }
+.btn { border:none; border-radius:40px; padding:10px 20px; font-weight:600; cursor:pointer; background:#241e1a; color:white; border:1px solid var(--border-ember); width:100%; margin-top:8px; }
+.btn-primary { background:linear-gradient(135deg,#b9591f,#e06c2e); color:#0a0502; border:none; }
+.btn-outline { background:transparent; border:1px solid var(--ember); color:var(--ember-bright); }
+.stats-row { display:flex; justify-content:space-between; background:#1a1512; border-radius:40px; padding:12px; margin-top:8px; }
+.avatar-circle { width:56px; height:56px; background:#2e241f; border-radius:50%; border:2px solid var(--ember); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.grid-2col { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin:8px 0; text-align:center; cursor:pointer; }
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; background:rgba(5,3,2,0.95); display:flex; justify-content:space-around; padding:8px 8px calc(8px + var(--safe-bottom)); border-top:1px solid var(--border-ember); z-index:20; }
+.nav-item { display:flex; flex-direction:column; align-items:center; background:none; border:none; color:var(--text-muted); font-size:0.7rem; padding:6px; gap:4px; cursor:pointer; }
+.nav-item.active { color:var(--ember-bright); }
+.xp-bar { background:#2e241f; height:8px; border-radius:10px; margin:8px 0; overflow:hidden; }
+.xp-fill { height:100%; background:linear-gradient(90deg,#c97e3a,#f0b27a); width:0%; }
+input, textarea { width:100%; padding:12px; background:#1c140f; border:1px solid #3a2a20; border-radius:20px; color:white; margin:6px 0; }
+.admin-panel { border:1px dashed var(--gold); background:#1e1814; margin-top:12px; padding:12px; border-radius:20px; }
+.loading-full { position:fixed; inset:0; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:300; flex-direction:column; gap:16px; }
+.spinner { display:inline-block; width:40px; height:40px; border:3px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.ticket-item { background:#1a1512; border-radius:16px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+.badge-admin { background:var(--gold); color:#000; padding:2px 8px; border-radius:12px; font-size:0.65rem; font-weight:bold; }
 </style>
 </head>
-
 <body>
-
 <div class="bg-flame"></div>
-
 <div class="toast-stack" id="toastStack"></div>
 
 <!-- LOGIN -->
-
-<div id="loginOverlay"
-style="
-position:fixed;
-inset:0;
-background:var(--bg-deep);
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:200;
-">
-
-<div class="card"
-style="max-width:380px;width:90%;text-align:center;">
-
-<div style="font-size:70px;">💀</div>
-
-<h2 style="color:var(--ember-bright);">
-IRMANDADE DO ASFALTO
-</h2>
-
-<p style="color:var(--text-muted);">
-MotoClube
-</p>
-
-<input type="email" id="emailLogin" placeholder="E-mail">
-
-<input type="password" id="senhaLogin" placeholder="Senha">
-
-<button class="btn btn-primary" id="loginBtn">
-⚡ ENTRAR
-</button>
-
-<button class="btn btn-outline" id="registerBtn">
-🛡️ CRIAR CONTA
-</button>
-
-<button class="btn btn-outline" id="forgotPasswordBtn">
-🔑 RECUPERAR SENHA
-</button>
-
-</div>
-
+<div id="loginOverlay" style="position:fixed; inset:0; background:var(--bg-deep); display:flex; align-items:center; justify-content:center; z-index:200;">
+  <div class="card" style="max-width:380px; width:90%; text-align:center;">
+    <div style="font-size:70px;">💀</div>
+    <h2 style="color:var(--ember-bright);">IRMANDADE DO ASFALTO</h2>
+    <p style="color:var(--text-muted);">MotoClube</p>
+    <input type="email" id="emailLogin" placeholder="E-mail">
+    <input type="password" id="senhaLogin" placeholder="Senha">
+    <button class="btn btn-primary" id="loginBtn">⚡ ENTRAR</button>
+    <button class="btn btn-outline" id="registerBtn">🛡️ CRIAR CONTA</button>
+    <button class="btn btn-outline" id="forgotPasswordBtn">🔑 RECUPERAR SENHA</button>
+  </div>
 </div>
 
 <!-- LOADING -->
-
-<div id="loadingData"
-class="loading-full"
-style="display:none;">
-
-<div class="spinner"></div>
-
-<span>Conectando...</span>
-
+<div id="loadingData" class="loading-full" style="display:none;">
+  <div class="spinner"></div>
+  <span>Conectando...</span>
 </div>
 
 <!-- APP -->
-
 <div id="app">
+  <div class="topbar">
+    <div class="logo"><i class="fas fa-skull"></i><span>Asfalto</span></div>
+    <div>🔥 <span id="creditsAmount">0</span></div>
+  </div>
+  <div class="content">
+    <!-- HOME -->
+    <div class="view active" id="viewHome">
+      <div class="card">
+        <div>Saldo de Tokens</div>
+        <div id="bigCredits" style="font-size:48px; font-weight:800; color:var(--ember-bright);">0</div>
+        <div class="stats-row">
+          <span>🎟️ <span id="ticketAmount">0</span></span>
+          <span id="trustScore">0 XP • Nível 1</span>
+        </div>
+        <div class="xp-bar"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+        <div id="statusBadge">✅ Adimplente</div>
+      </div>
+      <div id="adminEntry" style="display:none;">
+        <button class="btn btn-outline" onclick="navigateTo('admin')">👑 Painel do Mestre</button>
+      </div>
+      <div class="grid-2col">
+        <div onclick="navigateTo('qr')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-qrcode"></i></div>QR</div>
+        <div onclick="navigateTo('scanner')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-camera"></i></div>Scanner</div>
+        <div onclick="navigateTo('checkin')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-map-marker-alt"></i></div>Check-in</div>
+        <div onclick="navigateTo('perfil')"><div class="avatar-circle" style="margin:auto;"><i class="fas fa-user"></i></div>Perfil</div>
+      </div>
+      <button class="btn btn-outline" onclick="logout()">🚪 Sair</button>
+    </div>
 
-<div class="topbar">
+    <!-- QR -->
+    <div class="view" id="viewQr">
+      <div class="card"><h3>Meu QR</h3><div id="qrContainer" style="text-align:center;min-height:220px;"></div><button class="btn btn-primary" onclick="gerarQR()">Gerar QR</button></div>
+    </div>
 
-<div class="logo">
-<i class="fas fa-skull"></i>
-<span>Asfalto</span>
+    <!-- SCANNER -->
+    <div class="view" id="viewScanner">
+      <div class="card"><h3>Scanner</h3><div id="reader"></div><button class="btn btn-primary" id="btnStartScanner">Iniciar Scanner</button><button class="btn btn-outline" id="btnStopScanner" style="display:none;">Parar Scanner</button></div>
+    </div>
+
+    <!-- PERFIL -->
+    <div class="view" id="viewPerfil">
+      <div class="card"><h3>Perfil</h3><input id="perfilNome" placeholder="Nome"><input id="perfilMoto" placeholder="Moto"><input id="perfilPlaca" placeholder="Placa"><button class="btn btn-primary" onclick="salvarPerfil()">Salvar Perfil</button><hr style="margin:12px 0;"><h4>🎟️ Meus Ingressos</h4><div id="ticketsOwnedList">Nenhum ingresso comprado.</div></div>
+    </div>
+
+    <!-- CHECKIN SIMPLES -->
+    <div class="view" id="viewCheckin">
+      <div class="card"><h3>Check-in</h3><p>Recompensa: <strong id="checkinRewardDisplay">30</strong> 🔥 +10 XP</p><button class="btn btn-primary" onclick="realizarCheckinSimples()">Registrar Check-in</button><p id="checkinStatus"></p></div>
+    </div>
+
+    <!-- LOJA -->
+    <div class="view" id="viewLoja">
+      <div class="card"><h3><i class="fas fa-store"></i> Loja de Ingressos</h3><div id="ticketsShopList">Carregando...</div></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="view" id="viewAdmin">
+      <div class="card admin-panel">
+        <h3>👑 Painel do Mestre</h3>
+        <input type="number" id="adminCheckinReward" placeholder="Recompensa Check-in">
+        <button class="btn btn-primary" id="saveRewardBtn">Salvar Recompensa</button>
+        <hr style="margin:20px 0;opacity:.2;">
+        <h3>⚒️ Cunhar Tokens</h3>
+        <input type="email" id="adminMemberEmail" placeholder="Email do membro">
+        <input type="number" id="adminTokenAmount" placeholder="Quantidade">
+        <button class="btn btn-primary" id="adminMintBtn">Cunhar Tokens</button>
+        <div id="adminMintStatus"></div>
+        <hr style="margin:20px 0;opacity:.2;">
+        <h3>⚔️ Central do Mestre</h3>
+        <button class="btn btn-primary" onclick="abrirCriadorCheckpoint()">📍 Criar Checkpoint</button>
+        <button class="btn btn-primary" onclick="abrirCriadorMissao()">🎯 Criar Missão</button>
+        <button class="btn btn-primary" onclick="abrirCriadorEvento()">🏍️ Criar Evento</button>
+        <button class="btn btn-primary" onclick="abrirCriadorTicket()">🎟️ Criar Ticket</button>
+        <div id="adminWorkspace" style="margin-top:20px;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-item active" data-view="home" onclick="navigateTo('home')"><i class="fas fa-home"></i><span>Home</span></button>
+    <button class="nav-item" data-view="qr" onclick="navigateTo('qr')"><i class="fas fa-qrcode"></i><span>QR</span></button>
+    <button class="nav-item" data-view="checkin" onclick="navigateTo('checkin')"><i class="fas fa-map-marker-alt"></i><span>Check</span></button>
+    <button class="nav-item" data-view="loja" onclick="navigateTo('loja')"><i class="fas fa-ticket-alt"></i><span>Loja</span></button>
+    <button class="nav-item" data-view="perfil" onclick="navigateTo('perfil')"><i class="fas fa-user"></i><span>Perfil</span></button>
+  </div>
 </div>
-
-<div>
-🔥 <span id="creditsAmount">0</span>
-</div>
-
-</div>
-
-<div class="content">
-
-<!-- HOME -->
-
-<div class="view active" id="viewHome">
-
-<div class="card">
-
-<div>Saldo de Tokens</div>
-
-<div id="bigCredits"
-style="
-font-size:48px;
-font-weight:800;
-color:var(--ember-bright);
-">
-0
-</div>
-
-<div class="stats-row">
-
-<span>
-🎟️ <span id="ticketAmount">0</span>
-</span>
-
-<span id="trustScore">
-0 XP
-</span>
-
-</div>
-
-<div class="xp-bar">
-
-<div id="xpFill"
-style="
-height:100%;
-width:0%;
-background:linear-gradient(90deg,#c97e3a,#f0b27a);
-">
-</div>
-
-</div>
-
-<div id="statusBadge">
-✅ Adimplente
-</div>
-
-</div>
-
-<div id="adminEntry" style="display:none;">
-
-<button
-class="btn btn-outline"
-onclick="navigateTo('admin')">
-
-👑 Painel do Mestre
-
-</button>
-
-</div>
-
-<div class="grid-2col">
-
-<div onclick="navigateTo('qr')">
-<div class="avatar-circle" style="margin:auto;">
-<i class="fas fa-qrcode"></i>
-</div>
-QR
-</div>
-
-<div onclick="navigateTo('scanner')">
-<div class="avatar-circle" style="margin:auto;">
-<i class="fas fa-camera"></i>
-</div>
-Scanner
-</div>
-
-<div onclick="navigateTo('checkin')">
-<div class="avatar-circle" style="margin:auto;">
-<i class="fas fa-map-marker-alt"></i>
-</div>
-Check-in
-</div>
-
-<div onclick="navigateTo('perfil')">
-<div class="avatar-circle" style="margin:auto;">
-<i class="fas fa-user"></i>
-</div>
-Perfil
-</div>
-
-</div>
-
-<button class="btn btn-outline" onclick="logout()">
-🚪 Sair
-</button>
-
-</div>
-
-<!-- QR -->
-
-<div class="view" id="viewQr">
-
-<div class="card">
-
-<h3>Meu QR</h3>
-
-<div id="qrContainer"
-style="text-align:center;min-height:220px;"></div>
-
-<button class="btn btn-primary" onclick="gerarQR()">
-Gerar QR
-</button>
-
-</div>
-
-</div>
-
-<!-- SCANNER -->
-
-<div class="view" id="viewScanner">
-
-<div class="card">
-
-<h3>Scanner</h3>
-
-<div id="reader"></div>
-
-<button class="btn btn-primary" id="btnStartScanner">
-Iniciar Scanner
-</button>
-
-<button class="btn btn-outline"
-id="btnStopScanner"
-style="display:none;">
-
-Parar Scanner
-
-</button>
-
-</div>
-
-</div>
-
-<!-- PERFIL -->
-
-<div class="view" id="viewPerfil">
-
-<div class="card">
-
-<h3>Perfil</h3>
-
-<input id="perfilNome" placeholder="Nome">
-
-<input id="perfilMoto" placeholder="Moto">
-
-<input id="perfilPlaca" placeholder="Placa">
-
-<button class="btn btn-primary"
-onclick="salvarPerfil()">
-
-Salvar Perfil
-
-</button>
-
-</div>
-
-</div>
-
-<!-- CHECKIN -->
-
-<div class="view" id="viewCheckin">
-
-<div class="card">
-
-<h3>Check-in</h3>
-
-<p>
-Recompensa:
-<strong id="checkinRewardDisplay">
-30
-</strong> 🔥
-</p>
-
-<button class="btn btn-primary"
-onclick="realizarCheckinSimples()">
-
-Registrar Check-in
-
-</button>
-
-<p id="checkinStatus"></p>
-
-</div>
-
-</div>
-
-<!-- ADMIN -->
-
-<div class="view" id="viewAdmin">
-
-<div class="card admin-panel">
-
-<h3>👑 Painel do Mestre</h3>
-
-<input
-type="number"
-id="adminCheckinReward"
-placeholder="Recompensa Check-in">
-
-<button
-class="btn btn-primary"
-id="saveRewardBtn">
-
-Salvar Recompensa
-
-</button>
-
-<hr style="margin:20px 0;opacity:.2;">
-
-<h3>⚒️ Cunhar Tokens</h3>
-
-<input
-type="email"
-id="adminMemberEmail"
-placeholder="Email do membro">
-
-<input
-type="number"
-id="adminTokenAmount"
-placeholder="Quantidade">
-
-<button
-class="btn btn-primary"
-id="adminMintBtn">
-
-Cunhar Tokens
-
-</button>
-
-<div id="adminMintStatus"></div>
-
-<hr style="margin:20px 0;opacity:.2;">
-
-<h3>⚔️ Central do Mestre</h3>
-
-<button class="btn btn-primary"
-onclick="abrirCriadorCheckpoint()">
-
-📍 Criar Checkpoint
-
-</button>
-
-<button class="btn btn-primary"
-onclick="abrirCriadorMissao()">
-
-🎯 Criar Missão
-
-</button>
-
-<button class="btn btn-primary"
-onclick="abrirCriadorEvento()">
-
-🏍️ Criar Evento
-
-</button>
-
-<button class="btn btn-primary"
-onclick="abrirCriadorTicket()">
-
-🎟️ Criar Ticket
-
-</button>
-
-<div id="adminWorkspace"
-style="margin-top:20px;"></div>
-
-</div>
-
-</div>
-
-</div>
-
-<div class="bottom-nav">
-
-<button
-class="nav-item active"
-data-view="home"
-onclick="navigateTo('home')">
-
-<i class="fas fa-home"></i>
-<span>Home</span>
-
-</button>
-
-<button
-class="nav-item"
-data-view="qr"
-onclick="navigateTo('qr')">
-
-<i class="fas fa-qrcode"></i>
-<span>QR</span>
-
-</button>
-
-<button
-class="nav-item"
-data-view="checkin"
-onclick="navigateTo('checkin')">
-
-<i class="fas fa-map-marker-alt"></i>
-<span>Check</span>
-
-</button>
-
-<button
-class="nav-item"
-data-view="perfil"
-onclick="navigateTo('perfil')">
-
-<i class="fas fa-user"></i>
-<span>Perfil</span>
-
-</button>
-
-</div>
-
-</div>
-
-<!-- FIREBASE -->
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
 <script>
-
 const firebaseConfig = {
-
-apiKey:"AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
-
-authDomain:"clube-de-vantagens-d748e.firebaseapp.com",
-
-projectId:"clube-de-vantagens-d748e",
-
-storageBucket:"clube-de-vantagens-d748e.firebasestorage.app",
-
-messagingSenderId:"774730191238",
-
-appId:"1:774730191238:web:9af24eddfafb18f1351c07"
-
+  apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
+  authDomain: "clube-de-vantagens-d748e.firebaseapp.com",
+  projectId: "clube-de-vantagens-d748e",
+  storageBucket: "clube-de-vantagens-d748e.firebasestorage.app",
+  messagingSenderId: "774730191238",
+  appId: "1:774730191238:web:9af24eddfafb18f1351c07"
 };
-
 firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
-
 const db = firebase.firestore();
 
 let userData = null;
-
 let currentCheckinReward = 30;
-
 let html5QrScanner = null;
 
-function toast(msg,type='info'){
-
-const stack=document.getElementById('toastStack');
-
-const t=document.createElement('div');
-
-t.className=`toast ${
-type==='error'
-?'toast-error'
-:type==='success'
-?'toast-success'
-:''
-}`;
-
-t.innerText=msg;
-
-stack.appendChild(t);
-
-setTimeout(()=>t.remove(),3000);
-
+function toast(msg, type = 'info') {
+  const stack = document.getElementById('toastStack');
+  const t = document.createElement('div');
+  t.className = `toast ${type === 'error' ? 'toast-error' : type === 'success' ? 'toast-success' : ''}`;
+  t.innerText = msg;
+  stack.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
 
-async function definirAdminSePrimeiro(uid){
-
-const usersSnap=await db.collection('users').get();
-
-if(usersSnap.size===1){
-
-await db.collection('users')
-.doc(uid)
-.update({
-role:'admin'
-});
-
-return true;
-
+// Garantir que o email específico seja admin
+async function ensureAdminByEmail(email, uid) {
+  if (email === 'cristophersmonteiro357@gmail.com') {
+    const userRef = db.collection('users').doc(uid);
+    const doc = await userRef.get();
+    if (doc.exists && doc.data().role !== 'admin') {
+      await userRef.update({ role: 'admin' });
+      toast('⚡ Promovido a MESTRE!', 'success');
+    } else if (!doc.exists) {
+      await userRef.set({ role: 'admin', email }, { merge: true });
+    }
+  }
 }
 
-return false;
-
+// Carregar configuração do check-in
+async function loadConfig() {
+  try {
+    const doc = await db.collection('config').doc('app').get();
+    if (doc.exists) currentCheckinReward = doc.data().checkinReward || 30;
+    document.getElementById('checkinRewardDisplay').innerText = currentCheckinReward;
+  } catch (e) { console.warn(e); }
 }
 
-document.getElementById('registerBtn')
-.addEventListener('click',async()=>{
-
-const email=document.getElementById('emailLogin').value.trim();
-
-const senha=document.getElementById('senhaLogin').value;
-
-if(!email||!senha){
-toast('Preencha tudo','error');
-return;
+// Atualizar interface principal
+function atualizarUI() {
+  if (!userData) return;
+  document.getElementById('creditsAmount').innerText = userData.credits || 0;
+  document.getElementById('bigCredits').innerText = userData.credits || 0;
+  document.getElementById('ticketAmount').innerText = userData.tickets || 0;
+  const xp = userData.xp || 0;
+  const nivel = Math.floor(xp / 100) + 1;
+  document.getElementById('trustScore').innerText = `${xp} XP • Nível ${nivel}`;
+  const progress = xp % 100;
+  document.getElementById('xpFill').style.width = `${progress}%`;
+  document.getElementById('statusBadge').innerHTML = userData.status === 'adimplente' ? '✅ Adimplente' : '⚠️ Inadimplente';
+  if (userData.perfil) {
+    document.getElementById('perfilNome').value = userData.perfil.nome || '';
+    document.getElementById('perfilMoto').value = userData.perfil.moto || '';
+    document.getElementById('perfilPlaca').value = userData.perfil.placa || '';
+  }
+  carregarTicketsComprados();
 }
 
-try{
-
-const cred=
-await auth.createUserWithEmailAndPassword(
-email,
-senha
-);
-
-await db.collection('users')
-.doc(cred.user.uid)
-.set({
-
-email,
-
-credits:0,
-
-trust:0,
-
-tickets:0,
-
-role:'user',
-
-status:'adimplente',
-
-perfil:{
-nome:email.split('@')[0]
-},
-
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-
-});
-
-await definirAdminSePrimeiro(
-cred.user.uid
-);
-
-toast('Conta criada!','success');
-
-}catch(e){
-
-toast(e.message,'error');
-
-}
-
-});
-
-document.getElementById('loginBtn')
-.addEventListener('click',async()=>{
-
-const email=document.getElementById('emailLogin').value.trim();
-
-const senha=document.getElementById('senhaLogin').value;
-
-try{
-
-await auth.signInWithEmailAndPassword(
-email,
-senha
-);
-
-}catch(e){
-
-toast('Login inválido','error');
-
-}
-
-});
-
-document.getElementById('forgotPasswordBtn')
-.addEventListener('click',async()=>{
-
-const email=document.getElementById('emailLogin').value.trim();
-
-if(!email){
-toast('Digite o email','error');
-return;
-}
-
-await auth.sendPasswordResetEmail(email);
-
-toast('Email enviado','success');
-
-});
-
-auth.onAuthStateChanged(async(user)=>{
-
-if(user){
-
-document.getElementById('loadingData')
-.style.display='flex';
-
-let docSnap=
-await db.collection('users')
-.doc(user.uid)
-.get();
-
-if(!docSnap.exists){
-
-await db.collection('users')
-.doc(user.uid)
-.set({
-
-email:user.email,
-
-credits:0,
-
-trust:0,
-
-tickets:0,
-
-role:'user',
-
-status:'adimplente',
-
-perfil:{
-nome:user.email.split('@')[0]
-}
-
-});
-
-docSnap=
-await db.collection('users')
-.doc(user.uid)
-.get();
-
-}
-
-userData={
-uid:user.uid,
-...docSnap.data()
+// Check-in simples
+window.realizarCheckinSimples = async () => {
+  if (!userData) return;
+  try {
+    await db.collection('checkins').add({ userId: userData.uid, createdAt: new Date(), tipo: 'simples' });
+    await db.collection('users').doc(userData.uid).update({
+      credits: firebase.firestore.FieldValue.increment(currentCheckinReward),
+      xp: firebase.firestore.FieldValue.increment(10)
+    });
+    userData.credits += currentCheckinReward;
+    userData.xp = (userData.xp || 0) + 10;
+    atualizarUI();
+    toast(`Check-in simples! +${currentCheckinReward}🔥 +10 XP`, 'success');
+  } catch (e) { toast('Erro no check-in', 'error'); }
 };
 
-await loadConfig();
+// Salvar perfil
+window.salvarPerfil = async () => {
+  const perfil = {
+    nome: document.getElementById('perfilNome').value,
+    moto: document.getElementById('perfilMoto').value,
+    placa: document.getElementById('perfilPlaca').value
+  };
+  await db.collection('users').doc(userData.uid).update({ perfil });
+  userData.perfil = perfil;
+  toast('Perfil salvo', 'success');
+};
 
-atualizarUI();
+// Gerar QR do próprio usuário
+window.gerarQR = () => {
+  const container = document.getElementById('qrContainer');
+  container.innerHTML = '';
+  new QRCode(container, { text: userData.uid, width: 180, height: 180, colorDark: '#e06c2e', colorLight: '#ffffff' });
+  toast('QR gerado!', 'success');
+};
 
-document.getElementById('loginOverlay')
-.style.display='none';
-
-document.getElementById('loadingData')
-.style.display='none';
-
-document.getElementById('app')
-.style.display='flex';
-
-if(userData.role==='admin'){
-
-document.getElementById('adminEntry')
-.style.display='block';
-
+// Scanner com processamento de QRs
+function processarQR(texto) {
+  if (texto.startsWith('checkpoint:')) {
+    const id = texto.split(':')[1];
+    usarCheckpoint(id);
+  } else if (texto.startsWith('missao:')) {
+    const id = texto.split(':')[1];
+	completarMissao(id);
+  } else if (texto.startsWith('evento:')) {
+    const id = texto.split(':')[1];
+	participarEvento(id);
+  } else {
+    toast('QR inválido para esta função', 'error');
+  }
 }
 
-}else{
-
-document.getElementById('loginOverlay')
-.style.display='flex';
-
-document.getElementById('app')
-.style.display='none';
-
+async function usarCheckpoint(id) {
+  const cpDoc = await db.collection('checkpoints').doc(id).get();
+  if (!cpDoc.exists) return toast('Checkpoint não encontrado', 'error');
+  const jaUsado = await db.collection('checkins').where('userId', '==', userData.uid).where('checkpointId', '==', id).limit(1).get();
+  if (!jaUsado.empty) return toast('Você já usou este checkpoint!', 'error');
+  const reward = cpDoc.data().reward || 20;
+  await db.collection('checkins').add({ userId: userData.uid, checkpointId: id, createdAt: new Date(), tipo: 'checkpoint' });
+  await db.collection('users').doc(userData.uid).update({
+    credits: firebase.firestore.FieldValue.increment(reward),
+    xp: firebase.firestore.FieldValue.increment(15)
+  });
+  userData.credits += reward;
+  userData.xp = (userData.xp || 0) + 15;
+  atualizarUI();
+  toast(`Checkpoint "${cpDoc.data().nome}": +${reward}🔥 +15 XP`, 'success');
 }
 
-});
-
-async function loadConfig(){
-
-try{
-
-const doc=
-await db.collection('config')
-.doc('app')
-.get();
-
-if(doc.exists){
-
-currentCheckinReward=
-doc.data().checkinReward||30;
-
+async function completarMissao(id) {
+  const missaoDoc = await db.collection('missoes').doc(id).get();
+  if (!missaoDoc.exists) return toast('Missão não encontrada', 'error');
+  const jaCompleta = await db.collection('missoesCompletas').where('userId', '==', userData.uid).where('missaoId', '==', id).limit(1).get();
+  if (!jaCompleta.empty) return toast('Você já completou esta missão!', 'error');
+  const recompensaXP = missaoDoc.data().xp || 50;
+  await db.collection('missoesCompletas').add({ userId: userData.uid, missaoId: id, createdAt: new Date() });
+  await db.collection('users').doc(userData.uid).update({ xp: firebase.firestore.FieldValue.increment(recompensaXP) });
+  userData.xp = (userData.xp || 0) + recompensaXP;
+  atualizarUI();
+  toast(`Missão "${missaoDoc.data().titulo}" completa! +${recompensaXP} XP`, 'success');
 }
 
-}catch(e){}
-
+async function participarEvento(id) {
+  const eventoDoc = await db.collection('eventos').doc(id).get();
+  if (!eventoDoc.exists) return toast('Evento não encontrado', 'error');
+  const jaPresente = await db.collection('checkins').where('userId', '==', userData.uid).where('eventoId', '==', id).limit(1).get();
+  if (!jaPresente.empty) return toast('Presença já registrada neste evento!', 'error');
+  const reward = eventoDoc.data().reward || 50;
+  await db.collection('checkins').add({ userId: userData.uid, eventoId: id, createdAt: new Date(), tipo: 'evento' });
+  await db.collection('users').doc(userData.uid).update({
+    credits: firebase.firestore.FieldValue.increment(reward),
+    xp: firebase.firestore.FieldValue.increment(25)
+  });
+  userData.credits += reward;
+  userData.xp = (userData.xp || 0) + 25;
+  atualizarUI();
+  toast(`Evento "${eventoDoc.data().nome}": +${reward}🔥 +25 XP`, 'success');
 }
 
-function atualizarUI(){
+// Iniciar/parar scanner
+document.getElementById('btnStartScanner').addEventListener('click', () => {
+  document.getElementById('btnStartScanner').style.display = 'none';
+  document.getElementById('btnStopScanner').style.display = '';
+  html5QrScanner = new Html5Qrcode("reader");
+  html5QrScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } },
+    (text) => { processarQR(text); stopScanner(); },
+    () => {});
+});
+function stopScanner() {
+  if (html5QrScanner) { html5QrScanner.stop(); html5QrScanner = null; }
+  document.getElementById('btnStartScanner').style.display = '';
+  document.getElementById('btnStopScanner').style.display = 'none';
+}
+document.getElementById('btnStopScanner').addEventListener('click', stopScanner);
 
-document.getElementById('creditsAmount')
-.innerText=userData.credits||0;
+// ADMIN: cunhar tokens
+document.getElementById('adminMintBtn').addEventListener('click', async () => {
+  const email = document.getElementById('adminMemberEmail').value.trim();
+  const amount = parseInt(document.getElementById('adminTokenAmount').value);
+  if (!email || isNaN(amount) || amount <= 0) return toast('Dados inválidos', 'error');
+  const q = await db.collection('users').where('email', '==', email).limit(1).get();
+  if (q.empty) return toast('Membro não encontrado', 'error');
+  await q.docs[0].ref.update({ credits: firebase.firestore.FieldValue.increment(amount) });
+  toast(`${amount} tokens enviados para ${email}`, 'success');
+});
+document.getElementById('saveRewardBtn').addEventListener('click', async () => {
+  const val = parseInt(document.getElementById('adminCheckinReward').value);
+  if (!isNaN(val) && val >= 0) {
+    await db.collection('config').doc('app').set({ checkinReward: val }, { merge: true });
+    currentCheckinReward = val;
+    document.getElementById('checkinRewardDisplay').innerText = val;
+    toast(`Recompensa alterada para ${val}🔥`, 'success');
+  }
+});
 
-document.getElementById('bigCredits')
-.innerText=userData.credits||0;
+// Workspaces do admin
+function abrirWorkspace(html) { document.getElementById('adminWorkspace').innerHTML = html; }
+window.abrirCriadorCheckpoint = () => {
+  abrirWorkspace(`
+    <div class="card"><h3>📍 Novo Checkpoint</h3><input id="cpNome" placeholder="Nome"><input id="cpReward" type="number" placeholder="Recompensa 🔥"><button class="btn btn-primary" onclick="criarCheckpoint()">Criar e Gerar QR</button><div id="cpQr" style="margin-top:20px;"></div></div>
+  `);
+};
+window.criarCheckpoint = async () => {
+  const nome = document.getElementById('cpNome').value;
+  const reward = parseInt(document.getElementById('cpReward').value) || 20;
+  const docRef = await db.collection('checkpoints').add({ nome, reward, createdAt: new Date() });
+  const qrDiv = document.getElementById('cpQr');
+  qrDiv.innerHTML = '';
+  new QRCode(qrDiv, { text: `checkpoint:${docRef.id}`, width: 180, height: 180 });
+  toast('Checkpoint criado! QR exibido abaixo.', 'success');
+};
+window.abrirCriadorMissao = () => {
+  abrirWorkspace(`
+    <div class="card"><h3>🎯 Criar Missão</h3><input id="missaoTitulo" placeholder="Título"><textarea id="missaoDesc" placeholder="Descrição"></textarea><input id="missaoXp" type="number" placeholder="Recompensa XP"><button class="btn btn-primary" onclick="criarMissao()">Criar Missão e Gerar QR</button><div id="missaoQr" style="margin-top:20px;"></div></div>
+  `);
+};
+window.criarMissao = async () => {
+  const titulo = document.getElementById('missaoTitulo').value;
+  const desc = document.getElementById('missaoDesc').value;
+  const xp = parseInt(document.getElementById('missaoXp').value) || 50;
+  const docRef = await db.collection('missoes').add({ titulo, descricao: desc, xp, createdAt: new Date() });
+  const qrDiv = document.getElementById('missaoQr');
+  qrDiv.innerHTML = '';
+  new QRCode(qrDiv, { text: `missao:${docRef.id}`, width: 180, height: 180 });
+  toast('Missão criada! QR disponível.', 'success');
+};
+window.abrirCriadorEvento = () => {
+  abrirWorkspace(`
+    <div class="card"><h3>🏍️ Criar Evento</h3><input id="eventoNome" placeholder="Nome"><input type="datetime-local" id="eventoData"><input id="eventoLocal" placeholder="Local"><input id="eventoReward" type="number" placeholder="Recompensa 🔥"><button class="btn btn-primary" onclick="criarEvento()">Criar Evento e QR</button><div id="eventoQr" style="margin-top:20px;"></div></div>
+  `);
+};
+window.criarEvento = async () => {
+  const nome = document.getElementById('eventoNome').value;
+  const data = document.getElementById('eventoData').value;
+  const local = document.getElementById('eventoLocal').value;
+  const reward = parseInt(document.getElementById('eventoReward').value) || 50;
+  const docRef = await db.collection('eventos').add({ nome, data, local, reward, createdAt: new Date() });
+  const qrDiv = document.getElementById('eventoQr');
+  qrDiv.innerHTML = '';
+  new QRCode(qrDiv, { text: `evento:${docRef.id}`, width: 180, height: 180 });
+  toast('Evento criado! QR para check-in.', 'success');
+};
+window.abrirCriadorTicket = () => {
+  abrirWorkspace(`
+    <div class="card"><h3>🎟️ Criar Ticket (Ingresso)</h3><input id="ticketNome" placeholder="Nome"><input id="ticketPreco" type="number" placeholder="Preço 🔥"><input id="ticketQtd" type="number" placeholder="Quantidade"><button class="btn btn-primary" onclick="criarTicket()">Lançar Ticket</button><div id="ticketStatus"></div></div>
+  `);
+};
+window.criarTicket = async () => {
+  const nome = document.getElementById('ticketNome').value;
+  const preco = parseInt(document.getElementById('ticketPreco').value) || 10;
+  const qtd = parseInt(document.getElementById('ticketQtd').value) || 1;
+  await db.collection('tickets').add({ nome, preco, quantidade: qtd, createdAt: new Date() });
+  toast(`Ticket "${nome}" criado com ${qtd} unidades por ${preco}🔥`, 'success');
+  carregarTicketsLoja();
+};
 
-document.getElementById('ticketAmount')
-.innerText=userData.tickets||0;
-
-const xp=userData.trust||0;
-
-const nivel=Math.floor(xp/100)+1;
-
-document.getElementById('trustScore')
-.innerText=`${xp} XP • Nível ${nivel}`;
-
-document.getElementById('xpFill')
-.style.width=`${xp%100}%`;
-
-document.getElementById('statusBadge')
-.innerHTML=
-userData.status==='adimplente'
-?'✅ Adimplente'
-:'⚠️ Inadimplente';
-
-document.getElementById('perfilNome')
-.value=userData.perfil?.nome||'';
-
-document.getElementById('perfilMoto')
-.value=userData.perfil?.moto||'';
-
-document.getElementById('perfilPlaca')
-.value=userData.perfil?.placa||'';
-
-document.getElementById('checkinRewardDisplay')
-.innerText=currentCheckinReward;
-
+// Loja de ingressos
+async function carregarTicketsLoja() {
+  const snap = await db.collection('tickets').where('quantidade', '>', 0).get();
+  let html = '';
+  snap.forEach(doc => {
+    const t = doc.data();
+    html += `<div class="ticket-item"><span>${t.nome} - ${t.preco} 🔥</span><button class="btn btn-primary btn-sm" onclick="comprarTicket('${doc.id}', ${t.preco})">Comprar</button></div>`;
+  });
+  document.getElementById('ticketsShopList').innerHTML = html || 'Nenhum ingresso disponível.';
+}
+window.comprarTicket = async (ticketId, preco) => {
+  if ((userData.credits || 0) < preco) return toast('Saldo insuficiente', 'error');
+  try {
+    await db.runTransaction(async (trans) => {
+      const ticketRef = db.collection('tickets').doc(ticketId);
+      const ticketSnap = await trans.get(ticketRef);
+      if (ticketSnap.data().quantidade <= 0) throw new Error('Esgotado');
+      trans.update(ticketRef, { quantidade: ticketSnap.data().quantidade - 1 });
+      trans.update(db.collection('users').doc(userData.uid), {
+        credits: firebase.firestore.FieldValue.increment(-preco),
+        tickets: firebase.firestore.FieldValue.increment(1),
+        ticketsOwned: firebase.firestore.FieldValue.arrayUnion({
+          ticketId,
+          nome: ticketSnap.data().nome,
+          compradoEm: new Date()
+        })
+      });
+    });
+    userData.credits -= preco;
+    userData.tickets = (userData.tickets || 0) + 1;
+    if (!userData.ticketsOwned) userData.ticketsOwned = [];
+    userData.ticketsOwned.push({ ticketId, nome: '...', compradoEm: new Date() });
+    atualizarUI();
+    toast('Ingresso comprado!', 'success');
+    carregarTicketsLoja();
+    carregarTicketsComprados();
+  } catch (e) { toast('Erro na compra: ' + e.message, 'error'); }
+};
+async function carregarTicketsComprados() {
+  if (!userData) return;
+  const owned = userData.ticketsOwned || [];
+  if (owned.length === 0) document.getElementById('ticketsOwnedList').innerHTML = 'Nenhum ingresso adquirido.';
+  else {
+    let html = '';
+    owned.forEach(t => html += `<div>🎟️ ${t.nome || 'Ingresso'} (${new Date(t.compradoEm?.seconds * 1000).toLocaleDateString()})</div>`);
+    document.getElementById('ticketsOwnedList').innerHTML = html;
+  }
 }
 
-window.logout=()=>{
-auth.signOut();
+// Navegação
+window.navigateTo = (view) => {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(`view${view.charAt(0).toUpperCase() + view.slice(1)}`).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const btn = document.querySelector(`.nav-item[data-view="${view}"]`);
+  if (btn) btn.classList.add('active');
+  if (view === 'scanner') stopScanner();
+  if (view === 'loja') carregarTicketsLoja();
+  if (view === 'perfil') carregarTicketsComprados();
 };
 
-window.navigateTo=(view)=>{
-
-document.querySelectorAll('.view')
-.forEach(v=>v.classList.remove('active'));
-
-document.getElementById(
-`view${view.charAt(0).toUpperCase()+view.slice(1)}`
-).classList.add('active');
-
-document.querySelectorAll('.nav-item')
-.forEach(v=>v.classList.remove('active'));
-
-const btn=document.querySelector(
-`.nav-item[data-view="${view}"]`
-);
-
-if(btn){
-btn.classList.add('active');
-}
-
-};
-
-window.salvarPerfil=async()=>{
-
-const perfil={
-
-nome:
-document.getElementById('perfilNome').value,
-
-moto:
-document.getElementById('perfilMoto').value,
-
-placa:
-document.getElementById('perfilPlaca').value
-
-};
-
-await db.collection('users')
-.doc(userData.uid)
-.update({perfil});
-
-userData.perfil=perfil;
-
-toast('Perfil salvo','success');
-
-};
-
-window.realizarCheckinSimples=async()=>{
-
-await db.collection('checkins').add({
-
-userId:userData.uid,
-
-createdAt:new Date()
-
+// Autenticação
+document.getElementById('registerBtn').addEventListener('click', async () => {
+  const email = document.getElementById('emailLogin').value.trim();
+  const senha = document.getElementById('senhaLogin').value;
+  if (!email || senha.length < 6) return toast('Email e senha (mínimo 6 caracteres)', 'error');
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, senha);
+    await db.collection('users').doc(cred.user.uid).set({
+      email, credits: 0, xp: 0, tickets: 0, role: 'user', status: 'adimplente',
+      perfil: { nome: email.split('@')[0] }, ticketsOwned: [], createdAt: new Date()
+    });
+    await ensureAdminByEmail(email, cred.user.uid);
+    toast('Conta criada! Faça login.', 'success');
+  } catch (e) { toast(e.message, 'error'); }
+});
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email = document.getElementById('emailLogin').value.trim();
+  const senha = document.getElementById('senhaLogin').value;
+  try {
+    await auth.signInWithEmailAndPassword(email, senha);
+  } catch (e) { toast('Falha no login', 'error'); }
+});
+document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
+  const email = document.getElementById('emailLogin').value.trim();
+  if (!email) return toast('Digite o email', 'error');
+  await auth.sendPasswordResetEmail(email);
+  toast('Email de recuperação enviado', 'success');
 });
 
-await db.collection('users')
-.doc(userData.uid)
-.update({
-
-credits:
-firebase.firestore.FieldValue.increment(
-currentCheckinReward
-),
-
-trust:
-firebase.firestore.FieldValue.increment(10)
-
+// Estado de autenticação
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    document.getElementById('loadingData').style.display = 'flex';
+    try {
+      let snap = await db.collection('users').doc(user.uid).get();
+      if (!snap.exists) {
+        await db.collection('users').doc(user.uid).set({
+          email: user.email, credits: 0, xp: 0, tickets: 0, role: 'user',
+          status: 'adimplente', perfil: { nome: user.email.split('@')[0] },
+          ticketsOwned: [], createdAt: new Date()
+        });
+        snap = await db.collection('users').doc(user.uid).get();
+      }
+      userData = { uid: user.uid, ...snap.data() };
+      await ensureAdminByEmail(user.email, user.uid);
+      // recarregar dados caso role tenha mudado
+      if (user.email === 'cristophersmonteiro357@gmail.com') {
+        const updated = await db.collection('users').doc(user.uid).get();
+        userData.role = updated.data().role;
+      }
+      await loadConfig();
+      atualizarUI();
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      if (userData.role === 'admin') document.getElementById('adminEntry').style.display = 'block';
+    } catch (err) {
+      console.error(err);
+      toast('Erro ao carregar dados. Verifique as regras do Firestore.', 'error');
+      auth.signOut();
+    }
+    document.getElementById('loadingData').style.display = 'none';
+  } else {
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
 });
-
-userData.credits+=currentCheckinReward;
-
-userData.trust+=10;
-
-atualizarUI();
-
-toast('Check-in realizado','success');
-
-};
-
-window.gerarQR=()=>{
-
-const container=
-document.getElementById('qrContainer');
-
-container.innerHTML='';
-
-new QRCode(container,{
-
-text:userData.uid,
-
-width:180,
-
-height:180
-
-});
-
-};
-
-document.getElementById('btnStartScanner')
-.addEventListener('click',()=>{
-
-document.getElementById('btnStartScanner')
-.style.display='none';
-
-document.getElementById('btnStopScanner')
-.style.display='';
-
-html5QrScanner=
-new Html5Qrcode("reader");
-
-html5QrScanner.start(
-
-{facingMode:"environment"},
-
-{fps:10,qrbox:{width:250,height:250}},
-
-(text)=>{
-
-toast(`QR: ${text}`,'success');
-
-stopScanner();
-
-},
-
-()=>{}
-
-);
-
-});
-
-document.getElementById('btnStopScanner')
-.addEventListener('click',stopScanner);
-
-function stopScanner(){
-
-if(html5QrScanner){
-
-html5QrScanner.stop();
-
-html5QrScanner=null;
-
-}
-
-document.getElementById('btnStartScanner')
-.style.display='';
-
-document.getElementById('btnStopScanner')
-.style.display='none';
-
-}
-
-document.getElementById('adminMintBtn')
-.addEventListener('click',async()=>{
-
-const email=
-document.getElementById('adminMemberEmail')
-.value.trim();
-
-const amount=parseInt(
-document.getElementById('adminTokenAmount')
-.value
-);
-
-const q=await db.collection('users')
-.where('email','==',email)
-.limit(1)
-.get();
-
-if(q.empty){
-
-toast('Membro não encontrado','error');
-
-return;
-
-}
-
-await q.docs[0].ref.update({
-
-credits:
-firebase.firestore.FieldValue.increment(amount)
-
-});
-
-toast('Tokens cunhados','success');
-
-});
-
-document.getElementById('saveRewardBtn')
-.addEventListener('click',async()=>{
-
-const value=parseInt(
-document.getElementById('adminCheckinReward')
-.value
-);
-
-await db.collection('config')
-.doc('app')
-.set({
-
-checkinReward:value
-
-},{merge:true});
-
-currentCheckinReward=value;
-
-toast('Recompensa salva','success');
-
-});
-
-function abrirWorkspace(html){
-
-document.getElementById('adminWorkspace')
-.innerHTML=html;
-
-}
-
-window.abrirCriadorCheckpoint=()=>{
-
-abrirWorkspace(`
-
-<div class="card">
-
-<h3>📍 Novo Checkpoint</h3>
-
-<input id="checkpointNome"
-placeholder="Nome">
-
-<input id="checkpointReward"
-type="number"
-placeholder="Recompensa">
-
-<button class="btn btn-primary"
-onclick="criarCheckpoint()">
-
-Criar QR
-
-</button>
-
-<div id="checkpointQr"
-style="margin-top:20px;"></div>
-
-</div>
-
-`);
-
-};
-
-window.criarCheckpoint=async()=>{
-
-const nome=
-document.getElementById('checkpointNome')
-.value;
-
-const reward=
-parseInt(
-document.getElementById('checkpointReward')
-.value
-)||10;
-
-const ref=
-await db.collection('checkpoints')
-.add({
-
-nome,
-
-reward,
-
-createdAt:new Date()
-
-});
-
-const div=
-document.getElementById('checkpointQr');
-
-div.innerHTML='';
-
-new QRCode(div,{
-
-text:ref.id,
-
-width:180,
-
-height:180
-
-});
-
-toast('Checkpoint criado','success');
-
-};
-
-window.abrirCriadorMissao=()=>{
-
-abrirWorkspace(`
-
-<div class="card">
-
-<h3>🎯 Criar Missão</h3>
-
-<input id="missaoTitulo"
-placeholder="Título">
-
-<textarea id="missaoDesc"
-placeholder="Descrição"></textarea>
-
-<input id="missaoXp"
-type="number"
-placeholder="XP">
-
-<button class="btn btn-primary"
-onclick="criarMissao()">
-
-Salvar Missão
-
-</button>
-
-</div>
-
-`);
-
-};
-
-window.criarMissao=async()=>{
-
-await db.collection('missions')
-.add({
-
-titulo:
-document.getElementById('missaoTitulo')
-.value,
-
-descricao:
-document.getElementById('missaoDesc')
-.value,
-
-xp:
-parseInt(
-document.getElementById('missaoXp')
-.value
-)||50,
-
-createdAt:new Date()
-
-});
-
-toast('Missão criada','success');
-
-};
-
-window.abrirCriadorEvento=()=>{
-
-abrirWorkspace(`
-
-<div class="card">
-
-<h3>🏍️ Novo Evento</h3>
-
-<input id="eventoNome"
-placeholder="Nome">
-
-<input id="eventoData"
-type="datetime-local">
-
-<textarea id="eventoLocal"
-placeholder="Local"></textarea>
-
-<button class="btn btn-primary"
-onclick="criarEvento()">
-
-Criar Evento
-
-</button>
-
-</div>
-
-`);
-
-};
-
-window.criarEvento=async()=>{
-
-await db.collection('events')
-.add({
-
-nome:
-document.getElementById('eventoNome')
-.value,
-
-data:
-document.getElementById('eventoData')
-.value,
-
-local:
-document.getElementById('eventoLocal')
-.value,
-
-createdAt:new Date()
-
-});
-
-toast('Evento criado','success');
-
-};
-
-window.abrirCriadorTicket=()=>{
-
-abrirWorkspace(`
-
-<div class="card">
-
-<h3>🎟️ Criar Ticket</h3>
-
-<input id="ticketNome"
-placeholder="Nome">
-
-<input id="ticketQtd"
-type="number"
-placeholder="Quantidade">
-
-<button class="btn btn-primary"
-onclick="criarTicket()">
-
-Lançar Ticket
-
-</button>
-
-</div>
-
-`);
-
-};
-
-window.criarTicket=async()=>{
-
-await db.collection('tickets')
-.add({
-
-nome:
-document.getElementById('ticketNome')
-.value,
-
-quantidade:
-parseInt(
-document.getElementById('ticketQtd')
-.value
-)||0,
-
-createdAt:new Date()
-
-});
-
-toast('Ticket criado','success');
-
-};
-
-if('serviceWorker' in navigator){
-
-navigator.serviceWorker
-.getRegistrations()
-.then(regs=>regs.forEach(r=>r.unregister()));
-
-}
-
+window.logout = () => auth.signOut();
+if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
 </script>
-
 </body>
 </html>
