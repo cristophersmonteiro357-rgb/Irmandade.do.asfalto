@@ -767,7 +767,8 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+        // CORREÇÃO 1: Removido enablePersistence temporariamente para evitar conflitos com as regras
+        // db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
         const increment = firebase.firestore.FieldValue.increment;
         const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
@@ -827,7 +828,6 @@
             const navBtn = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
             if (navBtn) navBtn.classList.add('active');
 
-            // Carregar dados conforme view
             if (viewId === 'homeView') loadPartners();
             if (viewId === 'missoesView') loadMissoes();
             if (viewId === 'lojaView') loadLoja();
@@ -879,15 +879,23 @@
             }
         }
 
+        // CORREÇÃO 3: Verificação de banimento em tempo real
         function listenUser() {
             if (userListener) userListener();
             userListener = db.collection('users').doc(currentUser.uid)
                 .onSnapshot((doc) => {
                     if (doc.exists) {
+                        const data = doc.data();
+                        // Se o status for alterado para banido, força logout
+                        if (data.status === 'banido') {
+                            toast('Sua conta foi banida.', 'error');
+                            if (userListener) { userListener(); userListener = null; }
+                            auth.signOut();
+                            return;
+                        }
                         const oldXp = currentUser?.xp || 0;
-                        currentUser = { uid: doc.id, ...doc.data() };
+                        currentUser = { uid: doc.id, ...data };
                         updateUI();
-                        // Efeito de level up
                         if (getLevel(currentUser.xp || 0) > getLevel(oldXp)) {
                             const hero = document.querySelector('.hero');
                             if (hero) {
@@ -987,6 +995,7 @@
             }
         });
 
+        // CORREÇÃO 2: set com merge + CORREÇÃO 3: verificação de banido no login
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 showLoading();
@@ -1005,8 +1014,21 @@
                         snap = await db.collection('users').doc(user.uid).get();
                     }
 
-                    currentUser = { uid: user.uid, ...snap.data() };
-                    await db.collection('users').doc(user.uid).update({ lastLogin: serverTimestamp() });
+                    const userData = snap.data();
+                    // 🔒 Verificação de usuário banido LOGO APÓS OBTER OS DADOS
+                    if (userData.status === 'banido') {
+                        toast('Conta banida. Acesso negado.', 'error');
+                        await auth.signOut();
+                        hideLoading();
+                        return;
+                    }
+
+                    currentUser = { uid: user.uid, ...userData };
+
+                    // 🔄️ ALTERAÇÃO PRINCIPAL: usar set com merge em vez de update
+                    await db.collection('users').doc(user.uid).set({
+                        lastLogin: serverTimestamp()
+                    }, { merge: true });
 
                     document.getElementById('authScreen').classList.add('hidden');
                     document.getElementById('app').classList.remove('hidden');
