@@ -43,7 +43,6 @@
             overflow: hidden;
         }
 
-        /* Fundo animado cyberpunk */
         .bg-cyber {
             position: fixed;
             inset: 0;
@@ -92,7 +91,6 @@
 
         .hidden { display: none !important; }
 
-        /* ============ LOADING ============ */
         .loading-overlay {
             position: fixed;
             inset: 0;
@@ -120,7 +118,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* ============ TOAST ============ */
         #toastContainer {
             position: fixed;
             top: 20px;
@@ -154,7 +151,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ============ LOGIN CYBERPUNK ============ */
         #authScreen {
             position: fixed;
             inset: 0;
@@ -266,7 +262,6 @@
             background: rgba(255, 123, 0, 0.08);
         }
 
-        /* ============ APP ============ */
         #app {
             display: flex;
             flex-direction: column;
@@ -535,20 +530,16 @@
 </head>
 <body>
 
-    <!-- Fundo cyberpunk -->
     <div class="bg-cyber"></div>
     <div class="particles" id="particlesContainer"></div>
 
-    <!-- TOAST -->
     <div id="toastContainer"></div>
 
-    <!-- LOADING -->
     <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="spinner"></div>
         <span style="color:var(--orange);">Conectando à Irmandade...</span>
     </div>
 
-    <!-- LOGIN -->
     <div id="authScreen">
         <div class="auth-card">
             <div class="auth-skull">💀</div>
@@ -562,7 +553,6 @@
         </div>
     </div>
 
-    <!-- APP PRINCIPAL -->
     <div id="app" class="hidden">
         <header>
             <div class="logo">💀 IRMANDADE DO ASFALTO</div>
@@ -570,7 +560,6 @@
         </header>
 
         <main>
-            <!-- HOME -->
             <div class="view active" id="homeView">
                 <div class="hero">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
@@ -579,9 +568,7 @@
                             <div id="rankBadge" class="rank-badge rank-bronze">Bronze</div>
                             <div id="statusBadge" class="status-badge status-ok">Adimplente</div>
                         </div>
-                        <button class="btn-outline" style="padding:8px 14px; font-size:13px;" onclick="showView('perfilView')">
-                            ✏️ Editar
-                        </button>
+                        <button class="btn-outline" style="padding:8px 14px; font-size:13px;" onclick="showView('perfilView')">✏️ Editar</button>
                     </div>
                     <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
                     <div style="margin-top:10px; display:flex; justify-content:space-between;">
@@ -601,14 +588,12 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card">
                     <div class="section-title">🤝 Parceiros</div>
                     <div id="partnersList"></div>
                 </div>
             </div>
 
-            <!-- MISSÕES -->
             <div class="view" id="missoesView">
                 <div class="card">
                     <div class="section-title">⚔️ Missões</div>
@@ -616,7 +601,6 @@
                 </div>
             </div>
 
-            <!-- LOJA -->
             <div class="view" id="lojaView">
                 <div class="card">
                     <div class="section-title">🛒 Loja da Irmandade</div>
@@ -624,7 +608,6 @@
                 </div>
             </div>
 
-            <!-- INVENTÁRIO -->
             <div class="view" id="inventarioView">
                 <div class="card">
                     <div class="section-title">🎒 Inventário</div>
@@ -632,7 +615,6 @@
                 </div>
             </div>
 
-            <!-- GUILDAS -->
             <div class="view" id="guildasView">
                 <div class="card">
                     <div class="section-title">🏴 Guildas</div>
@@ -640,7 +622,6 @@
                 </div>
             </div>
 
-            <!-- RANKING -->
             <div class="view" id="rankingView">
                 <div class="card">
                     <div class="section-title">🏆 Ranking Global</div>
@@ -648,7 +629,6 @@
                 </div>
             </div>
 
-            <!-- PERFIL -->
             <div class="view" id="perfilView">
                 <div class="card">
                     <div class="section-title">👤 Perfil do Motociclista</div>
@@ -658,36 +638,29 @@
                     <input id="instagramInput" placeholder="Instagram (@)">
                     <textarea id="bioInput" placeholder="Biografia"></textarea>
                     <button class="btn btn-primary" id="savePerfilBtn">💾 SALVAR PERFIL</button>
+                    <!-- Botão de reparo removido por segurança -->
                 </div>
             </div>
 
-            <!-- ADMIN -->
             <div class="view" id="adminView">
                 <div class="card">
                     <div class="section-title">👑 Painel do Mestre</div>
-
                     <h4 style="color:var(--orange-light); margin-bottom:8px;">👥 Membros</h4>
                     <div id="membersList" style="margin-bottom:16px; max-height:300px; overflow-y:auto;"></div>
-
                     <hr>
-
                     <input id="rewardEmail" placeholder="Email do usuário">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
                         <input id="rewardTokens" type="number" placeholder="Tokens" value="0">
                         <input id="rewardXp" type="number" placeholder="XP" value="0">
                     </div>
                     <button class="btn btn-primary" id="rewardBtn">🔥 CUNHAR RECOMPENSA</button>
-
                     <hr>
-
                     <h4 style="color:var(--orange-light); margin-bottom:8px;">🛒 Criar Item (Loja)</h4>
                     <input id="itemNameInput" placeholder="Nome do item">
                     <input id="itemPriceInput" type="number" placeholder="Preço em tokens">
                     <input id="itemRarityInput" placeholder="Raridade (comum, raro, épico, lendário)">
                     <button class="btn btn-primary" id="createItemBtn">🛒 CRIAR ITEM</button>
-
                     <hr>
-
                     <h4 style="color:var(--orange-light); margin-bottom:8px;">⚔️ Criar Missão</h4>
                     <input id="missionTitleInput" placeholder="Título">
                     <input id="missionDescInput" placeholder="Descrição">
@@ -697,22 +670,16 @@
                     </div>
                     <input id="missionTypeInput" placeholder="Tipo (daily, weekly, special, event)">
                     <button class="btn btn-primary" id="createMissionBtn">⚔️ CRIAR MISSÃO</button>
-
                     <hr>
-
                     <h4 style="color:var(--orange-light); margin-bottom:8px;">🏴 Criar Guilda</h4>
                     <input id="guildNameInput" placeholder="Nome da Guilda">
                     <button class="btn btn-primary" id="createGuildBtn">🏴 CRIAR GUILDA</button>
-
                     <hr>
-
                     <h4 style="color:var(--orange-light); margin-bottom:8px;">🤝 Criar Parceiro</h4>
                     <input id="partnerName" placeholder="Nome do parceiro">
                     <input id="partnerDiscount" placeholder="Desconto (ex: 20% OFF)">
                     <button class="btn btn-primary" id="createPartnerBtn">🤝 CRIAR PARCEIRO</button>
-
                     <hr>
-
                     <h4 style="color:var(--orange-light); margin-bottom:8px;">🔨 Ações Rápidas</h4>
                     <input id="targetUserEmail" placeholder="Email do usuário alvo">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
@@ -722,9 +689,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-outline" style="width:100%; margin-top:20px;" id="logoutBtn">
-                🚪 SAIR DA IRMANDADE
-            </button>
+            <button class="btn btn-outline" style="width:100%; margin-top:20px;" id="logoutBtn">🚪 SAIR DA IRMANDADE</button>
         </main>
 
         <nav>
@@ -738,192 +703,140 @@
     </div>
 
     <script>
-        // ==================== PARTÍCULAS CYBERPUNK ====================
-        (function createParticles() {
+        (function() {
+            // ==================== PARTÍCULAS ====================
             const container = document.getElementById('particlesContainer');
             for (let i = 0; i < 35; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 6 + 's';
-                particle.style.animationDuration = (3 + Math.random() * 5) + 's';
-                container.appendChild(particle);
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 6 + 's';
+                p.style.animationDuration = (3 + Math.random() * 5) + 's';
+                container.appendChild(p);
             }
-        })();
 
-        // ==================== CONFIGURAÇÃO FIREBASE ====================
-        const firebaseConfig = {
-            apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
-            authDomain: "clube-de-vantagens-d748e.firebaseapp.com",
-            projectId: "clube-de-vantagens-d748e",
-            storageBucket: "clube-de-vantagens-d748e.firebasestorage.app",
-            messagingSenderId: "774730191238",
-            appId: "1:774730191238:web:9af24eddfafb18f1351c07"
-        };
+            // ==================== FIREBASE ====================
+            const firebaseConfig = {
+                apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
+                authDomain: "clube-de-vantagens-d748e.firebaseapp.com",
+                projectId: "clube-de-vantagens-d748e",
+                storageBucket: "clube-de-vantagens-d748e.firebasestorage.app",
+                messagingSenderId: "774730191238",
+                appId: "1:774730191238:web:9af24eddfafb18f1351c07"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
+            const db = firebase.firestore();
+            const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
+            const increment = firebase.firestore.FieldValue.increment;
+            const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
 
-        firebase.initializeApp(firebaseConfig);
+            const MASTER_EMAIL = "cristophersmonteiro357@gmail.com";
+            let currentUser = null;
+            let userListener = null;
 
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // CORREÇÃO 1: Removido enablePersistence temporariamente para evitar conflitos com as regras
-        // db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
-
-        const increment = firebase.firestore.FieldValue.increment;
-        const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
-        const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
-        const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
-
-        const MASTER_EMAIL = "cristophersmonteiro357@gmail.com";
-
-        let currentUser = null;
-        let userListener = null;
-
-        // ==================== UTILITÁRIOS ====================
-        function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
-        function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
-
-        function toast(msg, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const t = document.createElement('div');
-            t.className = `toast toast-${type}`;
-            t.innerText = msg;
-            container.appendChild(t);
-            setTimeout(() => t.remove(), 3200);
-        }
-
-        function disableButton(btn, text = 'Aguarde...') {
-            btn.disabled = true;
-            btn.dataset.originalText = btn.innerText;
-            btn.innerText = text;
-        }
-
-        function enableButton(btn) {
-            btn.disabled = false;
-            if (btn.dataset.originalText) btn.innerText = btn.dataset.originalText;
-            delete btn.dataset.originalText;
-        }
-
-        // ==================== SISTEMA RPG COMPLETO ====================
-        function getLevel(xp) { return Math.floor((xp || 0) / 100) + 1; }
-
-        function getRank(xp) {
-            if (xp >= 12000) return { nome: 'IMORTAL', classe: 'rank-imortal' };
-            if (xp >= 6000) return { nome: 'LENDÁRIO', classe: 'rank-lendario' };
-            if (xp >= 3000) return { nome: 'DIAMANTE', classe: 'rank-diamante' };
-            if (xp >= 1500) return { nome: 'PLATINA', classe: 'rank-platina' };
-            if (xp >= 700) return { nome: 'OURO', classe: 'rank-ouro' };
-            if (xp >= 300) return { nome: 'PRATA', classe: 'rank-prata' };
-            if (xp >= 100) return { nome: 'BRONZE', classe: 'rank-bronze' };
-            return { nome: 'NOVATO', classe: 'rank-novato' };
-        }
-
-        function showView(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            const view = document.getElementById(viewId);
-            if (view) view.classList.add('active');
-
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            const navBtn = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
-            if (navBtn) navBtn.classList.add('active');
-
-            if (viewId === 'homeView') loadPartners();
-            if (viewId === 'missoesView') loadMissoes();
-            if (viewId === 'lojaView') loadLoja();
-            if (viewId === 'inventarioView') loadInventario();
-            if (viewId === 'guildasView') loadGuildas();
-            if (viewId === 'rankingView') loadRanking();
-            if (viewId === 'adminView') loadMembers();
-        }
-
-        // ==================== UI ====================
-        function updateUI() {
-            if (!currentUser) return;
-
-            const xp = currentUser.xp || 0;
-            const tokens = currentUser.tokens || 0;
-            const reputation = currentUser.reputation || 0;
-            const rank = getRank(xp);
-            const level = getLevel(xp);
-            const status = currentUser.status || 'adimplente';
-
-            document.getElementById('tokensDisplay').innerText = tokens;
-            document.getElementById('nicknameDisplay').innerText = currentUser.profile?.nickname || 'Membro';
-            document.getElementById('xpAmount').innerText = xp;
-            document.getElementById('xpText').innerText = `${xp} XP`;
-            document.getElementById('reputationDisplay').innerText = reputation;
-            document.getElementById('cityText') && (document.getElementById('cityText').innerText = currentUser.profile?.city || '-');
-            document.getElementById('levelText').innerText = `Lv.${level}`;
-            document.getElementById('xpFill').style.width = `${(xp % 100)}%`;
-
-            const rankEl = document.getElementById('rankBadge');
-            rankEl.innerText = rank.nome;
-            rankEl.className = `rank-badge ${rank.classe}`;
-
-            const statusEl = document.getElementById('statusBadge');
-            statusEl.innerText = status === 'adimplente' ? 'Adimplente' : status.toUpperCase();
-            statusEl.className = `status-badge ${status === 'adimplente' ? 'status-ok' : 'status-bad'}`;
-
-            document.getElementById('nicknameInput').value = currentUser.profile?.nickname || '';
-            document.getElementById('bikeInput').value = currentUser.profile?.bike || '';
-            document.getElementById('cityInput').value = currentUser.profile?.city || '';
-            document.getElementById('instagramInput').value = currentUser.profile?.instagram || '';
-            document.getElementById('bioInput').value = currentUser.profile?.bio || '';
-
-            const adminElements = document.querySelectorAll('.admin-only');
-            if (currentUser.role === 'admin' || currentUser.role === 'master') {
-                adminElements.forEach(el => el.style.display = 'flex');
-            } else {
-                adminElements.forEach(el => el.style.display = 'none');
+            // ==================== HELPERS ====================
+            function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
+            function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+            function toast(msg, type = 'info') {
+                const c = document.getElementById('toastContainer');
+                const t = document.createElement('div');
+                t.className = `toast toast-${type}`;
+                t.innerText = msg;
+                c.appendChild(t);
+                setTimeout(() => t.remove(), 3500);
             }
-        }
+            function disableButton(btn, txt = 'Aguarde...') { btn.disabled = true; btn.dataset.original = btn.innerText; btn.innerText = txt; }
+            function enableButton(btn) { btn.disabled = false; if (btn.dataset.original) btn.innerText = btn.dataset.original; delete btn.dataset.original; }
 
-        // CORREÇÃO 3: Verificação de banimento em tempo real
-        function listenUser() {
-            if (userListener) userListener();
-            userListener = db.collection('users').doc(currentUser.uid)
-                .onSnapshot((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        // Se o status for alterado para banido, força logout
-                        if (data.status === 'banido') {
-                            toast('Sua conta foi banida.', 'error');
-                            if (userListener) { userListener(); userListener = null; }
-                            auth.signOut();
-                            return;
-                        }
-                        const oldXp = currentUser?.xp || 0;
-                        currentUser = { uid: doc.id, ...data };
-                        updateUI();
-                        if (getLevel(currentUser.xp || 0) > getLevel(oldXp)) {
-                            const hero = document.querySelector('.hero');
-                            if (hero) {
-                                hero.classList.add('level-up-anim');
-                                setTimeout(() => hero.classList.remove('level-up-anim'), 600);
-                            }
-                            toast('⬆️ LEVEL UP! ⬆️', 'success');
-                        }
-                    }
-                }, (error) => console.error('Listener error:', error));
-        }
+            // Sanitização contra XSS
+            function sanitize(text) {
+                if (!text) return '';
+                return text
+                    .replace(/</g, '')
+                    .replace(/>/g, '')
+                    .replace(/script/g, '')
+                    .trim();
+            }
 
-        // ==================== AUTENTICAÇÃO ====================
-        document.getElementById('registerBtn').addEventListener('click', async function() {
-            const email = document.getElementById('emailLogin').value.trim();
-            const senha = document.getElementById('senhaLogin').value;
+            function getLevel(xp) { return Math.floor((xp || 0) / 100) + 1; }
+            function getRank(xp) {
+                if (xp >= 12000) return { nome: 'IMORTAL', classe: 'rank-imortal' };
+                if (xp >= 6000) return { nome: 'LENDÁRIO', classe: 'rank-lendario' };
+                if (xp >= 3000) return { nome: 'DIAMANTE', classe: 'rank-diamante' };
+                if (xp >= 1500) return { nome: 'PLATINA', classe: 'rank-platina' };
+                if (xp >= 700) return { nome: 'OURO', classe: 'rank-ouro' };
+                if (xp >= 300) return { nome: 'PRATA', classe: 'rank-prata' };
+                if (xp >= 100) return { nome: 'BRONZE', classe: 'rank-bronze' };
+                return { nome: 'NOVATO', classe: 'rank-novato' };
+            }
 
-            if (!email || senha.length < 6) { toast('Senha mínima: 6 caracteres', 'error'); return; }
+            function showView(viewId) {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById(viewId).classList.add('active');
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                const nav = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
+                if (nav) nav.classList.add('active');
 
-            disableButton(this, 'Criando...');
-            showLoading();
+                if (viewId === 'homeView') loadPartners();
+                else if (viewId === 'missoesView') loadMissoes();
+                else if (viewId === 'lojaView') loadLoja();
+                else if (viewId === 'inventarioView') loadInventario();
+                else if (viewId === 'guildasView') loadGuildas();
+                else if (viewId === 'rankingView') loadRanking();
+                else if (viewId === 'adminView') loadMembers();
+            }
 
-            try {
-                const cred = await auth.createUserWithEmailAndPassword(email, senha);
-                const role = email === MASTER_EMAIL ? 'master' : 'novato';
+            function updateUI() {
+                if (!currentUser) return;
+                const xp = currentUser.xp || 0;
+                const tokens = currentUser.tokens || 0;
+                const reputation = currentUser.reputation || 0;
+                const rank = getRank(xp);
+                const level = getLevel(xp);
+                const status = currentUser.status || 'adimplente';
 
-                await db.collection('users').doc(cred.user.uid).set({
-                    email,
+                document.getElementById('tokensDisplay').innerText = tokens;
+                document.getElementById('nicknameDisplay').innerText = currentUser.profile?.nickname || 'Membro';
+                document.getElementById('xpAmount').innerText = xp;
+                document.getElementById('xpText').innerText = `${xp} XP`;
+                document.getElementById('reputationDisplay').innerText = reputation;
+                document.getElementById('levelText').innerText = `Lv.${level}`;
+                document.getElementById('xpFill').style.width = `${(xp % 100)}%`;
+
+                const rankEl = document.getElementById('rankBadge');
+                rankEl.innerText = rank.nome;
+                rankEl.className = `rank-badge ${rank.classe}`;
+
+                const statusEl = document.getElementById('statusBadge');
+                statusEl.innerText = status === 'adimplente' ? 'Adimplente' : status.toUpperCase();
+                statusEl.className = `status-badge ${status === 'adimplente' ? 'status-ok' : 'status-bad'}`;
+
+                document.getElementById('nicknameInput').value = currentUser.profile?.nickname || '';
+                document.getElementById('bikeInput').value = currentUser.profile?.bike || '';
+                document.getElementById('cityInput').value = currentUser.profile?.city || '';
+                document.getElementById('instagramInput').value = currentUser.profile?.instagram || '';
+                document.getElementById('bioInput').value = currentUser.profile?.bio || '';
+
+                const adminEls = document.querySelectorAll('.admin-only');
+                adminEls.forEach(el => el.style.display = currentUser.isAdmin ? 'flex' : 'none');
+            }
+
+            // ==================== CRIAÇÃO ÚNICA DO PERFIL (NÃO SOBRESCREVE) ====================
+            async function forceCreateUserDocument(user) {
+                const userRef = db.collection('users').doc(user.uid);
+                const existing = await userRef.get();
+                if (existing.exists) {
+                    return existing.data();
+                }
+                const profile = {
+                    nickname: user.email.split('@')[0],
+                    bike: '', city: '', bio: '', instagram: '', avatar: '', banner: ''
+                };
+                const role = 'novato';  // nunca auto-master
+                const payload = {
+                    email: user.email,
                     role,
                     tokens: 0,
                     xp: 0,
@@ -934,394 +847,455 @@
                     inventory: [],
                     titles: [],
                     badges: [],
-                    profile: {
-                        nickname: email.split('@')[0],
-                        bike: '',
-                        city: '',
-                        bio: '',
-                        instagram: '',
-                        avatar: '',
-                        banner: ''
-                    },
+                    profile,
                     createdAt: serverTimestamp(),
                     lastLogin: serverTimestamp(),
                     ticketsOwned: []
+                };
+                try {
+                    await userRef.set(payload, { merge: true }); // não reseta se já existir (segurança extra)
+                    toast('✅ Perfil criado com sucesso!', 'success');
+                    return { uid: user.uid, ...payload };
+                } catch (e) {
+                    toast('❌ Falha ao criar perfil: ' + (e.message || e), 'error');
+                    return null;
+                }
+            }
+
+            // ==================== LISTENER DO USUÁRIO ====================
+            function listenUser() {
+                if (userListener) userListener();
+                userListener = db.collection('users').doc(currentUser.uid).onSnapshot(doc => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        if (data.status === 'banido') {
+                            toast('Sua conta foi banida.', 'error');
+                            if (userListener) { userListener(); userListener = null; }
+                            auth.signOut();
+                            return;
+                        }
+                        const oldXp = currentUser?.xp || 0;
+                        currentUser = { ...currentUser, ...data, uid: currentUser.uid, isAdmin: currentUser.isAdmin };
+                        updateUI();
+                        if (getLevel(currentUser.xp || 0) > getLevel(oldXp)) {
+                            document.querySelector('.hero')?.classList.add('level-up-anim');
+                            setTimeout(() => document.querySelector('.hero')?.classList.remove('level-up-anim'), 600);
+                            toast('⬆️ LEVEL UP! ⬆️', 'success');
+                        }
+                    }
+                }, err => {
+                    console.error('Listener error:', err);
+                    toast('Erro ao escutar perfil', 'error');
                 });
-
-                toast('Conta criada! Bem-vindo à Irmandade! 💀', 'success');
-            } catch (e) {
-                console.error('Erro ao registrar:', e);
-                if (e.code === 'auth/email-already-in-use') toast('Email já cadastrado', 'error');
-                else if (e.code === 'auth/weak-password') toast('Senha muito fraca', 'error');
-                else toast('Erro: ' + e.message, 'error');
-            } finally {
-                enableButton(this);
-                hideLoading();
             }
-        });
 
-        document.getElementById('loginBtn').addEventListener('click', async function() {
-            const email = document.getElementById('emailLogin').value.trim();
-            const senha = document.getElementById('senhaLogin').value;
-
-            if (!email || !senha) { toast('Preencha email e senha', 'error'); return; }
-
-            disableButton(this, 'Entrando...');
-            showLoading();
-
-            try {
-                await auth.signInWithEmailAndPassword(email, senha);
-            } catch (e) {
-                if (e.code === 'auth/user-not-found') toast('Usuário não encontrado', 'error');
-                else if (e.code === 'auth/wrong-password') toast('Senha incorreta', 'error');
-                else toast('Falha no login', 'error');
-            } finally {
-                enableButton(this);
-                hideLoading();
-            }
-        });
-
-        document.getElementById('forgotPasswordBtn').addEventListener('click', async function() {
-            const email = document.getElementById('emailLogin').value.trim();
-            if (!email) { toast('Digite seu email', 'error'); return; }
-            disableButton(this, 'Enviando...');
-            try {
-                await auth.sendPasswordResetEmail(email);
-                toast('Email de recuperação enviado!', 'success');
-            } catch (e) {
-                toast('Erro: ' + e.message, 'error');
-            } finally {
-                enableButton(this);
-            }
-        });
-
-        // CORREÇÃO 2: set com merge + CORREÇÃO 3: verificação de banido no login
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
+            // ==================== AUTENTICAÇÃO ====================
+            document.getElementById('registerBtn').addEventListener('click', async function() {
+                const email = document.getElementById('emailLogin').value.trim();
+                const senha = document.getElementById('senhaLogin').value;
+                if (!email || senha.length < 6) { toast('Senha mínima: 6 caracteres', 'error'); return; }
+                disableButton(this, 'Criando...');
                 showLoading();
                 try {
-                    let snap = await db.collection('users').doc(user.uid).get();
-                    if (!snap.exists) {
-                        const defaultProfile = { nickname: user.email.split('@')[0], bike: '', city: '', bio: '', instagram: '', avatar: '', banner: '' };
-                        await db.collection('users').doc(user.uid).set({
-                            email: user.email,
-                            role: user.email === MASTER_EMAIL ? 'master' : 'novato',
-                            tokens: 0, xp: 0, reputation: 0, status: 'adimplente', guildId: null,
-                            achievements: [], inventory: [], titles: [], badges: [],
-                            profile: defaultProfile,
-                            createdAt: serverTimestamp(), lastLogin: serverTimestamp(), ticketsOwned: []
-                        });
-                        snap = await db.collection('users').doc(user.uid).get();
-                    }
+                    await auth.createUserWithEmailAndPassword(email, senha);
+                    // Envia verificação de email
+                    await auth.currentUser.sendEmailVerification();
+                    toast('Conta criada! Verifique seu email antes de entrar.', 'info');
+                } catch (e) {
+                    if (e.code === 'auth/email-already-in-use') toast('Email já cadastrado', 'error');
+                    else if (e.code === 'auth/weak-password') toast('Senha muito fraca', 'error');
+                    else toast('Erro: ' + e.message, 'error');
+                } finally {
+                    enableButton(this);
+                    hideLoading();
+                }
+            });
 
-                    const userData = snap.data();
-                    // 🔒 Verificação de usuário banido LOGO APÓS OBTER OS DADOS
-                    if (userData.status === 'banido') {
-                        toast('Conta banida. Acesso negado.', 'error');
+            document.getElementById('loginBtn').addEventListener('click', async function() {
+                const email = document.getElementById('emailLogin').value.trim();
+                const senha = document.getElementById('senhaLogin').value;
+                if (!email || !senha) { toast('Preencha email e senha', 'error'); return; }
+                disableButton(this, 'Entrando...');
+                showLoading();
+                try {
+                    await auth.signInWithEmailAndPassword(email, senha);
+                } catch (e) {
+                    if (e.code === 'auth/user-not-found') toast('Usuário não encontrado', 'error');
+                    else if (e.code === 'auth/wrong-password') toast('Senha incorreta', 'error');
+                    else toast('Falha no login', 'error');
+                } finally {
+                    enableButton(this);
+                    hideLoading();
+                }
+            });
+
+            document.getElementById('forgotPasswordBtn').addEventListener('click', async function() {
+                const email = document.getElementById('emailLogin').value.trim();
+                if (!email) { toast('Digite seu email', 'error'); return; }
+                disableButton(this, 'Enviando...');
+                try {
+                    await auth.sendPasswordResetEmail(email);
+                    toast('Email de recuperação enviado!', 'success');
+                } catch (e) { toast('Erro: ' + e.message, 'error'); }
+                finally { enableButton(this); }
+            });
+
+            // ==================== OBSERVADOR DE LOGIN (COM VERIFICAÇÃO DE EMAIL) ====================
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // Bloqueia login sem email verificado
+                    if (!user.emailVerified) {
+                        toast('Verifique seu email primeiro.', 'error');
                         await auth.signOut();
-                        hideLoading();
                         return;
                     }
 
-                    currentUser = { uid: user.uid, ...userData };
+                    showLoading();
+                    try {
+                        const userRef = db.collection('users').doc(user.uid);
+                        const snap = await userRef.get().catch(e => {
+                            if (e.code === 'permission-denied') throw new Error('Permissão negada. Verifique as regras do Firestore.');
+                            throw e;
+                        });
 
-                    // 🔄️ ALTERAÇÃO PRINCIPAL: usar set com merge em vez de update
-                    await db.collection('users').doc(user.uid).set({
-                        lastLogin: serverTimestamp()
-                    }, { merge: true });
+                        let userData;
+                        if (!snap.exists) {
+                            toast('Criando perfil do motociclista...', 'info');
+                            const createdProfile = await forceCreateUserDocument(user);
+                            if (!createdProfile) throw new Error('Falha ao criar perfil automaticamente.');
+                            userData = createdProfile;
+                        } else {
+                            userData = snap.data();
+                            await userRef.update({ lastLogin: serverTimestamp() }).catch(() => {});
+                        }
 
-                    document.getElementById('authScreen').classList.add('hidden');
-                    document.getElementById('app').classList.remove('hidden');
+                        // Admin apenas se for o email mestre
+                        const isAdmin = user.email === MASTER_EMAIL;
 
+                        if (userData.status === 'banido') {
+                            toast('Conta banida. Acesso negado.', 'error');
+                            await auth.signOut();
+                            return;
+                        }
+
+                        currentUser = { uid: user.uid, ...userData, isAdmin };
+
+                        document.getElementById('authScreen').classList.add('hidden');
+                        document.getElementById('app').classList.remove('hidden');
+                        updateUI();
+                        listenUser();
+                        loadPartners();
+                        showView('homeView');
+                        toast('🔥 Bem-vindo à Irmandade do Asfalto! 🔥', 'success');
+                    } catch (e) {
+                        console.error(e);
+                        toast('Erro: ' + (e.message || 'Falha ao carregar perfil'), 'error');
+                        document.getElementById('authScreen').classList.add('hidden');
+                        document.getElementById('app').classList.remove('hidden');
+                        updateUI();
+                    } finally {
+                        hideLoading();
+                    }
+                } else {
+                    if (userListener) { userListener(); userListener = null; }
+                    currentUser = null;
+                    document.getElementById('authScreen').classList.remove('hidden');
+                    document.getElementById('app').classList.add('hidden');
+                }
+            });
+
+            // ==================== PERFIL (COM SANITIZAÇÃO) ====================
+            document.getElementById('savePerfilBtn').addEventListener('click', async function() {
+                if (!currentUser) return;
+                const profile = {
+                    nickname: sanitize(document.getElementById('nicknameInput').value) || currentUser.profile?.nickname || 'Membro',
+                    bike: sanitize(document.getElementById('bikeInput').value),
+                    city: sanitize(document.getElementById('cityInput').value),
+                    instagram: sanitize(document.getElementById('instagramInput').value),
+                    bio: sanitize(document.getElementById('bioInput').value)
+                };
+                disableButton(this, 'Salvando...');
+                try {
+                    await db.collection('users').doc(currentUser.uid).update({ profile });
+                    currentUser.profile = profile;
                     updateUI();
-                    listenUser();
-                    loadPartners();
-                    showView('homeView');
-
-                    toast('🔥 Bem-vindo à Irmandade do Asfalto! 🔥', 'success');
+                    toast('Perfil salvo!', 'success');
                 } catch (e) {
-                    console.error('Erro ao carregar perfil:', e);
-                    toast('Erro ao carregar dados', 'error');
+                    toast('Erro ao salvar.', 'error');
+                } finally {
+                    enableButton(this);
                 }
-                hideLoading();
-            } else {
+            });
+
+            // ==================== CONTEÚDO ====================
+            async function loadPartners() {
+                try {
+                    const snap = await db.collection('partners').orderBy('createdAt', 'desc').limit(20).get();
+                    let html = snap.empty ? '<p class="muted">Nenhum parceiro ainda.</p>' : '';
+                    snap.forEach(doc => {
+                        const p = doc.data();
+                        html += `<div class="partner-card"><h3>🤝 ${p.name || 'Parceiro'}</h3><p style="color:var(--orange);">🎁 ${p.discount || 'Desconto'}</p></div>`;
+                    });
+                    document.getElementById('partnersList').innerHTML = html;
+                } catch (e) { document.getElementById('partnersList').innerHTML = '<p class="muted">Erro ao carregar.</p>'; }
+            }
+
+            async function loadMissoes() {
+                try {
+                    const snap = await db.collection('missions').orderBy('createdAt', 'desc').limit(20).get();
+                    let html = snap.empty ? '<p class="muted">Nenhuma missão disponível.</p>' : '';
+                    snap.forEach(doc => {
+                        const m = doc.data();
+                        html += `<div class="mission-card"><h3>⚔️ ${m.title || 'Missão'}</h3><p class="muted">${m.description || ''}</p><p>⚡ ${m.rewardXp || 0} XP | 🔥 ${m.rewardTokens || 0} Tokens</p><span style="font-size:11px; color:var(--orange);">${m.type || 'special'}</span></div>`;
+                    });
+                    document.getElementById('missoesList').innerHTML = html;
+                } catch (e) { document.getElementById('missoesList').innerHTML = '<p class="muted">Erro ao carregar.</p>'; }
+            }
+
+            // CORRIGIDO: loadLoja agora é async
+            async function loadLoja() {
+                try {
+                    const snap = await db.collection('store').orderBy('createdAt', 'desc').limit(20).get();
+                    let html = snap.empty ? '<p class="muted">Loja vazia.</p>' : '';
+                    snap.forEach(doc => {
+                        const item = doc.data();
+                        html += `<div class="item-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><h3>${item.name || 'Item'}</h3><p class="muted">${item.rarity || 'comum'}</p></div><div style="text-align:right;"><p>🔥 ${item.price || 0}</p><button class="btn-primary" style="padding:8px 14px; font-size:13px;" onclick="comprarItem('${doc.id}')">Comprar</button></div></div></div>`;
+                    });
+                    document.getElementById('lojaList').innerHTML = html;
+                } catch (e) { document.getElementById('lojaList').innerHTML = '<p class="muted">Erro ao carregar.</p>'; }
+            }
+
+            async function loadInventario() {
+                if (!currentUser) return;
+                try {
+                    const userSnap = await db.collection('users').doc(currentUser.uid).get();
+                    const inventory = userSnap.data()?.inventory || [];
+                    if (inventory.length === 0) {
+                        document.getElementById('inventarioList').innerHTML = '<p class="muted">Inventário vazio.</p>';
+                        return;
+                    }
+                    const storeSnap = await db.collection('store').get();
+                    const storeItems = {};
+                    storeSnap.forEach(doc => { storeItems[doc.id] = doc.data(); });
+                    let html = '';
+                    inventory.forEach(itemId => {
+                        const item = storeItems[itemId];
+                        html += `<div class="item-card"><span>${item ? item.name : 'Item #' + itemId}</span><span class="muted">${item ? item.rarity : '?'}</span></div>`;
+                    });
+                    document.getElementById('inventarioList').innerHTML = html;
+                } catch (e) { document.getElementById('inventarioList').innerHTML = '<p class="muted">Erro.</p>'; }
+            }
+
+            async function loadGuildas() {
+                try {
+                    const snap = await db.collection('guilds').orderBy('createdAt', 'desc').limit(20).get();
+                    let html = snap.empty ? '<p class="muted">Nenhuma guilda criada.</p>' : '';
+                    snap.forEach(doc => {
+                        const g = doc.data();
+                        html += `<div class="partner-card"><h3>🏴 ${g.name || 'Guilda'}</h3><p class="muted">Membros: ${(g.members || []).length} | XP: ${g.xp || 0}</p></div>`;
+                    });
+                    document.getElementById('guildasList').innerHTML = html;
+                } catch (e) { document.getElementById('guildasList').innerHTML = '<p class="muted">Erro.</p>'; }
+            }
+
+            async function loadRanking() {
+                try {
+                    const snap = await db.collection('users').orderBy('xp', 'desc').limit(30).get();
+                    let html = snap.empty ? '<p class="muted">Ranking vazio.</p>' : '';
+                    let pos = 1;
+                    snap.forEach(doc => {
+                        const u = doc.data();
+                        const rank = getRank(u.xp || 0);
+                        html += `<div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(31,31,31,0.6); border-radius:14px; margin-bottom:8px;"><span style="font-weight:900; color:var(--gold); width:28px;">#${pos++}</span><div style="flex:1;"><strong>${u.profile?.nickname || 'Membro'}</strong><br><span class="rank-badge ${rank.classe}" style="font-size:10px;">${rank.nome}</span></div><span>⚡ ${u.xp || 0}</span></div>`;
+                    });
+                    document.getElementById('rankingList').innerHTML = html;
+                } catch (e) { document.getElementById('rankingList').innerHTML = '<p class="muted">Erro.</p>'; }
+            }
+
+            // ==================== COMPRA SEGURA (PREÇO REAL DO BANCO) ====================
+            async function comprarItem(itemId) {
+                if (!currentUser) return;
+
+                try {
+                    const userRef = db.collection('users').doc(currentUser.uid);
+                    const itemRef = db.collection('store').doc(itemId);
+
+                    await db.runTransaction(async (transaction) => {
+                        const userDoc = await transaction.get(userRef);
+                        const itemDoc = await transaction.get(itemRef);
+
+                        if (!userDoc.exists) throw new Error('Usuário não encontrado');
+                        if (!itemDoc.exists) throw new Error('Item inexistente');
+
+                        const userData = userDoc.data();
+                        const itemData = itemDoc.data();
+                        const realPrice = itemData.price || 0;
+                        const currentTokens = userData.tokens || 0;
+                        const inventory = userData.inventory || [];
+
+                        if (inventory.includes(itemId)) throw new Error('Você já possui esse item');
+                        if (currentTokens < realPrice) throw new Error('Tokens insuficientes');
+
+                        transaction.update(userRef, {
+                            tokens: increment(-realPrice),
+                            inventory: arrayUnion(itemId)
+                        });
+                    });
+
+                    toast('Item comprado com sucesso!', 'success');
+                    // Recarrega a loja e o inventário
+                    loadLoja();
+                    loadInventario();
+                } catch (e) {
+                    toast(e.message, 'error');
+                }
+            }
+            // Torna a função acessível no escopo global para os botões da loja
+            window.comprarItem = comprarItem;
+
+            // ==================== ADMIN ====================
+            document.getElementById('rewardBtn').addEventListener('click', async function() {
+                if (!currentUser || !currentUser.isAdmin) { toast('Acesso negado', 'error'); return; }
+                const email = document.getElementById('rewardEmail').value.trim();
+                const tokens = parseInt(document.getElementById('rewardTokens').value) || 0;
+                const xp = parseInt(document.getElementById('rewardXp').value) || 0;
+                if (!email || (tokens === 0 && xp === 0)) { toast('Dados inválidos', 'error'); return; }
+                disableButton(this, 'Enviando...');
+                try {
+                    const q = await db.collection('users').where('email', '==', email).limit(1).get();
+                    if (q.empty) { toast('Usuário não encontrado', 'error'); enableButton(this); return; }
+                    const updateData = {};
+                    if (tokens > 0) updateData.tokens = increment(tokens);
+                    if (xp > 0) updateData.xp = increment(xp);
+                    await q.docs[0].ref.update(updateData);
+                    await db.collection('logs').add({ adminId: currentUser.uid, action: 'reward', targetEmail: email, tokens, xp, createdAt: serverTimestamp() });
+                    toast('Recompensa enviada!', 'success');
+                    document.getElementById('rewardEmail').value = '';
+                    document.getElementById('rewardTokens').value = '0';
+                    document.getElementById('rewardXp').value = '0';
+                } catch (e) { toast('Erro: ' + e.message, 'error'); }
+                finally { enableButton(this); }
+            });
+
+            document.getElementById('createItemBtn').addEventListener('click', async function() {
+                if (!currentUser || !currentUser.isAdmin) { toast('Acesso negado', 'error'); return; }
+                const name = document.getElementById('itemNameInput').value.trim();
+                const price = parseInt(document.getElementById('itemPriceInput').value) || 0;
+                const rarity = document.getElementById('itemRarityInput').value.trim() || 'comum';
+                if (!name || price <= 0) { toast('Preencha os dados', 'error'); return; }
+                disableButton(this);
+                try {
+                    await db.collection('store').add({ name, price, rarity, active: true, createdAt: serverTimestamp() });
+                    toast('Item criado!', 'success');
+                    document.getElementById('itemNameInput').value = '';
+                    document.getElementById('itemPriceInput').value = '';
+                    document.getElementById('itemRarityInput').value = '';
+                    loadLoja();
+                } catch (e) { toast('Erro', 'error'); }
+                finally { enableButton(this); }
+            });
+
+            document.getElementById('createMissionBtn').addEventListener('click', async function() {
+                if (!currentUser || !currentUser.isAdmin) { toast('Acesso negado', 'error'); return; }
+                const title = document.getElementById('missionTitleInput').value.trim();
+                const description = document.getElementById('missionDescInput').value.trim();
+                const rewardXp = parseInt(document.getElementById('missionXpInput').value) || 0;
+                const rewardTokens = parseInt(document.getElementById('missionTokensInput').value) || 0;
+                const type = document.getElementById('missionTypeInput').value.trim() || 'special';
+                if (!title) { toast('Preencha o título', 'error'); return; }
+                disableButton(this);
+                try {
+                    await db.collection('missions').add({ title, description, rewardXp, rewardTokens, type, active: true, createdAt: serverTimestamp() });
+                    toast('Missão criada!', 'success');
+                    document.getElementById('missionTitleInput').value = '';
+                    document.getElementById('missionDescInput').value = '';
+                    document.getElementById('missionXpInput').value = '0';
+                    document.getElementById('missionTokensInput').value = '0';
+                    loadMissoes();
+                } catch (e) { toast('Erro', 'error'); }
+                finally { enableButton(this); }
+            });
+
+            document.getElementById('createGuildBtn').addEventListener('click', async function() {
+                if (!currentUser || !currentUser.isAdmin) { toast('Acesso negado', 'error'); return; }
+                const name = document.getElementById('guildNameInput').value.trim();
+                if (!name) { toast('Preencha o nome', 'error'); return; }
+                disableButton(this);
+                try {
+                    await db.collection('guilds').add({ name, leaderId: currentUser.uid, members: [currentUser.uid], xp: 0, createdAt: serverTimestamp() });
+                    toast('Guilda criada!', 'success');
+                    document.getElementById('guildNameInput').value = '';
+                    loadGuildas();
+                } catch (e) { toast('Erro', 'error'); }
+                finally { enableButton(this); }
+            });
+
+            document.getElementById('createPartnerBtn').addEventListener('click', async function() {
+                if (!currentUser || !currentUser.isAdmin) { toast('Acesso negado', 'error'); return; }
+                const name = document.getElementById('partnerName').value.trim();
+                const discount = document.getElementById('partnerDiscount').value.trim();
+                if (!name || !discount) { toast('Preencha os campos', 'error'); return; }
+                disableButton(this);
+                try {
+                    await db.collection('partners').add({ name, discount, createdBy: currentUser.uid, createdAt: serverTimestamp() });
+                    toast('Parceiro criado!', 'success');
+                    document.getElementById('partnerName').value = '';
+                    document.getElementById('partnerDiscount').value = '';
+                    loadPartners();
+                } catch (e) { toast('Erro', 'error'); }
+                finally { enableButton(this); }
+            });
+
+            document.getElementById('banUserBtn').addEventListener('click', async function() {
+                if (!currentUser || !currentUser.isAdmin) { toast('Acesso negado', 'error'); return; }
+                const email = document.getElementById('targetUserEmail').value.trim();
+                if (!email) { toast('Informe o email', 'error'); return; }
+                try {
+                    const q = await db.collection('users').where('email', '==', email).limit(1).get();
+                    if (q.empty) { toast('Usuário não encontrado', 'error'); return; }
+                    await q.docs[0].ref.update({ status: 'banido' });
+                    await db.collection('logs').add({ adminId: currentUser.uid, action: 'ban', targetEmail: email, createdAt: serverTimestamp() });
+                    toast('Usuário banido!', 'success');
+                } catch (e) { toast('Erro', 'error'); }
+            });
+
+            document.getElementById('unbanUserBtn').addEventListener('click', async function() {
+                if (!currentUser || !currentUser.isAdmin) { toast('Acesso negado', 'error'); return; }
+                const email = document.getElementById('targetUserEmail').value.trim();
+                if (!email) { toast('Informe o email', 'error'); return; }
+                try {
+                    const q = await db.collection('users').where('email', '==', email).limit(1).get();
+                    if (q.empty) { toast('Usuário não encontrado', 'error'); return; }
+                    await q.docs[0].ref.update({ status: 'adimplente' });
+                    toast('Usuário liberado!', 'success');
+                } catch (e) { toast('Erro', 'error'); }
+            });
+
+            async function loadMembers() {
+                if (!currentUser || !currentUser.isAdmin) return;
+                try {
+                    const snap = await db.collection('users').orderBy('xp', 'desc').limit(50).get();
+                    let html = '';
+                    snap.forEach(doc => {
+                        const u = doc.data();
+                        html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(29,21,16,0.6); border-radius:12px; margin-bottom:6px;"><div><strong>${u.profile?.nickname || '?'}</strong><br><small class="muted">${u.email}</small></div><div style="text-align:right;">🔥${u.tokens||0} ⚡${u.xp||0}</div></div>`;
+                    });
+                    document.getElementById('membersList').innerHTML = html || '<p class="muted">Nenhum membro.</p>';
+                } catch (e) { document.getElementById('membersList').innerHTML = '<p class="muted">Erro.</p>'; }
+            }
+
+            // ==================== NAVEGAÇÃO ====================
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => showView(btn.dataset.view)));
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
                 if (userListener) { userListener(); userListener = null; }
-                currentUser = null;
-                document.getElementById('authScreen').classList.remove('hidden');
-                document.getElementById('app').classList.add('hidden');
+                auth.signOut();
+            });
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
             }
-        });
-
-        // ==================== PERFIL ====================
-        document.getElementById('savePerfilBtn').addEventListener('click', async function() {
-            if (!currentUser) return;
-            const profile = {
-                nickname: document.getElementById('nicknameInput').value.trim() || currentUser.profile?.nickname || 'Membro',
-                bike: document.getElementById('bikeInput').value.trim(),
-                city: document.getElementById('cityInput').value.trim(),
-                instagram: document.getElementById('instagramInput').value.trim(),
-                bio: document.getElementById('bioInput').value.trim()
-            };
-            disableButton(this, 'Salvando...');
-            try {
-                await db.collection('users').doc(currentUser.uid).update({ profile });
-                currentUser.profile = profile;
-                updateUI();
-                toast('Perfil salvo!', 'success');
-            } catch (e) {
-                toast('Erro ao salvar', 'error');
-            } finally {
-                enableButton(this);
-            }
-        });
-
-        // ==================== LISTAGENS ====================
-        async function loadPartners() {
-            try {
-                const snap = await db.collection('partners').orderBy('createdAt', 'desc').limit(20).get();
-                let html = snap.empty ? '<p class="muted">Nenhum parceiro ainda.</p>' : '';
-                snap.forEach(doc => {
-                    const p = doc.data();
-                    html += `<div class="partner-card"><h3>🤝 ${p.name || 'Parceiro'}</h3><p style="color:var(--orange);">🎁 ${p.discount || 'Desconto'}</p></div>`;
-                });
-                document.getElementById('partnersList').innerHTML = html;
-            } catch (e) { document.getElementById('partnersList').innerHTML = '<p class="muted">Erro ao carregar.</p>'; }
-        }
-
-        async function loadMissoes() {
-            try {
-                const snap = await db.collection('missions').orderBy('createdAt', 'desc').limit(20).get();
-                let html = snap.empty ? '<p class="muted">Nenhuma missão disponível.</p>' : '';
-                snap.forEach(doc => {
-                    const m = doc.data();
-                    html += `<div class="mission-card"><h3>⚔️ ${m.title || 'Missão'}</h3><p class="muted">${m.description || ''}</p><p>⚡ ${m.rewardXp || 0} XP | 🔥 ${m.rewardTokens || 0} Tokens</p><span style="font-size:11px; color:var(--orange);">${m.type || 'special'}</span></div>`;
-                });
-                document.getElementById('missoesList').innerHTML = html;
-            } catch (e) { document.getElementById('missoesList').innerHTML = '<p class="muted">Erro ao carregar.</p>'; }
-        }
-
-        async function loadLoja() {
-            try {
-                const snap = await db.collection('store').orderBy('createdAt', 'desc').limit(20).get();
-                let html = snap.empty ? '<p class="muted">Loja vazia.</p>' : '';
-                snap.forEach(doc => {
-                    const item = doc.data();
-                    html += `<div class="item-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><h3>${item.name || 'Item'}</h3><p class="muted">${item.rarity || 'comum'}</p></div><div style="text-align:right;"><p>🔥 ${item.price || 0}</p><button class="btn-primary" style="padding:8px 14px; font-size:13px;" onclick="comprarItem('${doc.id}', ${item.price || 0})">Comprar</button></div></div></div>`;
-                });
-                document.getElementById('lojaList').innerHTML = html;
-            } catch (e) { document.getElementById('lojaList').innerHTML = '<p class="muted">Erro ao carregar.</p>'; }
-        }
-
-        async function loadInventario() {
-            if (!currentUser) return;
-            try {
-                const userSnap = await db.collection('users').doc(currentUser.uid).get();
-                const inventory = userSnap.data()?.inventory || [];
-                if (inventory.length === 0) {
-                    document.getElementById('inventarioList').innerHTML = '<p class="muted">Inventário vazio.</p>';
-                    return;
-                }
-                const storeSnap = await db.collection('store').get();
-                const storeItems = {};
-                storeSnap.forEach(doc => { storeItems[doc.id] = doc.data(); });
-                let html = '';
-                inventory.forEach(itemId => {
-                    const item = storeItems[itemId];
-                    html += `<div class="item-card"><span>${item ? item.name : 'Item #' + itemId}</span><span class="muted">${item ? item.rarity : '?'}</span></div>`;
-                });
-                document.getElementById('inventarioList').innerHTML = html;
-            } catch (e) { document.getElementById('inventarioList').innerHTML = '<p class="muted">Erro.</p>'; }
-        }
-
-        async function loadGuildas() {
-            try {
-                const snap = await db.collection('guilds').orderBy('createdAt', 'desc').limit(20).get();
-                let html = snap.empty ? '<p class="muted">Nenhuma guilda criada.</p>' : '';
-                snap.forEach(doc => {
-                    const g = doc.data();
-                    html += `<div class="partner-card"><h3>🏴 ${g.name || 'Guilda'}</h3><p class="muted">Membros: ${(g.members || []).length} | XP: ${g.xp || 0}</p></div>`;
-                });
-                document.getElementById('guildasList').innerHTML = html;
-            } catch (e) { document.getElementById('guildasList').innerHTML = '<p class="muted">Erro.</p>'; }
-        }
-
-        async function loadRanking() {
-            try {
-                const snap = await db.collection('users').orderBy('xp', 'desc').limit(30).get();
-                let html = snap.empty ? '<p class="muted">Ranking vazio.</p>' : '';
-                let pos = 1;
-                snap.forEach(doc => {
-                    const u = doc.data();
-                    const rank = getRank(u.xp || 0);
-                    html += `<div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(31,31,31,0.6); border-radius:14px; margin-bottom:8px;"><span style="font-weight:900; color:var(--gold); width:28px;">#${pos++}</span><div style="flex:1;"><strong>${u.profile?.nickname || 'Membro'}</strong><br><span class="rank-badge ${rank.classe}" style="font-size:10px;">${rank.nome}</span></div><span>⚡ ${u.xp || 0}</span></div>`;
-                });
-                document.getElementById('rankingList').innerHTML = html;
-            } catch (e) { document.getElementById('rankingList').innerHTML = '<p class="muted">Erro.</p>'; }
-        }
-
-        // ==================== COMPRAS ====================
-        async function comprarItem(itemId, price) {
-            if (!currentUser) return;
-            if ((currentUser.tokens || 0) < price) { toast('Tokens insuficientes', 'error'); return; }
-            try {
-                await db.collection('users').doc(currentUser.uid).update({
-                    tokens: increment(-price),
-                    inventory: arrayUnion(itemId)
-                });
-                currentUser.tokens -= price;
-                if (!currentUser.inventory) currentUser.inventory = [];
-                currentUser.inventory.push(itemId);
-                updateUI();
-                toast('Item comprado!', 'success');
-                loadLoja();
-            } catch (e) { toast('Erro ao comprar', 'error'); }
-        }
-
-        // ==================== ADMIN ====================
-        document.getElementById('rewardBtn').addEventListener('click', async function() {
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'master')) { toast('Acesso negado', 'error'); return; }
-            const email = document.getElementById('rewardEmail').value.trim();
-            const tokens = parseInt(document.getElementById('rewardTokens').value) || 0;
-            const xp = parseInt(document.getElementById('rewardXp').value) || 0;
-            if (!email || (tokens === 0 && xp === 0)) { toast('Dados inválidos', 'error'); return; }
-            disableButton(this, 'Enviando...');
-            try {
-                const q = await db.collection('users').where('email', '==', email).limit(1).get();
-                if (q.empty) { toast('Usuário não encontrado', 'error'); enableButton(this); return; }
-                const updateData = {};
-                if (tokens > 0) updateData.tokens = increment(tokens);
-                if (xp > 0) updateData.xp = increment(xp);
-                await q.docs[0].ref.update(updateData);
-                await db.collection('logs').add({ adminId: currentUser.uid, action: 'reward', targetEmail: email, tokens, xp, createdAt: serverTimestamp() });
-                toast('Recompensa enviada!', 'success');
-                document.getElementById('rewardEmail').value = '';
-                document.getElementById('rewardTokens').value = '0';
-                document.getElementById('rewardXp').value = '0';
-            } catch (e) { toast('Erro: ' + e.message, 'error'); }
-            finally { enableButton(this); }
-        });
-
-        document.getElementById('createItemBtn').addEventListener('click', async function() {
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'master')) { toast('Acesso negado', 'error'); return; }
-            const name = document.getElementById('itemNameInput').value.trim();
-            const price = parseInt(document.getElementById('itemPriceInput').value) || 0;
-            const rarity = document.getElementById('itemRarityInput').value.trim() || 'comum';
-            if (!name || price <= 0) { toast('Preencha os dados', 'error'); return; }
-            disableButton(this);
-            try {
-                await db.collection('store').add({ name, price, rarity, active: true, createdAt: serverTimestamp() });
-                toast('Item criado!', 'success');
-                document.getElementById('itemNameInput').value = '';
-                document.getElementById('itemPriceInput').value = '';
-                document.getElementById('itemRarityInput').value = '';
-                loadLoja();
-            } catch (e) { toast('Erro', 'error'); }
-            finally { enableButton(this); }
-        });
-
-        document.getElementById('createMissionBtn').addEventListener('click', async function() {
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'master')) { toast('Acesso negado', 'error'); return; }
-            const title = document.getElementById('missionTitleInput').value.trim();
-            const description = document.getElementById('missionDescInput').value.trim();
-            const rewardXp = parseInt(document.getElementById('missionXpInput').value) || 0;
-            const rewardTokens = parseInt(document.getElementById('missionTokensInput').value) || 0;
-            const type = document.getElementById('missionTypeInput').value.trim() || 'special';
-            if (!title) { toast('Preencha o título', 'error'); return; }
-            disableButton(this);
-            try {
-                await db.collection('missions').add({ title, description, rewardXp, rewardTokens, type, active: true, createdAt: serverTimestamp() });
-                toast('Missão criada!', 'success');
-                document.getElementById('missionTitleInput').value = '';
-                document.getElementById('missionDescInput').value = '';
-                document.getElementById('missionXpInput').value = '0';
-                document.getElementById('missionTokensInput').value = '0';
-                loadMissoes();
-            } catch (e) { toast('Erro', 'error'); }
-            finally { enableButton(this); }
-        });
-
-        document.getElementById('createGuildBtn').addEventListener('click', async function() {
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'master')) { toast('Acesso negado', 'error'); return; }
-            const name = document.getElementById('guildNameInput').value.trim();
-            if (!name) { toast('Preencha o nome', 'error'); return; }
-            disableButton(this);
-            try {
-                await db.collection('guilds').add({ name, leaderId: currentUser.uid, members: [currentUser.uid], xp: 0, createdAt: serverTimestamp() });
-                toast('Guilda criada!', 'success');
-                document.getElementById('guildNameInput').value = '';
-                loadGuildas();
-            } catch (e) { toast('Erro', 'error'); }
-            finally { enableButton(this); }
-        });
-
-        document.getElementById('createPartnerBtn').addEventListener('click', async function() {
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'master')) { toast('Acesso negado', 'error'); return; }
-            const name = document.getElementById('partnerName').value.trim();
-            const discount = document.getElementById('partnerDiscount').value.trim();
-            if (!name || !discount) { toast('Preencha os campos', 'error'); return; }
-            disableButton(this);
-            try {
-                await db.collection('partners').add({ name, discount, createdBy: currentUser.uid, createdAt: serverTimestamp() });
-                toast('Parceiro criado!', 'success');
-                document.getElementById('partnerName').value = '';
-                document.getElementById('partnerDiscount').value = '';
-                loadPartners();
-            } catch (e) { toast('Erro', 'error'); }
-            finally { enableButton(this); }
-        });
-
-        document.getElementById('banUserBtn').addEventListener('click', async function() {
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'master')) return;
-            const email = document.getElementById('targetUserEmail').value.trim();
-            if (!email) { toast('Informe o email', 'error'); return; }
-            try {
-                const q = await db.collection('users').where('email', '==', email).limit(1).get();
-                if (q.empty) { toast('Usuário não encontrado', 'error'); return; }
-                await q.docs[0].ref.update({ status: 'banido' });
-                await db.collection('logs').add({ adminId: currentUser.uid, action: 'ban', targetEmail: email, createdAt: serverTimestamp() });
-                toast('Usuário banido!', 'success');
-            } catch (e) { toast('Erro', 'error'); }
-        });
-
-        document.getElementById('unbanUserBtn').addEventListener('click', async function() {
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'master')) return;
-            const email = document.getElementById('targetUserEmail').value.trim();
-            if (!email) { toast('Informe o email', 'error'); return; }
-            try {
-                const q = await db.collection('users').where('email', '==', email).limit(1).get();
-                if (q.empty) { toast('Usuário não encontrado', 'error'); return; }
-                await q.docs[0].ref.update({ status: 'adimplente' });
-                toast('Usuário liberado!', 'success');
-            } catch (e) { toast('Erro', 'error'); }
-        });
-
-        async function loadMembers() {
-            if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'master')) return;
-            try {
-                const snap = await db.collection('users').orderBy('xp', 'desc').limit(50).get();
-                let html = '';
-                snap.forEach(doc => {
-                    const u = doc.data();
-                    html += `<div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:rgba(29,21,16,0.6); border-radius:12px; margin-bottom:6px;"><div><strong>${u.profile?.nickname || '?'}</strong><br><small class="muted">${u.email}</small></div><div style="text-align:right;">🔥${u.tokens||0} ⚡${u.xp||0}</div></div>`;
-                });
-                document.getElementById('membersList').innerHTML = html || '<p class="muted">Nenhum membro.</p>';
-            } catch (e) { document.getElementById('membersList').innerHTML = '<p class="muted">Erro.</p>'; }
-        }
-
-        // ==================== NAVEGAÇÃO ====================
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => showView(btn.dataset.view));
-        });
-
-        // ==================== LOGOUT ====================
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            if (userListener) { userListener(); userListener = null; }
-            auth.signOut();
-        });
-
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
-        }
+        })();
     </script>
 </body>
 </html>
