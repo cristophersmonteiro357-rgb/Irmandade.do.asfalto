@@ -12,6 +12,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
     <style>
+        /* ... (todo o CSS permanece exatamente igual, sem alterações) ... */
         :root {
             --orange: #ff7b00;
             --orange-light: #ffae42;
@@ -940,16 +941,10 @@
                 finally { enableButton(this); }
             });
 
-            // ==================== OBSERVADOR DE LOGIN (COM VERIFICAÇÃO DE EMAIL) ====================
+            // ==================== OBSERVADOR DE LOGIN (SEM VERIFICAÇÃO DE EMAIL) ====================
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
-                    // Bloqueia login sem email verificado
-                    if (!user.emailVerified) {
-                        toast('Verifique seu email primeiro.', 'error');
-                        await auth.signOut();
-                        return;
-                    }
-
+                    // Removida a exigência de email verificado para permitir login imediato
                     showLoading();
                     try {
                         const userRef = db.collection('users').doc(user.uid);
