@@ -1,131 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Irmandade do Asfalto | RPG Motoclube</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <style>
-        /* ===== SEU CSS ORIGINAL (IDÊNTICO) ===== */
-        :root { --orange: #ff7b00; --orange-light: #ffae42; --card: #161616; --card2: #1f1f1f; --border: rgba(255,123,0,.25); --success: #2e7d32; --danger: #c55a3a; --gold: #ffd700; --text: #f5f5f5; --muted: #999; --safe-bottom: env(safe-area-inset-bottom, 16px); --neon-glow: 0 0 20px rgba(255,123,0,0.4); --card-glass: rgba(22,22,22,0.75); }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; -webkit-tap-highlight-color:transparent; }
-        body { background:#050505; color:var(--text); height:100vh; overflow:hidden; }
-        .bg-cyber { position:fixed; inset:0; z-index:-1; background:radial-gradient(circle at 20% 30%,rgba(255,123,0,0.08),transparent 40%),radial-gradient(circle at 80% 70%,rgba(255,174,66,0.05),transparent 40%),radial-gradient(circle at 50% 50%,rgba(255,123,0,0.03),transparent 60%); animation:bgPulse 6s infinite alternate ease-in-out; }
-        @keyframes bgPulse { 0%{opacity:0.8;transform:scale(1);} 100%{opacity:1;transform:scale(1.03);} }
-        .particles { position:fixed; inset:0; z-index:-1; pointer-events:none; }
-        .particle { position:absolute; width:2px; height:2px; background:var(--orange); border-radius:50%; animation:float 4s infinite ease-in-out; opacity:0.6; }
-        @keyframes float { 0%,100%{transform:translateY(0) translateX(0);opacity:0.4;} 50%{transform:translateY(-30px) translateX(15px);opacity:0.9;} }
-        button,input,textarea,select { border:none; outline:none; font-family:inherit; }
-        button { cursor:pointer; }
-        .hidden { display:none!important; }
-        .loading-overlay { position:fixed; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:16px; background:rgba(0,0,0,0.92); z-index:999; backdrop-filter:blur(8px); }
-        .spinner { width:52px; height:52px; border-radius:50%; border:4px solid rgba(255,255,255,0.08); border-top-color:var(--orange); animation:spin 0.8s linear infinite; box-shadow:var(--neon-glow); }
-        @keyframes spin { to{transform:rotate(360deg);} }
-        #toastContainer { position:fixed; top:20px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; gap:8px; z-index:1000; width:90%; max-width:400px; }
-        .toast { padding:14px 20px; border-radius:16px; font-weight:700; background:rgba(29,29,29,0.95); backdrop-filter:blur(12px); border:1px solid var(--border); animation:toastIn 0.25s ease; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
-        .toast-success { border-left:4px solid var(--success); } .toast-error { border-left:4px solid var(--danger); } .toast-info { border-left:4px solid var(--orange); }
-        @keyframes toastIn { from{opacity:0;transform:translateY(-10px);} to{opacity:1;transform:translateY(0);} }
-        #authScreen { position:fixed; inset:0; display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,0.94); backdrop-filter:blur(14px); padding:20px; z-index:50; }
-        .auth-card { width:100%; max-width:440px; background:rgba(18,18,18,0.9); backdrop-filter:blur(20px); padding:36px 28px; border-radius:32px; display:flex; flex-direction:column; gap:16px; border:1px solid var(--border); box-shadow:0 0 60px rgba(255,123,0,0.12),inset 0 1px 0 rgba(255,255,255,0.04); animation:cardEntry 0.5s ease; }
-        @keyframes cardEntry { from{opacity:0;transform:translateY(20px) scale(0.96);} to{opacity:1;transform:translateY(0) scale(1);} }
-        .auth-skull { text-align:center; font-size:64px; filter:drop-shadow(0 0 20px rgba(255,123,0,0.6)); animation:skullPulse 2s infinite ease-in-out; }
-        @keyframes skullPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
-        .auth-title { text-align:center; font-size:26px; font-weight:900; color:var(--orange); letter-spacing:1px; text-shadow:0 0 30px rgba(255,123,0,0.4); }
-        .auth-subtitle { text-align:center; color:var(--muted); font-size:14px; margin-top:-8px; }
-        .auth-card input { padding:16px; background:rgba(29,29,29,0.8); border-radius:16px; color:#fff; transition:all 0.25s; border:1px solid rgba(255,255,255,0.06); }
-        .auth-card input:focus { border-color:var(--orange); box-shadow:0 0 25px rgba(255,123,0,0.3); background:rgba(29,29,29,0.95); }
-        .btn { padding:16px; border-radius:16px; font-weight:800; transition:all 0.2s; display:flex; justify-content:center; align-items:center; gap:8px; letter-spacing:0.5px; }
-        .btn:active { transform:scale(0.97); } .btn:disabled { opacity:0.5; cursor:not-allowed; filter:grayscale(0.4); }
-        .btn-primary { background:linear-gradient(135deg,#e07000,#ff8c00); color:#0a0a0a; box-shadow:0 0 30px rgba(255,123,0,0.3); }
-        .btn-primary:hover:not(:disabled) { box-shadow:0 0 45px rgba(255,123,0,0.5); transform:translateY(-1px); }
-        .btn-outline { background:transparent; border:1px solid var(--orange); color:var(--orange); }
-        .btn-outline:hover:not(:disabled) { background:rgba(255,123,0,0.08); }
-        .btn-danger { background:var(--danger); color:#fff; }
-        #app { display:flex; flex-direction:column; height:100vh; animation:appEntry 0.35s ease; }
-        @keyframes appEntry { from{opacity:0;} to{opacity:1;} }
-        main { flex:1; overflow-y:auto; padding:18px; padding-bottom:calc(130px + var(--safe-bottom)); }
-        .card { background:var(--card-glass); backdrop-filter:blur(12px); padding:20px; border-radius:24px; margin-bottom:16px; border:1px solid rgba(255,255,255,.06); box-shadow:0 8px 30px rgba(0,0,0,0.3); }
-        .section-title { font-size:18px; font-weight:800; margin-bottom:16px; color:var(--orange); text-shadow:0 0 15px rgba(255,123,0,0.2); display:flex; align-items:center; gap:8px; }
-        .hero { padding:24px 20px; border-radius:30px; background:linear-gradient(145deg,rgba(26,26,26,0.9),rgba(14,14,14,0.9)); backdrop-filter:blur(14px); border:1px solid var(--border); position:relative; overflow:hidden; box-shadow:0 0 40px rgba(255,123,0,0.06); margin-top:16px; }
-        .hero::after { content:''; position:absolute; top:-50%; right:-50%; width:200px; height:200px; background:radial-gradient(circle,rgba(255,123,0,0.08),transparent 70%); pointer-events:none; }
-        .hero h2 { font-size:24px; margin-bottom:6px; }
-        .rank-badge { display:inline-block; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:800; margin-top:8px; letter-spacing:0.5px; }
-        .rank-aspirante{background:rgba(150,150,150,0.2);color:#aaa;} .rank-estradeiro{background:rgba(205,127,50,0.2);color:#cd7f32;}
-        .rank-guardiao{background:rgba(192,192,192,0.2);color:#c0c0c0;} .rank-lider{background:rgba(255,215,0,0.2);color:#ffd700;}
-        .rank-forjado{background:rgba(0,217,255,0.2);color:#00d9ff;} .rank-lenda{background:rgba(125,249,255,0.2);color:#7df9ff;}
-        .rank-mestre{background:rgba(255,61,0,0.2);color:#ff3d00;} .rank-icone{background:rgba(255,0,255,0.2);color:#f0f;}
-        .rank-imortal2{background:rgba(255,215,0,0.3);color:#ffd700; text-shadow:0 0 10px #ffd700;} .rank-deus{background:rgba(255,255,255,0.2);color:#fff; text-shadow:0 0 15px #fff;}
-        .status-badge { display:inline-block; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:800; margin-top:4px; }
-        .status-ok{background:rgba(46,125,50,0.2);color:#4caf50;} .status-bad{background:rgba(255,61,0,0.2);color:#ff3d00;}
-        .muted { color:var(--muted); font-size:0.9rem; }
-        .xp-bar { height:12px; background:rgba(38,38,38,0.8); border-radius:20px; overflow:hidden; margin-top:16px; border:1px solid rgba(255,255,255,0.04); }
-        .xp-fill { height:100%; width:0%; background:linear-gradient(90deg,#ff7b00,#ffb347); transition:width 0.5s cubic-bezier(0.4,0,0.2,1); border-radius:20px; box-shadow:0 0 18px rgba(255,123,0,0.4); }
-        .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:16px; }
-        .mini-card { background:rgba(31,31,31,0.7); backdrop-filter:blur(8px); padding:14px 8px; border-radius:18px; text-align:center; border:1px solid rgba(255,255,255,0.05); transition:transform 0.2s,box-shadow 0.2s; }
-        .mini-card:hover { transform:translateY(-2px); box-shadow:0 0 20px rgba(255,123,0,0.1); }
-        .view { display:none; animation:viewIn 0.3s ease; } .view.active { display:block; }
-        @keyframes viewIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
-        input,textarea,select { width:100%; padding:16px; background:rgba(29,29,29,0.8); color:#fff; border-radius:16px; margin-bottom:12px; transition:all 0.2s; border:1px solid rgba(255,255,255,0.06); }
-        select option { background:#1a1a1a; color:#fff; }
-        input:focus,textarea:focus,select:focus { border-color:var(--orange); box-shadow:0 0 20px rgba(255,123,0,0.2); }
-        textarea { resize:vertical; min-height:80px; }
-        nav { position:fixed; bottom:0; left:0; right:0; display:flex; justify-content:space-around; background:rgba(18,18,18,0.9); backdrop-filter:blur(22px); padding:8px 2px calc(8px + var(--safe-bottom)); border-top:1px solid var(--border); z-index:20; overflow-x:auto; white-space:nowrap; }
-        .nav-btn { background:none; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:2px; font-size:12px; padding:6px 8px; border-radius:12px; transition:0.2s; min-width:44px; }
-        .nav-btn.active { color:var(--orange); background:rgba(255,123,0,0.1); text-shadow:0 0 15px rgba(255,123,0,0.5); }
-        .partner-card,.mission-card,.item-card,.ticket-card,.event-card,.raffle-card { background:rgba(28,28,28,0.8); backdrop-filter:blur(8px); padding:16px; border-radius:18px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.05); transition:transform 0.2s; }
-        .partner-card:hover,.mission-card:hover,.item-card:hover,.ticket-card:hover,.event-card:hover,.raffle-card:hover { transform:translateY(-2px); box-shadow:0 0 20px rgba(255,123,0,0.08); }
-        .admin-only { display:none; }
-        hr { border:none; height:1px; background:rgba(255,255,255,0.08); margin:20px 0; }
-        .level-up-anim { animation:levelUp 0.6s ease; }
-        @keyframes levelUp { 0%{transform:scale(1);filter:brightness(1);} 50%{transform:scale(1.1);filter:brightness(1.8);} 100%{transform:scale(1);filter:brightness(1);} }
-        .modal { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:100; }
-        .modal-content { background:var(--card-glass); backdrop-filter:blur(16px); padding:24px; border-radius:24px; width:90%; max-width:400px; border:1px solid var(--border); box-shadow:var(--neon-glow); text-align:center; position:relative; max-height:80vh; overflow-y:auto; }
-        .close { position:absolute; top:10px; right:14px; font-size:28px; color:var(--orange); cursor:pointer; line-height:1; }
-        #qrCanvasContainer canvas { margin:16px auto; border-radius:12px; box-shadow:0 0 20px rgba(0,0,0,0.5); }
-        .btn-small { padding:8px 14px; font-size:13px; border-radius:12px; background:var(--orange); color:#0a0a0a; font-weight:700; border:none; }
-        .btn-danger-small { padding:8px 14px; font-size:13px; border-radius:12px; background:var(--danger); color:#fff; font-weight:700; border:none; }
-        .status-aberto { color:#4caf50; } .status-fechado { color:#999; }
-        .reward-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
-        .reward-row input { width:80px; margin-bottom:0; }
-        .reward-row select { width:110px; margin-bottom:0; }
-        .home-banner { text-align:center; margin-bottom:20px; }
-        .home-banner .skull { font-size:72px; filter:drop-shadow(0 0 30px rgba(255,123,0,0.8)); }
-        .home-banner h1 { font-size:32px; color:var(--orange); text-shadow:0 0 20px rgba(255,123,0,0.5); margin:12px 0 4px; }
-        .home-banner p { color:var(--muted); font-size:14px; }
-        @media (max-width:380px) { .hero h2{font-size:20px;} .auth-card{padding:24px 20px;} .nav-btn{font-size:10px;padding:4px 4px;} }
-    </style>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><title>Irmandade do Asfalto | Motoclube</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<style>:root{--orange:#ff7b00;--orange-light:#ffae42;--card:#161616;--card2:#1f1f1f;--border:rgba(255,123,0,.25);--success:#2e7d32;--danger:#c55a3a;--gold:#ffd700;--text:#f5f5f5;--muted:#999;--safe-bottom:env(safe-area-inset-bottom,16px);--neon-glow:0 0 20px rgba(255,123,0,0.4);--card-glass:rgba(22,22,22,0.75)}*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif;-webkit-tap-highlight-color:transparent}body{background:#050505;color:var(--text);height:100vh;overflow:hidden}.bg-cyber{position:fixed;inset:0;z-index:-1;background:radial-gradient(circle at 20% 30%,rgba(255,123,0,0.08),transparent 40%),radial-gradient(circle at 80% 70%,rgba(255,174,66,0.05),transparent 40%),radial-gradient(circle at 50% 50%,rgba(255,123,0,0.03),transparent 60%);animation:bgPulse 6s infinite alternate ease-in-out}@keyframes bgPulse{0%{opacity:0.8;transform:scale(1)}100%{opacity:1;transform:scale(1.03)}}.particles{position:fixed;inset:0;z-index:-1;pointer-events:none}.particle{position:absolute;width:2px;height:2px;background:var(--orange);border-radius:50%;animation:float 4s infinite ease-in-out;opacity:0.6}@keyframes float{0%,100%{transform:translateY(0) translateX(0);opacity:0.4}50%{transform:translateY(-30px) translateX(15px);opacity:0.9}}button,input,textarea,select{border:none;outline:none;font-family:inherit}button{cursor:pointer}.hidden{display:none!important}.loading-overlay{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16px;background:rgba(0,0,0,0.92);z-index:999;backdrop-filter:blur(8px)}.spinner{width:52px;height:52px;border-radius:50%;border:4px solid rgba(255,255,255,0.08);border-top-color:var(--orange);animation:spin 0.8s linear infinite;box-shadow:var(--neon-glow)}@keyframes spin{to{transform:rotate(360deg)}}#toastContainer{position:fixed;top:20px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:1000;width:90%;max-width:400px}.toast{padding:14px 20px;border-radius:16px;font-weight:700;background:rgba(29,29,29,0.95);backdrop-filter:blur(12px);border:1px solid var(--border);animation:toastIn 0.25s ease;box-shadow:0 4px 20px rgba(0,0,0,0.5)}.toast-success{border-left:4px solid var(--success)}.toast-error{border-left:4px solid var(--danger)}.toast-info{border-left:4px solid var(--orange)}@keyframes toastIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}#authScreen{position:fixed;inset:0;display:flex;justify-content:center;align-items:center;background:rgba(0,0,0,0.94);backdrop-filter:blur(14px);padding:20px;z-index:50}.auth-card{width:100%;max-width:440px;background:rgba(18,18,18,0.9);backdrop-filter:blur(20px);padding:36px 28px;border-radius:32px;display:flex;flex-direction:column;gap:16px;border:1px solid var(--border);box-shadow:0 0 60px rgba(255,123,0,0.12),inset 0 1px 0 rgba(255,255,255,0.04);animation:cardEntry 0.5s ease}@keyframes cardEntry{from{opacity:0;transform:translateY(20px) scale(0.96)}to{opacity:1;transform:translateY(0) scale(1)}}.auth-skull{text-align:center;font-size:64px;filter:drop-shadow(0 0 20px rgba(255,123,0,0.6));animation:skullPulse 2s infinite ease-in-out}@keyframes skullPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}.auth-title{text-align:center;font-size:26px;font-weight:900;color:var(--orange);letter-spacing:1px;text-shadow:0 0 30px rgba(255,123,0,0.4)}.auth-subtitle{text-align:center;color:var(--muted);font-size:14px;margin-top:-8px}.auth-card input{padding:16px;background:rgba(29,29,29,0.8);border-radius:16px;color:#fff;transition:all 0.25s;border:1px solid rgba(255,255,255,0.06)}.auth-card input:focus{border-color:var(--orange);box-shadow:0 0 25px rgba(255,123,0,0.3);background:rgba(29,29,29,0.95)}.btn{padding:16px;border-radius:16px;font-weight:800;transition:all 0.2s;display:flex;justify-content:center;align-items:center;gap:8px;letter-spacing:0.5px}.btn:active{transform:scale(0.97)}.btn:disabled{opacity:0.5;cursor:not-allowed;filter:grayscale(0.4)}.btn-primary{background:linear-gradient(135deg,#e07000,#ff8c00);color:#0a0a0a;box-shadow:0 0 30px rgba(255,123,0,0.3)}.btn-primary:hover:not(:disabled){box-shadow:0 0 45px rgba(255,123,0,0.5);transform:translateY(-1px)}.btn-outline{background:transparent;border:1px solid var(--orange);color:var(--orange)}.btn-outline:hover:not(:disabled){background:rgba(255,123,0,0.08)}.btn-danger{background:var(--danger);color:#fff}#app{display:flex;flex-direction:column;height:100vh;animation:appEntry 0.35s ease}@keyframes appEntry{from{opacity:0}to{opacity:1}}main{flex:1;overflow-y:auto;padding:18px;padding-bottom:calc(130px + var(--safe-bottom))}.card{background:var(--card-glass);backdrop-filter:blur(12px);padding:20px;border-radius:24px;margin-bottom:16px;border:1px solid rgba(255,255,255,.06);box-shadow:0 8px 30px rgba(0,0,0,0.3)}.section-title{font-size:18px;font-weight:800;margin-bottom:16px;color:var(--orange);text-shadow:0 0 15px rgba(255,123,0,0.2);display:flex;align-items:center;gap:8px}.hero{padding:24px 20px;border-radius:30px;background:linear-gradient(145deg,rgba(26,26,26,0.9),rgba(14,14,14,0.9));backdrop-filter:blur(14px);border:1px solid var(--border);position:relative;overflow:hidden;box-shadow:0 0 40px rgba(255,123,0,0.06);margin-top:16px}.hero::after{content:'';position:absolute;top:-50%;right:-50%;width:200px;height:200px;background:radial-gradient(circle,rgba(255,123,0,0.08),transparent 70%);pointer-events:none}.hero h2{font-size:24px;margin-bottom:6px}.rank-badge{display:inline-block;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:800;margin-top:8px;letter-spacing:0.5px}.rank-aspirante{background:rgba(150,150,150,0.2);color:#aaa}.rank-estradeiro{background:rgba(205,127,50,0.2);color:#cd7f32}.rank-guardiao{background:rgba(192,192,192,0.2);color:#c0c0c0}.rank-lider{background:rgba(255,215,0,0.2);color:#ffd700}.rank-forjado{background:rgba(0,217,255,0.2);color:#00d9ff}.rank-lenda{background:rgba(125,249,255,0.2);color:#7df9ff}.rank-mestre{background:rgba(255,61,0,0.2);color:#ff3d00}.rank-icone{background:rgba(255,0,255,0.2);color:#f0f}.rank-imortal2{background:rgba(255,215,0,0.3);color:#ffd700;text-shadow:0 0 10px #ffd700}.rank-deus{background:rgba(255,255,255,0.2);color:#fff;text-shadow:0 0 15px #fff}.status-badge{display:inline-block;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:800;margin-top:4px}.status-ok{background:rgba(46,125,50,0.2);color:#4caf50}.status-bad{background:rgba(255,61,0,0.2);color:#ff3d00}.muted{color:var(--muted);font-size:0.9rem}.xp-bar{height:12px;background:rgba(38,38,38,0.8);border-radius:20px;overflow:hidden;margin-top:16px;border:1px solid rgba(255,255,255,0.04)}.xp-fill{height:100%;width:0%;background:linear-gradient(90deg,#ff7b00,#ffb347);transition:width 0.5s cubic-bezier(0.4,0,0.2,1);border-radius:20px;box-shadow:0 0 18px rgba(255,123,0,0.4)}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}.mini-card{background:rgba(31,31,31,0.7);backdrop-filter:blur(8px);padding:14px 8px;border-radius:18px;text-align:center;border:1px solid rgba(255,255,255,0.05);transition:transform 0.2s,box-shadow 0.2s}.mini-card:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(255,123,0,0.1)}.view{display:none;animation:viewIn 0.3s ease}.view.active{display:block}@keyframes viewIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}input,textarea,select{width:100%;padding:16px;background:rgba(29,29,29,0.8);color:#fff;border-radius:16px;margin-bottom:12px;transition:all 0.2s;border:1px solid rgba(255,255,255,0.06)}select option{background:#1a1a1a;color:#fff}input:focus,textarea:focus,select:focus{border-color:var(--orange);box-shadow:0 0 20px rgba(255,123,0,0.2)}textarea{resize:vertical;min-height:80px}nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:rgba(18,18,18,0.9);backdrop-filter:blur(22px);padding:8px 2px calc(8px + var(--safe-bottom));border-top:1px solid var(--border);z-index:20;overflow-x:auto;white-space:nowrap}.nav-btn{background:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;padding:6px 8px;border-radius:12px;transition:0.2s;min-width:44px}.nav-btn.active{color:var(--orange);background:rgba(255,123,0,0.1);text-shadow:0 0 15px rgba(255,123,0,0.5)}.partner-card,.mission-card,.item-card,.ticket-card,.event-card,.raffle-card{background:rgba(28,28,28,0.8);backdrop-filter:blur(8px);padding:16px;border-radius:18px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.05);transition:transform 0.2s}.partner-card:hover,.mission-card:hover,.item-card:hover,.ticket-card:hover,.event-card:hover,.raffle-card:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(255,123,0,0.08)}.admin-only{display:none}hr{border:none;height:1px;background:rgba(255,255,255,0.08);margin:20px 0}.level-up-anim{animation:levelUp 0.6s ease}@keyframes levelUp{0%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.1);filter:brightness(1.8)}100%{transform:scale(1);filter:brightness(1)}}.modal{position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:100}.modal-content{background:var(--card-glass);backdrop-filter:blur(16px);padding:24px;border-radius:24px;width:90%;max-width:400px;border:1px solid var(--border);box-shadow:var(--neon-glow);text-align:center;position:relative;max-height:80vh;overflow-y:auto}.close{position:absolute;top:10px;right:14px;font-size:28px;color:var(--orange);cursor:pointer;line-height:1}#qrCanvasContainer canvas{margin:16px auto;border-radius:12px;box-shadow:0 0 20px rgba(0,0,0,0.5)}.btn-small{padding:8px 14px;font-size:13px;border-radius:12px;background:var(--orange);color:#0a0a0a;font-weight:700;border:none}.btn-danger-small{padding:8px 14px;font-size:13px;border-radius:12px;background:var(--danger);color:#fff;font-weight:700;border:none}.status-aberto{color:#4caf50}.status-fechado{color:#999}.reward-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}.reward-row input{width:80px;margin-bottom:0}.reward-row select{width:110px;margin-bottom:0}.home-banner{text-align:center;margin-bottom:20px}.home-banner .skull{font-size:72px;filter:drop-shadow(0 0 30px rgba(255,123,0,0.8))}.home-banner h1{font-size:32px;color:var(--orange);text-shadow:0 0 20px rgba(255,123,0,0.5);margin:12px 0 4px}.home-banner p{color:var(--muted);font-size:14px}@media (max-width:380px){.hero h2{font-size:20px}.auth-card{padding:24px 20px}.nav-btn{font-size:10px;padding:4px 4px}}</style>
 </head>
 <body>
 <div class="bg-cyber"></div><div class="particles" id="particlesContainer"></div><div id="toastContainer"></div>
 <div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div><span style="color:var(--orange);">Conectando...</span></div>
-<div id="authScreen"><div class="auth-card"><div class="auth-skull">💀</div><div class="auth-title">IRMANDADE DO ASFALTO</div><div class="auth-subtitle">Ecossistema RPG • Motoclube</div><input id="emailLogin" type="email" placeholder="Seu email" autocomplete="email"><input id="senhaLogin" type="password" placeholder="Sua senha" autocomplete="current-password"><button class="btn btn-primary" id="loginBtn">⚡ ENTRAR</button><button class="btn btn-outline" id="registerBtn">🛡️ CRIAR CONTA</button><button class="btn btn-outline" id="forgotPasswordBtn" style="font-size:14px;">🔑 Recuperar senha</button></div></div>
+<div id="authScreen"><div class="auth-card"><div class="auth-skull">💀</div><div class="auth-title">IRMANDADE DO ASFALTO</div><div class="auth-subtitle">Motoclube</div><input id="emailLogin" type="email" placeholder="Seu email" autocomplete="email"><input id="senhaLogin" type="password" placeholder="Sua senha" autocomplete="current-password"><button class="btn btn-primary" id="loginBtn">⚡ ENTRAR</button><button class="btn btn-outline" id="registerBtn">🛡️ CRIAR CONTA</button><button class="btn btn-outline" id="forgotPasswordBtn" style="font-size:14px;">🔑 Recuperar senha</button></div></div>
 <div id="app" class="hidden">
 <main>
-    <div class="view active" id="homeView">
-        <div class="home-banner">
-            <div class="skull">💀</div>
-            <h1>IRMANDADE DO ASFALTO</h1>
-            <p>Ecossistema RPG • Motoclube</p>
-        </div>
-        <div class="hero" id="hero">
-            <div style="display:flex;justify-content:space-between;">
-                <div><h2 id="nicknameDisplay">Membro</h2><div id="rankBadge" class="rank-badge">Aspirante</div><div id="statusBadge" class="status-badge">Adimplente</div></div>
-            </div>
-            <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
-            <div><span id="xpText" class="muted">0 XP</span><span id="levelText" class="muted">Lv.1</span></div>
-            <div class="grid-3">
-                <div class="mini-card"><div>🪙</div><div id="tokensAmount">0</div><div class="muted">Tokens</div></div>
-                <div class="mini-card"><div>⚡</div><div id="xpAmount">0</div><div class="muted">XP Total</div></div>
-                <div class="mini-card"><div>⭐</div><div id="reputationDisplay">0</div><div class="muted">Reputação</div></div>
-            </div>
-        </div>
-        <div class="card"><div class="section-title">🤝 Parceiros</div><div id="partnersList"></div><button class="btn btn-outline" id="scanReceiptBtn">Validar Compra (Escanear Nota)</button></div>
-    </div>
+    <div class="view active" id="homeView"><div class="home-banner"><div class="skull">💀</div><h1>IRMANDADE DO ASFALTO</h1><p>Motoclube</p></div><div class="hero" id="hero"><div style="display:flex;justify-content:space-between"><div><h2 id="nicknameDisplay">Membro</h2><div id="rankBadge" class="rank-badge">Aspirante</div><div id="statusBadge" class="status-badge">Adimplente</div></div></div><div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div><div><span id="xpText" class="muted">0 XP</span><span id="levelText" class="muted">Lv.1</span></div><div class="grid-3"><div class="mini-card"><div>🪙</div><div id="tokensAmount">0</div><div class="muted">Tokens</div></div><div class="mini-card"><div>⚡</div><div id="xpAmount">0</div><div class="muted">XP Total</div></div><div class="mini-card"><div>⭐</div><div id="reputationDisplay">0</div><div class="muted">Reputação</div></div></div></div><div class="card"><div class="section-title">🤝 Parceiros</div><div id="partnersList"></div><div style="display:flex;flex-direction:column;gap:12px;margin-top:16px"><button class="btn btn-outline" id="scanReceiptBtn"><i class="fas fa-qrcode"></i> Validar Compra (Escanear Nota)</button><button class="btn btn-outline" id="scanPartnerCheckpointBtn"><i class="fas fa-store"></i> Validar Checkpoint Parceiro</button><button class="btn btn-outline" id="scanMissionCheckpointBtn"><i class="fas fa-flag-checkered"></i> Validar Checkpoint Missão</button></div></div></div>
     <div class="view" id="missoesView"><div class="card"><div class="section-title">⚔️ Missões</div><div id="missoesList"></div></div></div>
     <div class="view" id="lojaView"><div class="card"><div class="section-title">🛒 Loja da Irmandade</div><div id="lojaList"></div></div></div>
     <div class="view" id="inventarioView"><div class="card"><div class="section-title">🎒 Inventário</div><div id="inventarioList"></div></div></div>
@@ -135,644 +26,119 @@
     <div class="view" id="rankingView"><div class="card"><div class="section-title">🏆 Ranking Global</div><div id="rankingList"></div></div></div>
     <div class="view" id="perfilView"><div class="card"><div class="section-title">👤 Perfil do Motociclista</div><input id="nicknameInput" placeholder="Apelido"><input id="bikeInput" placeholder="Moto"><input id="cityInput" placeholder="Cidade"><input id="instagramInput" placeholder="Instagram"><input id="cpfInput" placeholder="CPF (opcional, criptografado)"><textarea id="bioInput" placeholder="Bio"></textarea><button class="btn btn-primary" id="savePerfilBtn">💾 SALVAR PERFIL</button><button class="btn btn-outline" id="logoutBtn">🚪 SAIR</button></div></div>
     <div class="view" id="atendimentoView"><div class="card"><div class="section-title">🎧 Central de Atendimento</div><div id="servicesList"></div><button class="btn btn-primary" id="openTicketBtn">📩 Solicitar Atendimento</button><hr><h4>Meus Chamados</h4><div id="myTicketsList"></div></div></div>
-    <div class="view" id="adminView"><div class="card"><div class="section-title">👑 Painel do Mestre</div><h4>👥 Membros</h4><div id="membersList"></div><hr><h4>🪙 Cunhar Recompensa</h4><input id="rewardEmail" placeholder="Email"><input id="rewardTokens" type="number" placeholder="Tokens"><input id="rewardXp" type="number" placeholder="XP"><button class="btn btn-primary" id="rewardBtn">🔥 ENVIAR</button><hr><h4>🛒 Criar Item</h4><input id="itemName" placeholder="Nome"><input id="itemPrice" type="number" placeholder="Preço"><button class="btn btn-primary" id="createItemBtn">CRIAR</button><hr><h4>⚔️ Criar Missão</h4><input id="missionTitle" placeholder="Título"><input id="missionDesc" placeholder="Descrição"><input id="missionXp" type="number" placeholder="XP"><input id="missionTokens" type="number" placeholder="Tokens"><button class="btn btn-primary" id="createMissionBtn">CRIAR</button><hr><h4>🤝 Criar Parceiro</h4><input id="partnerName" placeholder="Nome"><input id="partnerDiscount" placeholder="Desconto"><input id="partnerCashback" type="number" placeholder="Cashback %"><textarea id="partnerDesc" placeholder="Descrição"></textarea><button class="btn btn-primary" id="createPartnerBtn">CRIAR</button><hr><h4>🎟️ Criar Sorteio</h4><input id="raffleTitle" placeholder="Título"><input id="raffleCost" type="number" placeholder="Custo tokens"><textarea id="raffleDesc" placeholder="Descrição"></textarea><button class="btn btn-primary" id="createRaffleBtn">CRIAR</button><hr><h4>⛔ Banir / Liberar</h4><input id="targetEmail" placeholder="Email do usuário"><button class="btn-danger" id="banUserBtn">BANIR</button><button class="btn-outline" id="unbanUserBtn">LIBERAR</button></div></div>
+    <div class="view" id="adminView"><div class="card"><div class="section-title">👑 Painel do Mestre</div><h4>👥 Membros</h4><div id="membersList"></div><hr><h4>🪙 Cunhar Recompensa</h4><input id="rewardEmail" placeholder="Email"><input id="rewardTokens" type="number" placeholder="Tokens"><input id="rewardXp" type="number" placeholder="XP"><button class="btn btn-primary" id="rewardBtn">🔥 ENVIAR</button><hr><h4>🛒 Criar Item</h4><input id="itemName" placeholder="Nome"><input id="itemPrice" type="number" placeholder="Preço"><button class="btn btn-primary" id="createItemBtn">CRIAR</button><hr><h4>⚔️ Criar Missão</h4><input id="missionTitle" placeholder="Título"><input id="missionDesc" placeholder="Descrição"><input id="missionXp" type="number" placeholder="XP"><input id="missionTokens" type="number" placeholder="Tokens"><button class="btn btn-primary" id="createMissionBtn">CRIAR</button><div id="adminMissionsList" style="margin-top:16px"></div><hr><h4>🤝 Criar Parceiro</h4><input id="partnerName" placeholder="Nome"><input id="partnerDiscount" placeholder="Desconto"><input id="partnerCashback" type="number" placeholder="Cashback %"><textarea id="partnerDesc" placeholder="Descrição"></textarea><button class="btn btn-primary" id="createPartnerBtn">CRIAR</button><div id="adminPartnersList" style="margin-top:16px"></div><hr><h4>🎟️ Criar Sorteio</h4><input id="raffleTitle" placeholder="Título"><input id="raffleCost" type="number" placeholder="Custo tokens"><textarea id="raffleDesc" placeholder="Descrição"></textarea><button class="btn btn-primary" id="createRaffleBtn">CRIAR</button><hr><h4>⛔ Banir / Liberar</h4><input id="targetEmail" placeholder="Email do usuário"><button class="btn-danger" id="banUserBtn">BANIR</button><button class="btn-outline" id="unbanUserBtn">LIBERAR</button></div></div>
 </main>
-<nav>
-    <button class="nav-btn active" data-view="homeView"><i class="fas fa-home"></i><span>Home</span></button>
-    <button class="nav-btn" data-view="missoesView"><i class="fas fa-crosshairs"></i><span>Missões</span></button>
-    <button class="nav-btn" data-view="lojaView"><i class="fas fa-store"></i><span>Loja</span></button>
-    <button class="nav-btn" data-view="eventosView"><i class="fas fa-calendar-alt"></i><span>Eventos</span></button>
-    <button class="nav-btn" data-view="sorteiosView"><i class="fas fa-ticket-alt"></i><span>Sorteios</span></button>
-    <button class="nav-btn" data-view="rankingView"><i class="fas fa-trophy"></i><span>Ranking</span></button>
-    <button class="nav-btn" data-view="perfilView"><i class="fas fa-user"></i><span>Perfil</span></button>
-    <button class="nav-btn admin-only" data-view="adminView"><i class="fas fa-crown"></i><span>Admin</span></button>
-</nav>
+<nav><button class="nav-btn active" data-view="homeView"><i class="fas fa-home"></i><span>Home</span></button><button class="nav-btn" data-view="missoesView"><i class="fas fa-crosshairs"></i><span>Missões</span></button><button class="nav-btn" data-view="lojaView"><i class="fas fa-store"></i><span>Loja</span></button><button class="nav-btn" data-view="eventosView"><i class="fas fa-calendar-alt"></i><span>Eventos</span></button><button class="nav-btn" data-view="sorteiosView"><i class="fas fa-ticket-alt"></i><span>Sorteios</span></button><button class="nav-btn" data-view="rankingView"><i class="fas fa-trophy"></i><span>Ranking</span></button><button class="nav-btn" data-view="perfilView"><i class="fas fa-user"></i><span>Perfil</span></button><button class="nav-btn admin-only" data-view="adminView"><i class="fas fa-crown"></i><span>Admin</span></button></nav>
 </div>
 <div id="qrModal" class="modal hidden"><div class="modal-content"><span class="close" onclick="closeQRModal()">&times;</span><h3>QR Code</h3><div id="qrCanvasContainer"></div><button class="btn-outline" onclick="closeQRModal()">Fechar</button></div></div>
 <div id="scannerModal" class="modal hidden"><div class="modal-content"><span class="close" onclick="closeScannerModal()">&times;</span><h3>Escanear QR Code</h3><video id="scannerVideo" autoplay playsinline></video><canvas id="scannerCanvas" hidden></canvas><p id="scannerResult"></p><button class="btn-outline" onclick="closeScannerModal()">Cancelar</button></div></div>
 <div id="ticketModal" class="modal hidden"><div class="modal-content"><span class="close" onclick="closeTicketModal()">&times;</span><h3>Solicitar Atendimento</h3><select id="ticketServiceSelect"><option>Selecione</option></select><textarea id="ticketDescription" placeholder="Descreva seu problema"></textarea><button class="btn btn-primary" id="sendTicketBtn">📩 ENVIAR</button></div></div>
 <div id="confirmModal" class="modal hidden"><div class="modal-content"><span class="close" onclick="closeConfirmModal()">&times;</span><h3 id="confirmTitle">Confirmar</h3><p id="confirmMessage"></p><div><button class="btn-outline" onclick="closeConfirmModal()">Cancelar</button><button class="btn-danger" id="confirmActionBtn">Confirmar</button></div></div></div>
+<div id="generateQRModal" class="modal hidden"><div class="modal-content"><span class="close" onclick="closeGenerateQRModal()">&times;</span><h3 id="qrGenTitle">Gerar QR Checkpoint</h3><input type="number" id="qrRewardXp" placeholder="XP ao escanear" value="10"><input type="number" id="qrRewardTokens" placeholder="Tokens ao escanear" value="5"><select id="qrExpiryUnit"><option value="hours">Horas</option><option value="days">Dias</option></select><input type="number" id="qrExpiryValue" placeholder="Valor" value="24"><button class="btn btn-primary" id="confirmGenerateQRBtn">Gerar QR Code</button></div></div>
 
 <script>
-// ============================================================
-// MÓDULO PRINCIPAL - VERSÃO CORRIGIDA E OTIMIZADA
-// ============================================================
 (function(){
-    // ---------- FIREBASE (CONFIG CORRIGIDA) ----------
-    firebase.initializeApp({
-        apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8",
-        authDomain: "clube-de-vantagens-d748e.firebaseapp.com",
-        projectId: "clube-de-vantagens-d748e",
-        storageBucket: "clube-de-vantagens-d748e.appspot.com",  // CORRIGIDO
-        messagingSenderId: "774730191238",
-        appId: "1:774730191238:web:9af24eddfafb18f1351c07"
-    });
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-    const increment = firebase.firestore.FieldValue.increment;
-    const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
-    const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
-
-    const MASTER_EMAIL = "cristophersmonteiro357@gmail.com";
-    let currentUser = null;
-    let userUnsubscribe = null;
-    let appConfig = { xpStore:5, xpReceipt:3, xpTicket:0, xpRaffle:2, defaultCashback:5 };
-    let scannerStream = null;
-    let confirmCallback = null;
-
-    // ---------- RATE LIMIT (cooldown de 5 segundos) ----------
-    const actionCooldown = new Map();
-    function checkCooldown(action, seconds = 5){
-        const last = actionCooldown.get(action);
-        const now = Date.now();
-        if(last && (now - last) < seconds * 1000){
-            toast(`Aguarde ${seconds} segundos antes de repetir esta ação.`, 'error');
+    // ========== PROTEÇÃO ANTI-DEVTOOLS (integrada) ==========
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || (e.ctrlKey && e.key === 'U') || (e.ctrlKey && e.key === 'S')) {
+            e.preventDefault();
             return false;
         }
-        actionCooldown.set(action, now);
-        return true;
-    }
+    });
+    let devToolsOpen = false;
+    const element = new Image();
+    Object.defineProperty(element, 'id', { get: function() {
+        devToolsOpen = true;
+        document.body.innerHTML = '<div style="position:fixed;inset:0;background:#000;color:red;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:99999;font-size:24px;text-align:center"><h1>🔒 ACESSO BLOQUEADO</h1><p>Ferramentas de desenvolvedor detectadas.<br>Recarregue a página sem o DevTools.</p></div>';
+        document.body.style.overflow = 'hidden';
+        throw new Error('DevTools detectado');
+    } });
+    setInterval(() => {
+        devToolsOpen = false;
+        console.log(element);
+        console.clear();
+        if (devToolsOpen) {
+            document.body.innerHTML = '<div style="position:fixed;inset:0;background:#000;color:red;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:99999;font-size:24px;text-align:center"><h1>🔒 ACESSO BLOQUEADO</h1><p>Ferramentas de desenvolvedor detectadas.<br>Recarregue a página sem o DevTools.</p></div>';
+            document.body.style.overflow = 'hidden';
+        }
+    }, 1000);
 
-    // ---------- SANITIZAÇÃO REFORÇADA ----------
-    function sanitize(text, maxLen = 300){
-        if(!text) return '';
-        let cleaned = text.replace(/[<>"']/g, '').trim();
-        if(cleaned.length > maxLen) cleaned = cleaned.substring(0, maxLen);
-        return cleaned;
-    }
-    function escapeHtml(text){
-        if(!text) return '';
-        return text.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;');
-    }
-
-    // ---------- XP BAR CORRIGIDA (percentual do nível atual) ----------
-    function updateXpBar(xp){
-        const levelProgress = xp % 100;
-        const percent = (levelProgress / 100) * 100;
-        document.getElementById('xpFill').style.width = `${percent}%`;
-    }
-
-    // ---------- RANKS E NÍVEIS ----------
+    // ========== FIREBASE ==========
+    firebase.initializeApp({ apiKey: "AIzaSyDbb96DSw05nFxK8W6-khfbkRMn9CIheq8", authDomain: "clube-de-vantagens-d748e.firebaseapp.com", projectId: "clube-de-vantagens-d748e", storageBucket: "clube-de-vantagens-d748e.appspot.com", messagingSenderId: "774730191238", appId: "1:774730191238:web:9af24eddfafb18f1351c07" });
+    const auth = firebase.auth(), db = firebase.firestore(), increment = firebase.firestore.FieldValue.increment, arrayUnion = firebase.firestore.FieldValue.arrayUnion, serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
+    const MASTER_EMAIL = "cristophersmonteiro357@gmail.com";
+    let currentUser = null, userUnsubscribe = null, appConfig = { xpStore:5, xpReceipt:3, xpTicket:0, xpRaffle:2, defaultCashback:5 }, scannerStream = null, confirmCallback = null, pendingScanType = null;
+    const actionCooldown = new Map();
+    function checkCooldown(a,s=5){ let l=actionCooldown.get(a), n=Date.now(); if(l&&(n-l)<s*1000){ toast(`Aguarde ${s} segundos.`,'error'); return false; } actionCooldown.set(a,n); return true; }
+    function sanitize(t,m=300){ if(!t) return ''; let c=t.replace(/[<>"']/g,'').trim(); if(c.length>m) c=c.substring(0,m); return c; }
+    function escapeHtml(t){ if(!t) return ''; return t.replace(/[&<>]/g,m=>m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+    function updateXpBar(xp){ let lp=xp%100, p=(lp/100)*100; document.getElementById('xpFill').style.width=`${p}%`; }
     function getLevel(xp){ return Math.floor((xp||0)/100)+1; }
-    function getRank(xp){
-        if(xp>=50000) return {nome:'Deus do Asfalto',classe:'rank-deus'};
-        if(xp>=25000) return {nome:'Lenda Imortal',classe:'rank-imortal2'};
-        if(xp>=12000) return {nome:'Ícone da Irmandade',classe:'rank-icone'};
-        if(xp>=6000) return {nome:'Mestre do Asfalto',classe:'rank-mestre'};
-        if(xp>=3000) return {nome:'Lenda Urbana',classe:'rank-lenda'};
-        if(xp>=1500) return {nome:'Forjado na Estrada',classe:'rank-forjado'};
-        if(xp>=700) return {nome:'Líder de Comboio',classe:'rank-lider'};
-        if(xp>=300) return {nome:'Guardião do Asfalto',classe:'rank-guardiao'};
-        if(xp>=100) return {nome:'Estradeiro',classe:'rank-estradeiro'};
-        return {nome:'Aspirante',classe:'rank-aspirante'};
-    }
-
-    // ---------- UTILITÁRIOS ----------
-    const $ = id => document.getElementById(id);
-    const showLoading = () => $('loadingOverlay').classList.remove('hidden');
-    const hideLoading = () => $('loadingOverlay').classList.add('hidden');
-    function toast(msg, type='info'){
-        const c = $('toastContainer');
-        const t = document.createElement('div');
-        t.className = `toast toast-${type}`;
-        t.innerText = msg;
-        c.appendChild(t);
-        setTimeout(() => t.remove(), 3500);
-    }
-
-    // ---------- CARREGAR CONFIGURAÇÕES ----------
-    async function loadConfig(){
-        try{
-            const doc = await db.collection('config').doc('xp_rewards').get();
-            if(doc.exists){
-                const data = doc.data();
-                if(data.xpStore !== undefined) appConfig.xpStore = data.xpStore;
-                if(data.xpReceipt !== undefined) appConfig.xpReceipt = data.xpReceipt;
-                if(data.xpTicket !== undefined) appConfig.xpTicket = data.xpTicket;
-                if(data.xpRaffle !== undefined) appConfig.xpRaffle = data.xpRaffle;
-                if(data.defaultCashback !== undefined) appConfig.defaultCashback = data.defaultCashback;
-            }
-        }catch(e){}
-    }
-
-    // ---------- ATUALIZAR UI ----------
-    async function updateUI(){
-        if(!currentUser) return;
-        const xp = currentUser.xp || 0;
-        const tokens = currentUser.tokens || 0;
-        const rep = currentUser.reputation || 0;
-        const rank = getRank(xp);
-        const level = getLevel(xp);
-        const status = currentUser.status || 'adimplente';
-        $('tokensAmount').innerText = tokens;
-        $('nicknameDisplay').innerText = currentUser.profile?.nickname || 'Membro';
-        $('xpAmount').innerText = xp;
-        $('xpText').innerText = `${xp} XP`;
-        $('reputationDisplay').innerText = rep;
-        $('levelText').innerText = `Lv.${level}`;
-        updateXpBar(xp);
-        const rankEl = $('rankBadge');
-        rankEl.innerText = rank.nome;
-        rankEl.className = `rank-badge ${rank.classe}`;
-        const statusEl = $('statusBadge');
-        statusEl.innerText = status === 'adimplente' ? 'Adimplente' : status.toUpperCase();
-        statusEl.className = `status-badge ${status === 'adimplente' ? 'status-ok' : 'status-bad'}`;
-        if($('nicknameInput')) $('nicknameInput').value = currentUser.profile?.nickname || '';
-        if($('bikeInput')) $('bikeInput').value = currentUser.profile?.bike || '';
-        if($('cityInput')) $('cityInput').value = currentUser.profile?.city || '';
-        if($('instagramInput')) $('instagramInput').value = currentUser.profile?.instagram || '';
-        if($('bioInput')) $('bioInput').value = currentUser.profile?.bio || '';
-        // CPF não é carregado do perfil principal (está na subcoleção privada)
-        const isAdmin = currentUser.role === 'admin';
-        document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? 'flex' : 'none');
-    }
-
-    // ---------- GERENCIAR CPF (subcoleção privada) ----------
-    async function loadPrivateCpf(){
-        if(!currentUser) return '';
-        const doc = await db.collection('private').doc(currentUser.uid).get();
-        return doc.exists ? doc.data().cpf : '';
-    }
-    async function savePrivateCpf(cpf){
-        if(!currentUser) return;
-        const cpfClean = cpf.replace(/\D/g, '').slice(0,11);
-        await db.collection('private').doc(currentUser.uid).set({ cpf: cpfClean }, { merge: true });
-    }
-
-    // ---------- CRIAÇÃO DE DOCUMENTO COM ADMIN AUTOMÁTICO ----------
-    async function forceCreateUserDocument(user){
-        const userRef = db.collection('users').doc(user.uid);
-        const snap = await userRef.get();
-        if(snap.exists) return snap.data();
-        const isMaster = (user.email === MASTER_EMAIL);
-        const profile = {
-            nickname: user.email.split('@')[0],
-            bike: '', city: '', bio: '', instagram: '',
-            avatar: '', banner: ''
-        };
-        const payload = {
-            email: user.email,
-            role: isMaster ? 'admin' : 'novato',
-            tokens: 0, xp: 0, reputation: 0,
-            status: 'adimplente',
-            guildId: null,
-            achievements: [],
-            inventory: [],
-            titles: [],
-            badges: [],
-            profile,
-            createdAt: serverTimestamp(),
-            lastLogin: serverTimestamp(),
-            ticketsOwned: []
-        };
-        await userRef.set(payload, { merge: true });
-        toast(`✅ Perfil criado${isMaster ? ' (Mestre)' : ''}!`, 'success');
-        return payload;
-    }
-
-    async function ensureAdminRole(user){
-        if(user.email !== MASTER_EMAIL) return;
-        const userRef = db.collection('users').doc(user.uid);
-        const doc = await userRef.get();
-        if(doc.exists && doc.data().role !== 'admin'){
-            await userRef.update({ role: 'admin' });
-            toast('🔑 Você foi promovido a Mestre da Irmandade!', 'success');
-        }
-    }
-
-    // ---------- LISTENER DO USUÁRIO ----------
-    function listenUser(){
-        if(userUnsubscribe) userUnsubscribe();
-        userUnsubscribe = db.collection('users').doc(currentUser.uid).onSnapshot(doc => {
-            if(doc.exists){
-                const data = doc.data();
-                if(data.status === 'banido'){
-                    toast('Conta banida','error');
-                    auth.signOut();
-                    return;
-                }
-                const oldXp = currentUser.xp || 0;
-                currentUser = { ...currentUser, ...data, uid: currentUser.uid };
-                updateUI();
-                if(getLevel(currentUser.xp) > getLevel(oldXp)){
-                    $('hero')?.classList.add('level-up-anim');
-                    setTimeout(() => $('hero')?.classList.remove('level-up-anim'), 600);
-                    toast('⬆️ LEVEL UP! ⬆️','success');
-                }
-            }
-        }, err => console.error(err));
-    }
-
-    // ========== FUNÇÕES DE CARREGAMENTO (OTIMIZADAS) ==========
-    async function loadPartners(){
-        const container = $('partnersList');
-        container.innerHTML = '<p class="muted">Carregando...</p>';
-        try{
-            const snap = await db.collection('partners').orderBy('createdAt','desc').limit(20).get();
-            if(snap.empty){ container.innerHTML = '<p class="muted">Nenhum parceiro.</p>'; return; }
-            let html = '';
-            snap.forEach(doc => {
-                const p = doc.data();
-                html += `<div class="partner-card"><h3>${escapeHtml(p.name||'Parceiro')}</h3><p>${escapeHtml(p.description||'')}</p><div><span class="rank-badge">${escapeHtml(p.discount||'Benefício')}</span><span class="status-badge">Cashback ${p.cashback||appConfig.defaultCashback}%</span></div></div>`;
-            });
-            container.innerHTML = html;
-        }catch(e){ container.innerHTML = '<p class="muted">Erro.</p>'; }
-    }
-
-    async function loadMissoes(){
-        const container = $('missoesList');
-        container.innerHTML = '<p class="muted">Carregando...</p>';
-        try{
-            const snap = await db.collection('missions').orderBy('createdAt','desc').limit(30).get();
-            if(snap.empty){ container.innerHTML = '<p class="muted">Nenhuma missão.</p>'; return; }
-            let html = '';
-            snap.forEach(doc => {
-                const m = doc.data();
-                html += `<div class="mission-card"><h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.description)}</p><div>+${m.xp||0} XP | +${m.tokens||0} Tokens</div></div>`;
-            });
-            container.innerHTML = html;
-        }catch(e){ container.innerHTML = '<p class="muted">Erro.</p>'; }
-    }
-
-    async function loadLoja(){
-        const container = $('lojaList');
-        container.innerHTML = '<p class="muted">Carregando...</p>';
-        try{
-            const snap = await db.collection('store').limit(50).get();
-            if(snap.empty){ container.innerHTML = '<p class="muted">Nenhum item.</p>'; return; }
-            let html = '';
-            snap.forEach(doc => {
-                const item = doc.data();
-                html += `<div class="item-card"><h3>${escapeHtml(item.name)}</h3><p>${item.price} tokens</p><button class="btn-small" data-id="${doc.id}">Comprar</button></div>`;
-            });
-            container.innerHTML = html;
-            container.querySelectorAll('.btn-small').forEach(btn => btn.addEventListener('click', () => comprarItem(btn.dataset.id)));
-        }catch(e){ container.innerHTML = '<p class="muted">Erro.</p>'; }
-    }
-
-    // COMPRA COM VERIFICAÇÃO DE DUPLICIDADE E COOLDOWN
-    async function comprarItem(itemId){
-        if(!currentUser) return toast('Login necessário','error');
-        if(!checkCooldown('buy', 3)) return;
-        showLoading();
-        try{
-            const userRef = db.collection('users').doc(currentUser.uid);
-            const itemRef = db.collection('store').doc(itemId);
-            await db.runTransaction(async t => {
-                const itemDoc = await t.get(itemRef);
-                if(!itemDoc.exists) throw new Error('Item não existe');
-                const item = itemDoc.data();
-                const userDoc = await t.get(userRef);
-                const userData = userDoc.data();
-                if(userData.tokens < item.price) throw new Error('Tokens insuficientes');
-                // Impedir compra duplicada (se o item já estiver no inventário)
-                if(userData.inventory && userData.inventory.includes(itemId)){
-                    throw new Error('Você já possui este item!');
-                }
-                t.update(userRef, {
-                    tokens: increment(-item.price),
-                    inventory: arrayUnion(itemId),
-                    xp: increment(appConfig.xpStore)
-                });
-            });
-            toast(`Comprou! +${appConfig.xpStore} XP`,'success');
-            const snap = await userRef.get();
-            currentUser.tokens = snap.data().tokens;
-            currentUser.xp = snap.data().xp;
-            updateUI();
-            await loadInventario();
-        }catch(e){ toast(e.message,'error'); } finally{ hideLoading(); }
-    }
-
-    // INVENTÁRIO COM Promise.all (otimizado)
-    async function loadInventario(){
-        const container = $('inventarioList');
-        if(!currentUser?.inventory?.length){ container.innerHTML = '<p class="muted">Inventário vazio.</p>'; return; }
-        showLoading();
-        try{
-            const promises = currentUser.inventory.map(id => db.collection('store').doc(id).get());
-            const docs = await Promise.all(promises);
-            let html = '';
-            docs.forEach(doc => {
-                if(doc.exists){
-                    const item = doc.data();
-                    html += `<div class="item-card"><h3>${escapeHtml(item.name)}</h3><p>${item.price} tokens</p></div>`;
-                }
-            });
-            container.innerHTML = html || '<p class="muted">Nenhum item válido.</p>';
-        }catch(e){ container.innerHTML = '<p class="muted">Erro ao carregar inventário.</p>'; }
-        finally{ hideLoading(); }
-    }
-
-    // RANKING IMPLEMENTADO
-    async function loadRanking(){
-        const container = $('rankingList');
-        container.innerHTML = '<p class="muted">Carregando ranking...</p>';
-        try{
-            const snap = await db.collection('users').orderBy('xp','desc').limit(50).get();
-            if(snap.empty){ container.innerHTML = '<p class="muted">Ranking indisponível.</p>'; return; }
-            let html = '<ol>';
-            snap.forEach(doc => {
-                const u = doc.data();
-                html += `<li><strong>${escapeHtml(u.profile?.nickname||'Anônimo')}</strong> - ${u.xp||0} XP</li>`;
-            });
-            html += '</ol>';
-            container.innerHTML = html;
-        }catch(e){ container.innerHTML = '<p class="muted">Erro ao carregar ranking.</p>'; }
-    }
-
-    // SERVIÇOS (para atendimento)
-    async function loadServices(){
-        const container = $('servicesList');
-        container.innerHTML = '<p class="muted">Carregando serviços...</p>';
-        try{
-            const snap = await db.collection('services').limit(20).get();
-            if(snap.empty){ container.innerHTML = '<p class="muted">Nenhum serviço disponível.</p>'; return; }
-            let html = '';
-            const select = $('ticketServiceSelect');
-            select.innerHTML = '<option value="">Selecione um serviço...</option>';
-            snap.forEach(doc => {
-                const s = doc.data();
-                html += `<div class="ticket-card"><h3>${escapeHtml(s.name)}</h3><p>${escapeHtml(s.description)}</p><p>Custo: ${s.cost} tokens</p></div>`;
-                select.innerHTML += `<option value="${doc.id}">${escapeHtml(s.name)} (${s.cost} tokens)</option>`;
-            });
-            container.innerHTML = html;
-        }catch(e){ container.innerHTML = '<p class="muted">Erro ao carregar serviços.</p>'; }
-    }
-
-    async function loadMyTickets(){
-        const container = $('myTicketsList');
-        if(!currentUser){ container.innerHTML = '<p class="muted">Faça login.</p>'; return; }
-        container.innerHTML = '<p class="muted">Carregando chamados...</p>';
-        try{
-            const snap = await db.collection('tickets').where('userId','==',currentUser.uid).orderBy('createdAt','desc').limit(20).get();
-            if(snap.empty){ container.innerHTML = '<p class="muted">Nenhum chamado.</p>'; return; }
-            let html = '';
-            snap.forEach(doc => {
-                const t = doc.data();
-                html += `<div class="ticket-card"><h3>${escapeHtml(t.serviceName)}</h3><p>${escapeHtml(t.description)}</p><span class="status-badge">${t.status||'aberto'}</span></div>`;
-            });
-            container.innerHTML = html;
-        }catch(e){ container.innerHTML = '<p class="muted">Erro ao carregar chamados.</p>'; }
-    }
-
-    // OUTRAS VIEWS (guildas, eventos, sorteios) - implementações básicas
-    async function loadGuildas(){ $('guildasList').innerHTML = '<p class="muted">Em breve...</p>'; }
-    async function loadEventos(){ $('eventosList').innerHTML = '<p class="muted">Em breve...</p>'; }
-    async function loadSorteios(){
-        const container = $('sorteiosList');
-        container.innerHTML = '<p class="muted">Carregando sorteios...</p>';
-        try{
-            const snap = await db.collection('raffles').limit(20).get();
-            if(snap.empty){ container.innerHTML = '<p class="muted">Nenhum sorteio.</p>'; return; }
-            let html = '';
-            snap.forEach(doc => {
-                const r = doc.data();
-                html += `<div class="raffle-card"><h3>${escapeHtml(r.title)}</h3><p>Custo: ${r.cost} tokens</p><button class="btn-small" data-id="${doc.id}">Participar</button></div>`;
-            });
-            container.innerHTML = html;
-            container.querySelectorAll('.btn-small').forEach(btn => btn.addEventListener('click', () => enterRaffle(btn.dataset.id)));
-        }catch(e){ container.innerHTML = '<p class="muted">Erro.</p>'; }
-    }
-
-    async function enterRaffle(raffleId){
-        if(!currentUser) return toast('Login necessário','error');
-        if(!checkCooldown('raffle', 5)) return;
-        showLoading();
-        try{
-            const raffleRef = db.collection('raffles').doc(raffleId);
-            const userRef = db.collection('users').doc(currentUser.uid);
-            await db.runTransaction(async t => {
-                const raffleDoc = await t.get(raffleRef);
-                if(!raffleDoc.exists) throw new Error('Sorteio inválido');
-                const raffle = raffleDoc.data();
-                const userDoc = await t.get(userRef);
-                if(userDoc.data().tokens < raffle.cost) throw new Error('Tokens insuficientes');
-                t.update(userRef, { tokens: increment(-raffle.cost), xp: increment(appConfig.xpRaffle) });
-                t.update(raffleRef, { entries: arrayUnion(currentUser.uid) });
-            });
-            toast(`Participou! +${appConfig.xpRaffle} XP`,'success');
-            const snap = await userRef.get();
-            currentUser.tokens = snap.data().tokens;
-            currentUser.xp = snap.data().xp;
-            updateUI();
-        }catch(e){ toast(e.message,'error'); } finally{ hideLoading(); }
-    }
-
-    // ========== FUNÇÕES ADMIN (COM VERIFICAÇÃO) ==========
-    async function giveReward(email, tokens, xp){
-        if(currentUser.role !== 'admin') return toast('Acesso negado','error');
-        try{
-            const q = await db.collection('users').where('email','==',email).limit(1).get();
-            if(q.empty) throw new Error('Usuário não encontrado');
-            const uid = q.docs[0].id;
-            await db.collection('users').doc(uid).update({ tokens: increment(tokens), xp: increment(xp) });
-            toast(`Recompensa enviada para ${email}`,'success');
-        }catch(e){ toast(e.message,'error'); }
-    }
-    async function createItem(name, price){
-        if(currentUser.role !== 'admin') return toast('Acesso negado','error');
-        if(!name || price<=0) return toast('Dados inválidos','error');
-        await db.collection('store').add({ name: sanitize(name), price, createdAt: serverTimestamp() });
-        toast('Item criado!','success');
-        loadLoja();
-    }
-    async function createMission(title, desc, xp, tokens){
-        if(currentUser.role !== 'admin') return toast('Acesso negado','error');
-        await db.collection('missions').add({ title: sanitize(title), description: sanitize(desc), xp, tokens, createdAt: serverTimestamp() });
-        toast('Missão criada!','success');
-        loadMissoes();
-    }
-    async function createPartner(name, discount, cashback, description){
-        if(currentUser.role !== 'admin') return toast('Acesso negado','error');
-        await db.collection('partners').add({ name: sanitize(name), discount: sanitize(discount), cashback, description: sanitize(description), createdAt: serverTimestamp() });
-        toast('Parceiro criado!','success');
-        loadPartners();
-    }
-    async function createRaffle(title, cost, description){
-        if(currentUser.role !== 'admin') return toast('Acesso negado','error');
-        await db.collection('raffles').add({ title: sanitize(title), cost, description: sanitize(description), entries: [], createdAt: serverTimestamp() });
-        toast('Sorteio criado!','success');
-        loadSorteios();
-    }
-    async function banUser(email, ban=true){
-        if(currentUser.role !== 'admin') return toast('Acesso negado','error');
-        const q = await db.collection('users').where('email','==',email).limit(1).get();
-        if(q.empty) return toast('Usuário não encontrado','error');
-        const uid = q.docs[0].id;
-        await db.collection('users').doc(uid).update({ status: ban ? 'banido' : 'adimplente' });
-        toast(ban ? 'Usuário banido' : 'Usuário liberado','success');
-    }
-
-    // ========== NAVEGAÇÃO E EVENTOS ==========
-    function showView(viewId){
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        $(viewId).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        const nav = document.querySelector(`.nav-btn[data-view="${viewId}"]`);
-        if(nav) nav.classList.add('active');
-        if(viewId === 'homeView') loadPartners();
-        else if(viewId === 'missoesView') loadMissoes();
-        else if(viewId === 'lojaView') loadLoja();
-        else if(viewId === 'inventarioView') loadInventario();
-        else if(viewId === 'rankingView') loadRanking();
-        else if(viewId === 'guildasView') loadGuildas();
-        else if(viewId === 'eventosView') loadEventos();
-        else if(viewId === 'sorteiosView') loadSorteios();
-        else if(viewId === 'atendimentoView'){ loadServices(); loadMyTickets(); }
-    }
-
-    document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => showView(btn.dataset.view)));
-
-    $('logoutBtn')?.addEventListener('click', () => auth.signOut());
-    $('savePerfilBtn')?.addEventListener('click', async function(){
-        if(!currentUser) return;
-        const profile = {
-            nickname: sanitize($('nicknameInput').value) || 'Membro',
-            bike: sanitize($('bikeInput').value),
-            city: sanitize($('cityInput').value),
-            instagram: sanitize($('instagramInput').value),
-            bio: sanitize($('bioInput').value)
-        };
-        await db.collection('users').doc(currentUser.uid).update({ profile });
-        currentUser.profile = profile;
-        // Salvar CPF na subcoleção privada
-        const cpfValue = $('cpfInput').value;
-        if(cpfValue) await savePrivateCpf(cpfValue);
-        updateUI();
-        toast('Perfil salvo!','success');
-    });
-    $('rewardBtn')?.addEventListener('click', () => giveReward($('rewardEmail').value, parseInt($('rewardTokens').value)||0, parseInt($('rewardXp').value)||0));
-    $('createItemBtn')?.addEventListener('click', () => createItem($('itemName').value, parseInt($('itemPrice').value)||0));
-    $('createMissionBtn')?.addEventListener('click', () => createMission($('missionTitle').value, $('missionDesc').value, parseInt($('missionXp').value)||0, parseInt($('missionTokens').value)||0));
-    $('createPartnerBtn')?.addEventListener('click', () => createPartner($('partnerName').value, $('partnerDiscount').value, parseFloat($('partnerCashback').value)||0, $('partnerDesc').value));
-    $('createRaffleBtn')?.addEventListener('click', () => createRaffle($('raffleTitle').value, parseInt($('raffleCost').value)||0, $('raffleDesc').value));
-    $('banUserBtn')?.addEventListener('click', () => banUser($('targetEmail').value, true));
-    $('unbanUserBtn')?.addEventListener('click', () => banUser($('targetEmail').value, false));
-
-    // Ticket (com cooldown)
-    $('sendTicketBtn')?.addEventListener('click', async () => {
-        if(!currentUser) return toast('Login necessário','error');
-        if(!checkCooldown('ticket', 30)) return;
-        const serviceId = $('ticketServiceSelect').value;
-        const desc = $('ticketDescription').value;
-        if(!serviceId || !desc) return toast('Preencha todos os campos','error');
-        showLoading();
-        try{
-            const serviceDoc = await db.collection('services').doc(serviceId).get();
-            if(!serviceDoc.exists) throw new Error('Serviço inválido');
-            const service = serviceDoc.data();
-            if(currentUser.tokens < service.cost) throw new Error('Tokens insuficientes');
-            await db.runTransaction(async t => {
-                const userRef = db.collection('users').doc(currentUser.uid);
-                const userSnap = await t.get(userRef);
-                if(userSnap.data().tokens < service.cost) throw new Error('Saldo');
-                t.update(userRef, { tokens: increment(-service.cost), xp: increment(appConfig.xpTicket) });
-                t.set(db.collection('tickets').doc(), {
-                    userId: currentUser.uid, userEmail: currentUser.email,
-                    serviceId, serviceName: service.name, description: sanitize(desc),
-                    status: 'aberto', createdAt: serverTimestamp()
-                });
-            });
-            toast(`Ticket aberto! -${service.cost} tokens +${appConfig.xpTicket} XP`,'success');
-            $('ticketModal').classList.add('hidden');
-            loadMyTickets();
-            const snap = await db.collection('users').doc(currentUser.uid).get();
-            currentUser.tokens = snap.data().tokens;
-            currentUser.xp = snap.data().xp;
-            updateUI();
-        }catch(e){ toast(e.message,'error'); } finally{ hideLoading(); }
-    });
-
-    $('openTicketBtn')?.addEventListener('click', () => {
-        if(currentUser) $('ticketModal').classList.remove('hidden');
-        else toast('Faça login primeiro','error');
-    });
-
-    // ========== AUTENTICAÇÃO COM VERIFICAÇÃO DE E-MAIL ==========
-    auth.onAuthStateChanged(async user => {
-        if(user){
-            showLoading();
-            try{
-                // Verificar se email foi verificado (exceto admin mestre)
-                if(!user.emailVerified && user.email !== MASTER_EMAIL){
-                    toast('⚠️ Verifique seu e-mail antes de acessar. Um link foi enviado.', 'error');
-                    await auth.signOut();
-                    return;
-                }
-                await loadConfig();
-                await ensureAdminRole(user);
-                let userData = await forceCreateUserDocument(user);
-                if(userData.status === 'banido'){
-                    toast('Conta banida','error');
-                    await auth.signOut();
-                    return;
-                }
-                currentUser = { uid: user.uid, ...userData };
-                // Carregar CPF da subcoleção privada (para exibir no perfil)
-                const cpfSaved = await loadPrivateCpf();
-                if($('cpfInput')) $('cpfInput').value = cpfSaved;
-                $('authScreen').classList.add('hidden');
-                $('app').classList.remove('hidden');
-                updateUI();
-                listenUser();
-                loadPartners();
-                showView('homeView');
-                toast('🔥 Bem-vindo à Irmandade do Asfalto! 🔥','success');
-            }catch(e){ toast('Erro: '+e.message,'error'); }
-            finally{ hideLoading(); }
-        } else {
-            if(userUnsubscribe) userUnsubscribe();
-            currentUser = null;
-            $('authScreen').classList.remove('hidden');
-            $('app').classList.add('hidden');
-        }
-    });
-
-    // Register com envio de verificação de email
-    $('registerBtn')?.addEventListener('click', async function(){
-        const email = $('emailLogin').value.trim();
-        const senha = $('senhaLogin').value;
-        if(!email || senha.length < 6){ toast('Email e senha (mínimo 6 caracteres)','error'); return; }
-        disableButton(this, 'Criando...');
-        showLoading();
-        try{
-            const cred = await auth.createUserWithEmailAndPassword(email, senha);
-            await cred.user.sendEmailVerification();
-            toast('Conta criada! Verifique seu e-mail para ativar.','info');
-        }catch(e){ toast('Erro: '+e.message,'error'); }
-        finally{ enableButton(this); hideLoading(); }
-    });
-
-    function disableButton(btn, txt){ btn.disabled=true; btn.dataset.original=btn.innerText; btn.innerText=txt; }
-    function enableButton(btn){ btn.disabled=false; if(btn.dataset.original) btn.innerText=btn.dataset.original; delete btn.dataset.original; }
-
-    // Login padrão já existe
-    $('loginBtn')?.addEventListener('click', async function(){
-        const email = $('emailLogin').value.trim();
-        const senha = $('senhaLogin').value;
-        if(!email || !senha){ toast('Preencha email e senha','error'); return; }
-        disableButton(this, 'Entrando...');
-        showLoading();
-        try{ await auth.signInWithEmailAndPassword(email, senha); }
-        catch(e){ toast('Falha no login','error'); }
-        finally{ enableButton(this); hideLoading(); }
-    });
-
-    $('forgotPasswordBtn')?.addEventListener('click', async function(){
-        const email = $('emailLogin').value.trim();
-        if(!email){ toast('Digite seu email','error'); return; }
-        disableButton(this, 'Enviando...');
-        try{ await auth.sendPasswordResetEmail(email); toast('Email de recuperação enviado!','success'); }
-        catch(e){ toast('Erro: '+e.message,'error'); }
-        finally{ enableButton(this); }
-    });
-
-    // Funções de fechamento de modais
-    window.closeQRModal = () => $('qrModal').classList.add('hidden');
-    window.closeScannerModal = () => { $('scannerModal').classList.add('hidden'); if(scannerStream) scannerStream.getTracks().forEach(t=>t.stop()); scannerStream=null; };
-    window.closeTicketModal = () => $('ticketModal').classList.add('hidden');
-    window.closeConfirmModal = () => $('confirmModal').classList.add('hidden');
+    function getRank(xp){ if(xp>=50000) return {nome:'Deus do Asfalto',classe:'rank-deus'}; if(xp>=25000) return {nome:'Lenda Imortal',classe:'rank-imortal2'}; if(xp>=12000) return {nome:'Ícone da Irmandade',classe:'rank-icone'}; if(xp>=6000) return {nome:'Mestre do Asfalto',classe:'rank-mestre'}; if(xp>=3000) return {nome:'Lenda Urbana',classe:'rank-lenda'}; if(xp>=1500) return {nome:'Forjado na Estrada',classe:'rank-forjado'}; if(xp>=700) return {nome:'Líder de Comboio',classe:'rank-lider'}; if(xp>=300) return {nome:'Guardião do Asfalto',classe:'rank-guardiao'}; if(xp>=100) return {nome:'Estradeiro',classe:'rank-estradeiro'}; return {nome:'Aspirante',classe:'rank-aspirante'}; }
+    const $=id=>document.getElementById(id); const showLoading=()=>$('loadingOverlay').classList.remove('hidden'); const hideLoading=()=>$('loadingOverlay').classList.add('hidden');
+    function toast(msg,type='info'){ let c=$('toastContainer'),t=document.createElement('div'); t.className=`toast toast-${type}`; t.innerText=msg; c.appendChild(t); setTimeout(()=>t.remove(),3500); }
+    async function loadConfig(){ try{ let doc=await db.collection('config').doc('xp_rewards').get(); if(doc.exists){ let d=doc.data(); if(d.xpStore!==undefined) appConfig.xpStore=d.xpStore; if(d.xpReceipt!==undefined) appConfig.xpReceipt=d.xpReceipt; if(d.xpTicket!==undefined) appConfig.xpTicket=d.xpTicket; if(d.xpRaffle!==undefined) appConfig.xpRaffle=d.xpRaffle; if(d.defaultCashback!==undefined) appConfig.defaultCashback=d.defaultCashback; } }catch(e){} }
+    async function updateUI(){ if(!currentUser) return; let xp=currentUser.xp||0, tokens=currentUser.tokens||0, rep=currentUser.reputation||0, rank=getRank(xp), level=getLevel(xp), status=currentUser.status||'adimplente'; $('tokensAmount').innerText=tokens; $('nicknameDisplay').innerText=currentUser.profile?.nickname||'Membro'; $('xpAmount').innerText=xp; $('xpText').innerText=`${xp} XP`; $('reputationDisplay').innerText=rep; $('levelText').innerText=`Lv.${level}`; updateXpBar(xp); let rankEl=$('rankBadge'); rankEl.innerText=rank.nome; rankEl.className=`rank-badge ${rank.classe}`; let statusEl=$('statusBadge'); statusEl.innerText=status==='adimplente'?'Adimplente':status.toUpperCase(); statusEl.className=`status-badge ${status==='adimplente'?'status-ok':'status-bad'}`; if($('nicknameInput')) $('nicknameInput').value=currentUser.profile?.nickname||''; if($('bikeInput')) $('bikeInput').value=currentUser.profile?.bike||''; if($('cityInput')) $('cityInput').value=currentUser.profile?.city||''; if($('instagramInput')) $('instagramInput').value=currentUser.profile?.instagram||''; if($('bioInput')) $('bioInput').value=currentUser.profile?.bio||''; let isAdmin=currentUser.role==='admin'; document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'flex':'none'); }
+    async function loadPrivateCpf(){ if(!currentUser) return ''; let doc=await db.collection('private').doc(currentUser.uid).get(); return doc.exists?doc.data().cpf:''; }
+    async function savePrivateCpf(cpf){ if(!currentUser) return; let cpfClean=cpf.replace(/\D/g,'').slice(0,11); await db.collection('private').doc(currentUser.uid).set({cpf:cpfClean},{merge:true}); }
+    async function forceCreateUserDocument(user){ let userRef=db.collection('users').doc(user.uid); let snap=await userRef.get(); if(snap.exists) return snap.data(); let isMaster=(user.email===MASTER_EMAIL); let profile={nickname:user.email.split('@')[0],bike:'',city:'',bio:'',instagram:'',avatar:'',banner:''}; let payload={email:user.email,role:isMaster?'admin':'novato',tokens:0,xp:0,reputation:0,status:'adimplente',guildId:null,achievements:[],inventory:[],titles:[],badges:[],profile,createdAt:serverTimestamp(),lastLogin:serverTimestamp(),ticketsOwned:[]}; await userRef.set(payload,{merge:true}); toast(`✅ Perfil criado${isMaster?' (Mestre)':''}!`,'success'); return payload; }
+    async function ensureAdminRole(user){ if(user.email!==MASTER_EMAIL) return; let userRef=db.collection('users').doc(user.uid); let doc=await userRef.get(); if(doc.exists&&doc.data().role!=='admin'){ await userRef.update({role:'admin'}); toast('🔑 Você foi promovido a Mestre!','success'); } }
+    function listenUser(){ if(userUnsubscribe) userUnsubscribe(); userUnsubscribe=db.collection('users').doc(currentUser.uid).onSnapshot(doc=>{ if(doc.exists){ let data=doc.data(); if(data.status==='banido'){ toast('Conta banida','error'); auth.signOut(); return; } let oldXp=currentUser.xp||0; currentUser={...currentUser,...data,uid:currentUser.uid}; updateUI(); if(getLevel(currentUser.xp)>getLevel(oldXp)){ $('hero')?.classList.add('level-up-anim'); setTimeout(()=>$('hero')?.classList.remove('level-up-anim'),600); toast('⬆️ LEVEL UP! ⬆️','success'); } } },err=>console.error(err)); }
+    // Funções de carga (abreviadas para compactação)
+    async function loadPartners(){ let c=$('partnersList'); c.innerHTML='<p class="muted">Carregando...</p>'; try{ let snap=await db.collection('partners').orderBy('createdAt','desc').limit(20).get(); if(snap.empty){ c.innerHTML='<p class="muted">Nenhum parceiro.</p>'; return; } let h=''; snap.forEach(d=>{ let p=d.data(); h+=`<div class="partner-card"><h3>${escapeHtml(p.name||'Parceiro')}</h3><p>${escapeHtml(p.description||'')}</p><div><span class="rank-badge">${escapeHtml(p.discount||'Benefício')}</span><span class="status-badge">Cashback ${p.cashback||appConfig.defaultCashback}%</span></div></div>`; }); c.innerHTML=h; }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    async function loadMissoes(){ let c=$('missoesList'); c.innerHTML='<p class="muted">Carregando...</p>'; try{ let snap=await db.collection('missions').orderBy('createdAt','desc').limit(30).get(); if(snap.empty){ c.innerHTML='<p class="muted">Nenhuma missão.</p>'; return; } let h=''; snap.forEach(d=>{ let m=d.data(); h+=`<div class="mission-card"><h3>${escapeHtml(m.title)}</h3><p>${escapeHtml(m.description)}</p><div>+${m.xp||0} XP | +${m.tokens||0} Tokens</div></div>`; }); c.innerHTML=h; }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    async function loadLoja(){ let c=$('lojaList'); c.innerHTML='<p class="muted">Carregando...</p>'; try{ let snap=await db.collection('store').limit(50).get(); if(snap.empty){ c.innerHTML='<p class="muted">Nenhum item.</p>'; return; } let h=''; snap.forEach(d=>{ let i=d.data(); h+=`<div class="item-card"><h3>${escapeHtml(i.name)}</h3><p>${i.price} tokens</p><button class="btn-small" data-id="${d.id}">Comprar</button></div>`; }); c.innerHTML=h; c.querySelectorAll('.btn-small').forEach(btn=>btn.addEventListener('click',()=>comprarItem(btn.dataset.id))); }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    async function comprarItem(itemId){ if(!currentUser) return toast('Login necessário','error'); if(!checkCooldown('buy',3)) return; showLoading(); try{ let userRef=db.collection('users').doc(currentUser.uid), itemRef=db.collection('store').doc(itemId); await db.runTransaction(async t=>{ let itemDoc=await t.get(itemRef); if(!itemDoc.exists) throw new Error('Item não existe'); let item=itemDoc.data(), userDoc=await t.get(userRef); if(userDoc.data().tokens<item.price) throw new Error('Tokens insuficientes'); if(userDoc.data().inventory&&userDoc.data().inventory.includes(itemId)) throw new Error('Você já possui este item!'); t.update(userRef,{tokens:increment(-item.price),inventory:arrayUnion(itemId),xp:increment(appConfig.xpStore)}); }); toast(`Comprou! +${appConfig.xpStore} XP`,'success'); let snap=await userRef.get(); currentUser.tokens=snap.data().tokens; currentUser.xp=snap.data().xp; updateUI(); await loadInventario(); }catch(e){ toast(e.message,'error'); } finally{ hideLoading(); } }
+    async function loadInventario(){ let c=$('inventarioList'); if(!currentUser?.inventory?.length){ c.innerHTML='<p class="muted">Inventário vazio.</p>'; return; } showLoading(); try{ let promises=currentUser.inventory.map(id=>db.collection('store').doc(id).get()); let docs=await Promise.all(promises); let h=''; docs.forEach(d=>{ if(d.exists){ let i=d.data(); h+=`<div class="item-card"><h3>${escapeHtml(i.name)}</h3><p>${i.price} tokens</p></div>`; } }); c.innerHTML=h||'<p class="muted">Nenhum item válido.</p>'; }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } finally{ hideLoading(); } }
+    async function loadRanking(){ let c=$('rankingList'); c.innerHTML='<p class="muted">Carregando ranking...</p>'; try{ let snap=await db.collection('users').orderBy('xp','desc').limit(50).get(); if(snap.empty){ c.innerHTML='<p class="muted">Ranking indisponível.</p>'; return; } let h='<ol>'; snap.forEach(d=>{ let u=d.data(); h+=`<li><strong>${escapeHtml(u.profile?.nickname||'Anônimo')}</strong> - ${u.xp||0} XP</li>`; }); h+='</ol>'; c.innerHTML=h; }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    async function loadServices(){ let c=$('servicesList'); c.innerHTML='<p class="muted">Carregando serviços...</p>'; try{ let snap=await db.collection('services').limit(20).get(); if(snap.empty){ c.innerHTML='<p class="muted">Nenhum serviço.</p>'; return; } let h='', select=$('ticketServiceSelect'); select.innerHTML='<option value="">Selecione...</option>'; snap.forEach(d=>{ let s=d.data(); h+=`<div class="ticket-card"><h3>${escapeHtml(s.name)}</h3><p>${escapeHtml(s.description)}</p><p>Custo: ${s.cost} tokens</p></div>`; select.innerHTML+=`<option value="${d.id}">${escapeHtml(s.name)} (${s.cost} tokens)</option>`; }); c.innerHTML=h; }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    async function loadMyTickets(){ let c=$('myTicketsList'); if(!currentUser){ c.innerHTML='<p class="muted">Faça login.</p>'; return; } c.innerHTML='<p class="muted">Carregando...</p>'; try{ let snap=await db.collection('tickets').where('userId','==',currentUser.uid).orderBy('createdAt','desc').limit(20).get(); if(snap.empty){ c.innerHTML='<p class="muted">Nenhum chamado.</p>'; return; } let h=''; snap.forEach(d=>{ let t=d.data(); h+=`<div class="ticket-card"><h3>${escapeHtml(t.serviceName)}</h3><p>${escapeHtml(t.description)}</p><span class="status-badge">${t.status||'aberto'}</span></div>`; }); c.innerHTML=h; }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    async function loadGuildas(){ $('guildasList').innerHTML='<p class="muted">Em breve...</p>'; }
+    async function loadEventos(){ $('eventosList').innerHTML='<p class="muted">Em breve...</p>'; }
+    async function loadSorteios(){ let c=$('sorteiosList'); c.innerHTML='<p class="muted">Carregando sorteios...</p>'; try{ let snap=await db.collection('raffles').limit(20).get(); if(snap.empty){ c.innerHTML='<p class="muted">Nenhum sorteio.</p>'; return; } let h=''; snap.forEach(d=>{ let r=d.data(); h+=`<div class="raffle-card"><h3>${escapeHtml(r.title)}</h3><p>Custo: ${r.cost} tokens</p><button class="btn-small" data-id="${d.id}">Participar</button></div>`; }); c.innerHTML=h; c.querySelectorAll('.btn-small').forEach(btn=>btn.addEventListener('click',()=>enterRaffle(btn.dataset.id))); }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    async function enterRaffle(raffleId){ if(!currentUser) return toast('Login necessário','error'); if(!checkCooldown('raffle',5)) return; showLoading(); try{ let raffleRef=db.collection('raffles').doc(raffleId), userRef=db.collection('users').doc(currentUser.uid); await db.runTransaction(async t=>{ let raffleDoc=await t.get(raffleRef); if(!raffleDoc.exists) throw new Error('Sorteio inválido'); let raffle=raffleDoc.data(), userDoc=await t.get(userRef); if(userDoc.data().tokens<raffle.cost) throw new Error('Tokens insuficientes'); t.update(userRef,{tokens:increment(-raffle.cost),xp:increment(appConfig.xpRaffle)}); t.update(raffleRef,{entries:arrayUnion(currentUser.uid)}); }); toast(`Participou! +${appConfig.xpRaffle} XP`,'success'); let snap=await userRef.get(); currentUser.tokens=snap.data().tokens; currentUser.xp=snap.data().xp; updateUI(); }catch(e){ toast(e.message,'error'); } finally{ hideLoading(); } }
+    // Admin CRUD e QR Checkpoint (resumido)
+    async function giveReward(email,tokens,xp){ if(currentUser?.role!=='admin') return toast('Acesso negado','error'); try{ let q=await db.collection('users').where('email','==',email).limit(1).get(); if(q.empty) throw new Error('Usuário não encontrado'); let uid=q.docs[0].id; await db.collection('users').doc(uid).update({tokens:increment(tokens),xp:increment(xp)}); toast(`Recompensa enviada para ${email}`,'success'); }catch(e){ toast(e.message,'error'); } }
+    async function createItem(name,price){ if(currentUser?.role!=='admin') return toast('Acesso negado','error'); if(!name||price<=0) return toast('Dados inválidos','error'); await db.collection('store').add({name:sanitize(name),price,createdAt:serverTimestamp()}); toast('Item criado!','success'); loadLoja(); }
+    async function createMission(title,desc,xp,tokens){ if(currentUser?.role!=='admin') return toast('Acesso negado','error'); await db.collection('missions').add({title:sanitize(title),description:sanitize(desc),xp,tokens,createdAt:serverTimestamp()}); toast('Missão criada!','success'); loadMissoes(); loadAdminMissionsList(); }
+    async function createPartner(name,discount,cashback,description){ if(currentUser?.role!=='admin') return toast('Acesso negado','error'); await db.collection('partners').add({name:sanitize(name),discount:sanitize(discount),cashback,description:sanitize(description),createdAt:serverTimestamp()}); toast('Parceiro criado!','success'); loadPartners(); loadAdminPartnersList(); }
+    async function createRaffle(title,cost,description){ if(currentUser?.role!=='admin') return toast('Acesso negado','error'); await db.collection('raffles').add({title:sanitize(title),cost,description:sanitize(description),entries:[],createdAt:serverTimestamp()}); toast('Sorteio criado!','success'); loadSorteios(); }
+    async function banUser(email,ban=true){ if(currentUser?.role!=='admin') return toast('Acesso negado','error'); let q=await db.collection('users').where('email','==',email).limit(1).get(); if(q.empty) return toast('Usuário não encontrado','error'); let uid=q.docs[0].id; await db.collection('users').doc(uid).update({status:ban?'banido':'adimplente'}); toast(ban?'Usuário banido':'Usuário liberado','success'); }
+    async function loadAdminMissionsList(){ let c=$('adminMissionsList'); if(!c) return; c.innerHTML='<p class="muted">Carregando missões...</p>'; try{ let snap=await db.collection('missions').limit(30).get(); if(snap.empty){ c.innerHTML='<p class="muted">Nenhuma missão.</p>'; return; } let h=''; snap.forEach(d=>{ let m=d.data(); h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;background:#2a2a2a;padding:8px;border-radius:12px"><div><strong>${escapeHtml(m.title)}</strong> (${m.xp||0} XP / ${m.tokens||0} Tokens)</div><button class="btn-small" data-mission="${d.id}" style="background:var(--orange);">📷 Gerar QR Checkpoint</button></div>`; }); c.innerHTML=h; c.querySelectorAll('button[data-mission]').forEach(btn=>btn.addEventListener('click',()=>openGenerateQRModal('mission',btn.dataset.mission))); }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    async function loadAdminPartnersList(){ let c=$('adminPartnersList'); if(!c) return; c.innerHTML='<p class="muted">Carregando parceiros...</p>'; try{ let snap=await db.collection('partners').limit(30).get(); if(snap.empty){ c.innerHTML='<p class="muted">Nenhum parceiro.</p>'; return; } let h=''; snap.forEach(d=>{ let p=d.data(); h+=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;background:#2a2a2a;padding:8px;border-radius:12px"><div><strong>${escapeHtml(p.name)}</strong> (Cashback ${p.cashback||0}%)</div><button class="btn-small" data-partner="${d.id}" style="background:var(--orange);">📷 Gerar QR Checkpoint</button></div>`; }); c.innerHTML=h; c.querySelectorAll('button[data-partner]').forEach(btn=>btn.addEventListener('click',()=>openGenerateQRModal('partner',btn.dataset.partner))); }catch(e){ c.innerHTML='<p class="muted">Erro.</p>'; } }
+    let currentQRType=null, currentQRRefId=null;
+    function openGenerateQRModal(type,refId){ if(currentUser?.role!=='admin') return toast('Acesso negado','error'); currentQRType=type; currentQRRefId=refId; $('qrGenTitle').innerText=type==='partner'?'Gerar QR Checkpoint para Parceiro':'Gerar QR Checkpoint para Missão'; $('generateQRModal').classList.remove('hidden'); }
+    function closeGenerateQRModal(){ $('generateQRModal').classList.add('hidden'); }
+    $('confirmGenerateQRBtn')?.addEventListener('click',async()=>{ let xp=parseInt($('qrRewardXp').value)||0, tokens=parseInt($('qrRewardTokens').value)||0, expiryValue=parseInt($('qrExpiryValue').value)||1, expiryUnit=$('qrExpiryUnit').value; let expiresAt=new Date(); if(expiryUnit==='hours') expiresAt.setHours(expiresAt.getHours()+expiryValue); else expiresAt.setDate(expiresAt.getDate()+expiryValue); let qrId=crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).substring(2); let qrData={type:currentQRType,refId:currentQRRefId,xpReward:xp,tokensReward:tokens,expiresAt:firebase.firestore.Timestamp.fromDate(expiresAt),usedBy:[],usedCount:0,createdAt:serverTimestamp()}; showLoading(); try{ await db.collection('qr_checkpoints').doc(qrId).set(qrData); let qrContainer=$('qrCanvasContainer'); qrContainer.innerHTML=''; new QRCode(qrContainer,{text:qrId,width:200,height:200}); $('qrModalTitle').innerText='QR Checkpoint Gerado'; $('qrModalDescription').innerHTML=`Válido até ${expiresAt.toLocaleString()}<br>Recompensa: ${xp} XP / ${tokens} Tokens`; $('qrModal').classList.remove('hidden'); closeGenerateQRModal(); }catch(e){ toast('Erro ao gerar QR: '+e.message,'error'); } finally{ hideLoading(); } });
+    async function startScanner(expectedType){ if(!currentUser) return toast('Faça login primeiro','error'); pendingScanType=expectedType; $('scannerModal').classList.remove('hidden'); let video=$('scannerVideo'), canvas=$('scannerCanvas'), context=canvas.getContext('2d'); try{ let stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}); scannerStream=stream; video.srcObject=stream; video.setAttribute('playsinline',true); await video.play(); requestAnimationFrame(function scan(){ if(!scannerStream) return; if(video.readyState===video.HAVE_ENOUGH_DATA){ canvas.width=video.videoWidth; canvas.height=video.videoHeight; context.drawImage(video,0,0,canvas.width,canvas.height); let imageData=context.getImageData(0,0,canvas.width,canvas.height); let code=jsQR(imageData.data,canvas.width,canvas.height,{inversionAttempts:"dontInvert"}); if(code){ processQRCode(code.data,pendingScanType); closeScannerModal(); return; } } requestAnimationFrame(scan); }); }catch(e){ toast('Erro ao acessar câmera','error'); closeScannerModal(); } }
+    async function processQRCode(qrId,expectedType){ showLoading(); try{ let qrDoc=await db.collection('qr_checkpoints').doc(qrId).get(); if(!qrDoc.exists) throw new Error('QR Code inválido ou não encontrado.'); let qr=qrDoc.data(); if(qr.expiresAt&&qr.expiresAt.toDate()<new Date()) throw new Error('Este QR Code expirou.'); if(qr.usedBy&&qr.usedBy.includes(currentUser.uid)) throw new Error('Você já utilizou este QR Code.'); if(expectedType==='partner'&&qr.type!=='partner') throw new Error('Este QR não é de checkpoint de parceiro.'); if(expectedType==='mission'&&qr.type!=='mission') throw new Error('Este QR não é de checkpoint de missão.'); let userRef=db.collection('users').doc(currentUser.uid); await db.runTransaction(async t=>{ t.update(userRef,{tokens:increment(qr.tokensReward),xp:increment(qr.xpReward)}); t.update(db.collection('qr_checkpoints').doc(qrId),{usedBy:arrayUnion(currentUser.uid),usedCount:increment(1)}); }); toast(`Checkpoint validado! +${qr.xpReward} XP e +${qr.tokensReward} Tokens`,'success'); let snap=await userRef.get(); currentUser.tokens=snap.data().tokens; currentUser.xp=snap.data().xp; updateUI(); }catch(e){ toast(e.message,'error'); } finally{ hideLoading(); } }
+    function closeScannerModal(){ $('scannerModal').classList.add('hidden'); if(scannerStream){ scannerStream.getTracks().forEach(t=>t.stop()); scannerStream=null; } }
+    function showView(viewId){ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active')); $(viewId).classList.add('active'); document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); let nav=document.querySelector(`.nav-btn[data-view="${viewId}"]`); if(nav) nav.classList.add('active'); if(viewId==='homeView') loadPartners(); else if(viewId==='missoesView') loadMissoes(); else if(viewId==='lojaView') loadLoja(); else if(viewId==='inventarioView') loadInventario(); else if(viewId==='rankingView') loadRanking(); else if(viewId==='guildasView') loadGuildas(); else if(viewId==='eventosView') loadEventos(); else if(viewId==='sorteiosView') loadSorteios(); else if(viewId==='atendimentoView'){ loadServices(); loadMyTickets(); } else if(viewId==='adminView'){ loadAdminMissionsList(); loadAdminPartnersList(); } }
+    document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>showView(btn.dataset.view)));
+    $('logoutBtn')?.addEventListener('click',()=>auth.signOut());
+    $('savePerfilBtn')?.addEventListener('click',async function(){ if(!currentUser) return; let profile={nickname:sanitize($('nicknameInput').value)||'Membro', bike:sanitize($('bikeInput').value), city:sanitize($('cityInput').value), instagram:sanitize($('instagramInput').value), bio:sanitize($('bioInput').value)}; await db.collection('users').doc(currentUser.uid).update({profile}); currentUser.profile=profile; let cpfValue=$('cpfInput').value; if(cpfValue) await savePrivateCpf(cpfValue); updateUI(); toast('Perfil salvo!','success'); });
+    $('rewardBtn')?.addEventListener('click',()=>giveReward($('rewardEmail').value,parseInt($('rewardTokens').value)||0,parseInt($('rewardXp').value)||0));
+    $('createItemBtn')?.addEventListener('click',()=>createItem($('itemName').value,parseInt($('itemPrice').value)||0));
+    $('createMissionBtn')?.addEventListener('click',()=>createMission($('missionTitle').value,$('missionDesc').value,parseInt($('missionXp').value)||0,parseInt($('missionTokens').value)||0));
+    $('createPartnerBtn')?.addEventListener('click',()=>createPartner($('partnerName').value,$('partnerDiscount').value,parseFloat($('partnerCashback').value)||0,$('partnerDesc').value));
+    $('createRaffleBtn')?.addEventListener('click',()=>createRaffle($('raffleTitle').value,parseInt($('raffleCost').value)||0,$('raffleDesc').value));
+    $('banUserBtn')?.addEventListener('click',()=>banUser($('targetEmail').value,true));
+    $('unbanUserBtn')?.addEventListener('click',()=>banUser($('targetEmail').value,false));
+    $('scanReceiptBtn')?.addEventListener('click',()=>toast('Funcionalidade de nota fiscal em desenvolvimento','info'));
+    $('scanPartnerCheckpointBtn')?.addEventListener('click',()=>startScanner('partner'));
+    $('scanMissionCheckpointBtn')?.addEventListener('click',()=>startScanner('mission'));
+    $('sendTicketBtn')?.addEventListener('click',async()=>{ if(!currentUser) return toast('Login necessário','error'); if(!checkCooldown('ticket',30)) return; let serviceId=$('ticketServiceSelect').value, desc=$('ticketDescription').value; if(!serviceId||!desc) return toast('Preencha todos os campos','error'); showLoading(); try{ let serviceDoc=await db.collection('services').doc(serviceId).get(); if(!serviceDoc.exists) throw new Error('Serviço inválido'); let service=serviceDoc.data(); if(currentUser.tokens<service.cost) throw new Error('Tokens insuficientes'); await db.runTransaction(async t=>{ let userRef=db.collection('users').doc(currentUser.uid), userSnap=await t.get(userRef); if(userSnap.data().tokens<service.cost) throw new Error('Saldo'); t.update(userRef,{tokens:increment(-service.cost),xp:increment(appConfig.xpTicket)}); t.set(db.collection('tickets').doc(),{userId:currentUser.uid,userEmail:currentUser.email,serviceId,serviceName:service.name,description:sanitize(desc),status:'aberto',createdAt:serverTimestamp()}); }); toast(`Ticket aberto! -${service.cost} tokens +${appConfig.xpTicket} XP`,'success'); $('ticketModal').classList.add('hidden'); loadMyTickets(); let snap=await db.collection('users').doc(currentUser.uid).get(); currentUser.tokens=snap.data().tokens; currentUser.xp=snap.data().xp; updateUI(); }catch(e){ toast(e.message,'error'); } finally{ hideLoading(); } });
+    $('openTicketBtn')?.addEventListener('click',()=>{ if(currentUser) $('ticketModal').classList.remove('hidden'); else toast('Faça login','error'); });
+    auth.onAuthStateChanged(async user=>{ if(user){ showLoading(); try{ if(!user.emailVerified && user.email!==MASTER_EMAIL){ toast('⚠️ Verifique seu e-mail antes de acessar.','error'); await auth.signOut(); return; } await loadConfig(); await ensureAdminRole(user); let userData=await forceCreateUserDocument(user); if(userData.status==='banido'){ toast('Conta banida','error'); await auth.signOut(); return; } currentUser={uid:user.uid,...userData}; let cpfSaved=await loadPrivateCpf(); if($('cpfInput')) $('cpfInput').value=cpfSaved; $('authScreen').classList.add('hidden'); $('app').classList.remove('hidden'); updateUI(); listenUser(); loadPartners(); showView('homeView'); toast('🔥 Bem-vindo à Irmandade do Asfalto! 🔥','success'); }catch(e){ toast('Erro: '+e.message,'error'); } finally{ hideLoading(); } }else{ if(userUnsubscribe) userUnsubscribe(); currentUser=null; $('authScreen').classList.remove('hidden'); $('app').classList.add('hidden'); } });
+    $('registerBtn')?.addEventListener('click',async function(){ let email=$('emailLogin').value.trim(), senha=$('senhaLogin').value; if(!email||senha.length<6){ toast('Email e senha (mínimo 6 caracteres)','error'); return; } this.disabled=true; let orig=this.innerText; this.innerText='Criando...'; showLoading(); try{ let cred=await auth.createUserWithEmailAndPassword(email,senha); await cred.user.sendEmailVerification(); toast('Conta criada! Verifique seu e-mail.','info'); }catch(e){ toast('Erro: '+e.message,'error'); } finally{ this.disabled=false; this.innerText=orig; hideLoading(); } });
+    $('loginBtn')?.addEventListener('click',async function(){ let email=$('emailLogin').value.trim(), senha=$('senhaLogin').value; if(!email||!senha){ toast('Preencha email e senha','error'); return; } this.disabled=true; let orig=this.innerText; this.innerText='Entrando...'; showLoading(); try{ await auth.signInWithEmailAndPassword(email,senha); }catch(e){ toast('Falha no login','error'); } finally{ this.disabled=false; this.innerText=orig; hideLoading(); } });
+    $('forgotPasswordBtn')?.addEventListener('click',async function(){ let email=$('emailLogin').value.trim(); if(!email){ toast('Digite seu email','error'); return; } this.disabled=true; let orig=this.innerText; this.innerText='Enviando...'; try{ await auth.sendPasswordResetEmail(email); toast('Email de recuperação enviado!','success'); }catch(e){ toast('Erro: '+e.message,'error'); } finally{ this.disabled=false; this.innerText=orig; } });
+    window.closeQRModal=()=>$('qrModal').classList.add('hidden');
+    window.closeScannerModal=closeScannerModal;
+    window.closeTicketModal=()=>$('ticketModal').classList.add('hidden');
+    window.closeConfirmModal=()=>$('confirmModal').classList.add('hidden');
+    window.closeGenerateQRModal=closeGenerateQRModal;
 })();
 </script>
 </body>
